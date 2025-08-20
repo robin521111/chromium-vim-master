@@ -1,0 +1,125 @@
+<svg width="1280" height="800" viewBox="0 0 1280 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="800" fill="#f8f9fa"/>
+  
+  <!-- Browser window mockup -->
+  <rect x="80" y="60" width="1120" height="680" rx="12" fill="#ffffff" stroke="#e9ecef" stroke-width="2"/>
+  
+  <!-- Browser header -->
+  <rect x="80" y="60" width="1120" height="40" rx="12" fill="#343a40"/>
+  <rect x="80" y="88" width="1120" height="12" fill="#343a40"/>
+  
+  <!-- Traffic lights -->
+  <circle cx="105" cy="80" r="6" fill="#ff5f56"/>
+  <circle cx="125" cy="80" r="6" fill="#ffbd2e"/>
+  <circle cx="145" cy="80" r="6" fill="#27ca3f"/>
+  
+  <!-- Address bar -->
+  <rect x="200" y="68" width="600" height="24" rx="12" fill="#f8f9fa" stroke="#dee2e6"/>
+  <text x="220" y="83" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">https://vim.org/docs</text>
+  
+  <!-- cVim icon in toolbar -->
+  <rect x="1140" y="68" width="24" height="24" rx="4" fill="#2c3e50"/>
+  <text x="1152" y="78" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
+  <rect x="1146" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1150" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1154" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1158" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  
+  <!-- Main content area -->
+  <rect x="80" y="100" width="1120" height="640" fill="#ffffff"/>
+  
+  <!-- Long article content -->
+  <g transform="translate(150, 130)">
+    <text x="0" y="30" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#212529">Vim Documentation</text>
+    <text x="0" y="60" font-family="Arial, sans-serif" font-size="16" fill="#6c757d">Complete guide to Vim editor commands and features</text>
+    
+    <!-- Article content with scroll indicators -->
+    <g transform="translate(0, 90)">
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="14" fill="#495057">Vim is a highly configurable text editor built to make creating and changing</text>
+      <text x="0" y="40" font-family="Arial, sans-serif" font-size="14" fill="#495057">any kind of text very efficient. It is included as "vi" with most UNIX systems</text>
+      <text x="0" y="60" font-family="Arial, sans-serif" font-size="14" fill="#495057">and with Apple OS X.</text>
+      
+      <text x="0" y="100" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#212529">Basic Navigation</text>
+      <text x="0" y="120" font-family="Arial, sans-serif" font-size="14" fill="#495057">• h - move cursor left</text>
+      <text x="0" y="140" font-family="Arial, sans-serif" font-size="14" fill="#495057">• j - move cursor down</text>
+      <text x="0" y="160" font-family="Arial, sans-serif" font-size="14" fill="#495057">• k - move cursor up</text>
+      <text x="0" y="180" font-family="Arial, sans-serif" font-size="14" fill="#495057">• l - move cursor right</text>
+      
+      <text x="0" y="220" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#212529">Page Navigation</text>
+      <text x="0" y="240" font-family="Arial, sans-serif" font-size="14" fill="#495057">• gg - go to top of document</text>
+      <text x="0" y="260" font-family="Arial, sans-serif" font-size="14" fill="#495057">• G - go to bottom of document</text>
+      <text x="0" y="280" font-family="Arial, sans-serif" font-size="14" fill="#495057">• Ctrl+u - scroll up half page</text>
+      <text x="0" y="300" font-family="Arial, sans-serif" font-size="14" fill="#495057">• Ctrl+d - scroll down half page</text>
+      
+      <!-- Highlight current section -->
+      <rect x="-10" y="205" width="600" height="110" fill="#e3f2fd" stroke="#2196f3" stroke-width="2" opacity="0.3" rx="4"/>
+    </g>
+  </g>
+  
+  <!-- Scroll indicator -->
+  <rect x="1150" y="120" width="8" height="500" fill="#e9ecef" rx="4"/>
+  <rect x="1150" y="200" width="8" height="80" fill="#007bff" rx="4">
+    <animate attributeName="y" values="200;300;200" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Navigation keys display -->
+  <g transform="translate(200, 500)">
+    <rect x="0" y="0" width="880" height="120" rx="8" fill="#2c3e50" opacity="0.9"/>
+    
+    <text x="20" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">Scroll Navigation</text>
+    
+    <!-- Key demonstrations -->
+    <g transform="translate(50, 50)">
+      <rect x="0" y="0" width="30" height="30" rx="4" fill="#3498db"/>
+      <text x="15" y="20" font-family="monospace" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">j</text>
+      <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Scroll down</text>
+      
+      <rect x="150" y="0" width="30" height="30" rx="4" fill="#3498db"/>
+      <text x="165" y="20" font-family="monospace" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">k</text>
+      <text x="190" y="20" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Scroll up</text>
+      
+      <rect x="300" y="0" width="40" height="30" rx="4" fill="#e74c3c"/>
+      <text x="320" y="20" font-family="monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">gg</text>
+      <text x="350" y="20" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Go to top</text>
+      
+      <rect x="450" y="0" width="30" height="30" rx="4" fill="#e74c3c"/>
+      <text x="465" y="20" font-family="monospace" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">G</text>
+      <text x="490" y="20" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Go to bottom</text>
+      
+      <rect x="600" y="0" width="50" height="30" rx="4" fill="#f39c12"/>
+      <text x="625" y="20" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Ctrl+d</text>
+      <text x="660" y="20" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Page down</text>
+      
+      <rect x="750" y="0" width="50" height="30" rx="4" fill="#f39c12"/>
+      <text x="775" y="20" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Ctrl+u</text>
+      <text x="810" y="20" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Page up</text>
+    </g>
+  </g>
+  
+  <!-- Visual scroll animation -->
+  <g transform="translate(800, 150)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#6c757d">Smooth Scrolling</text>
+    <rect x="0" y="10" width="200" height="4" fill="#e9ecef" rx="2"/>
+    <rect x="0" y="10" width="80" fill="#28a745" rx="2" height="4">
+      <animate attributeName="width" values="80;120;80" dur="2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  
+  <!-- Logo in corner -->
+  <g transform="translate(1100, 650)">
+    <rect x="0" y="0" width="80" height="80" rx="12" fill="#2c3e50"/>
+    <text x="40" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
+    <g transform="translate(40, 55)">
+      <rect x="-28" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="-23" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">h</text>
+      <rect x="-16" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="-11" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">j</text>
+      <rect x="-4" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="1" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">k</text>
+      <rect x="8" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="13" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">l</text>
+    </g>
+    <circle cx="65" cy="15" r="3" fill="#28a745"/>
+  </g>
+</svg>

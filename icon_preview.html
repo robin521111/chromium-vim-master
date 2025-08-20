@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 图标预览</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .icon-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .icon-item h3 {
+            margin: 10px 0 5px 0;
+            color: #495057;
+        }
+        .icon-item p {
+            margin: 5px 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .icon-display {
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .comparison {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .improvement {
+            color: #155724;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 rVim 图标设计优化</h1>
+        
+        <div class="comparison">
+            <h2>✨ 设计改进亮点</h2>
+            <ul class="improvement">
+                <li>🔍 <strong>更高对比度</strong>：使用深色背景和亮绿色文字，确保小尺寸下清晰可见</li>
+                <li>📝 <strong>加粗字体</strong>：font-weight设为900，在16x16像素下依然清晰</li>
+                <li>🎯 <strong>简化设计</strong>：移除复杂元素，专注于核心"vim"标识</li>
+                <li>💎 <strong>Chrome标识</strong>：保留蓝色圆点作为Chrome扩展标识</li>
+                <li>📐 <strong>一致性</strong>：所有尺寸保持统一的设计语言</li>
+            </ul>
+        </div>
+
+        <div class="icon-grid">
+            <div class="icon-item">
+                <h3>16×16 像素</h3>
+                <p>工具栏和菜单图标</p>
+                <div class="icon-display">
+                    <img src="icons/16.png" alt="16x16 图标" style="width: 32px; height: 32px; image-rendering: pixelated;">
+                </div>
+                <p>放大2倍显示效果</p>
+            </div>
+            
+            <div class="icon-item">
+                <h3>19×19 像素</h3>
+                <p>扩展按钮图标</p>
+                <div class="icon-display">
+                    <img src="icons/19.png" alt="19x19 图标" style="width: 38px; height: 38px; image-rendering: pixelated;">
+                </div>
+                <p>放大2倍显示效果</p>
+            </div>
+            
+            <div class="icon-item">
+                <h3>38×38 像素</h3>
+                <p>高分辨率显示</p>
+                <div class="icon-display">
+                    <img src="icons/38.png" alt="38x38 图标" style="width: 38px; height: 38px;">
+                </div>
+                <p>实际尺寸显示</p>
+            </div>
+            
+            <div class="icon-item">
+                <h3>SVG 源文件</h3>
+                <p>矢量格式，无损缩放</p>
+                <div class="icon-display">
+                    <img src="icons/16.svg" alt="SVG 图标" style="width: 48px; height: 48px;">
+                </div>
+                <p>SVG格式预览</p>
+            </div>
+        </div>
+        
+        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-top: 20px;">
+            <h3 style="color: #856404; margin-top: 0;">📋 使用说明</h3>
+            <p style="color: #856404; margin-bottom: 0;">新图标已自动更新到扩展中。重新加载扩展或重启Chrome浏览器即可看到改进后的图标效果。</p>
+        </div>
+    </div>
+</body>
+</html>

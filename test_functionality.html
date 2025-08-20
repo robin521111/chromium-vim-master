@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 扩展功能测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #007bff;
+            margin-top: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .test-links {
+            margin: 10px 0;
+        }
+        .test-links a {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+            padding: 8px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .test-links a:hover {
+            background: #0056b3;
+        }
+        .instructions {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .long-content {
+            height: 1500px;
+            background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>rVim Chrome 扩展功能测试页面</h1>
+        
+        <div class="test-section">
+            <h2>1. 基本功能测试</h2>
+            <div class="instructions">
+                <strong>测试步骤：</strong>
+                <ul>
+                    <li>点击浏览器工具栏中的 rVim 图标</li>
+                    <li>检查弹出窗口是否正常显示</li>
+                    <li>测试 "Disable rVim" 和 "Enable rVim" 按钮</li>
+                    <li>测试 "Settings" 链接</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. 键盘导航测试</h2>
+            <div class="instructions">
+                <strong>测试按键：</strong>
+                <ul>
+                    <li><kbd>f</kbd> - 在当前标签页打开链接提示</li>
+                    <li><kbd>F</kbd> - 在新标签页打开链接提示</li>
+                    <li><kbd>j</kbd> - 向下滚动</li>
+                    <li><kbd>k</kbd> - 向上滚动</li>
+                    <li><kbd>h</kbd> - 向左滚动</li>
+                    <li><kbd>l</kbd> - 向右滚动</li>
+                    <li><kbd>gg</kbd> - 滚动到页面顶部</li>
+                    <li><kbd>G</kbd> - 滚动到页面底部</li>
+                </ul>
+            </div>
+            
+            <div class="test-links">
+                <h3>测试链接（按 f 或 F 键激活链接提示）：</h3>
+                <a href="https://www.google.com" target="_blank" rel="noopener">Google</a>
+                <a href="https://www.github.com" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://www.stackoverflow.com" target="_blank" rel="noopener">Stack Overflow</a>
+                <a href="https://www.mozilla.org" target="_blank" rel="noopener">Mozilla</a>
+                <a href="https://www.w3.org" target="_blank" rel="noopener">W3C</a>
+                <a href="#section1">页面内链接1</a>
+                <a href="#section2">页面内链接2</a>
+                <a href="#section3">页面内链接3</a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. 命令栏测试</h2>
+            <div class="instructions">
+                <strong>测试步骤：</strong>
+                <ul>
+                    <li>按 <kbd>:</kbd> 键打开命令栏</li>
+                    <li>尝试输入命令如 <code>:help</code></li>
+                    <li>测试命令自动补全功能</li>
+                    <li>按 <kbd>Esc</kbd> 键关闭命令栏</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. 搜索功能测试</h2>
+            <div class="instructions">
+                <strong>测试步骤：</strong>
+                <ul>
+                    <li>按 <kbd>/</kbd> 键打开搜索</li>
+                    <li>输入搜索词，如 "测试"</li>
+                    <li>按 <kbd>n</kbd> 查找下一个</li>
+                    <li>按 <kbd>N</kbd> 查找上一个</li>
+                    <li>按 <kbd>Esc</kbd> 退出搜索</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. 表单输入测试</h2>
+            <div class="instructions">
+                <strong>测试步骤：</strong>
+                <ul>
+                    <li>点击输入框进入插入模式</li>
+                    <li>输入一些文本</li>
+                    <li>按 <kbd>Esc</kbd> 退出插入模式</li>
+                    <li>测试在表单中的 Vim 键盘操作</li>
+                </ul>
+            </div>
+            
+            <form>
+                <label for="test-input">测试输入框：</label>
+                <input type="text" id="test-input" placeholder="在这里输入文本测试...">
+                
+                <label for="test-textarea">测试文本区域：</label>
+                <textarea id="test-textarea" placeholder="在这里输入多行文本测试..."></textarea>
+            </form>
+        </div>
+
+        <div id="section1" class="long-content">
+            <h2>6. 滚动测试区域</h2>
+            <p>这是一个长内容区域，用于测试滚动功能。使用以下键盘快捷键测试滚动：</p>
+            <ul>
+                <li><kbd>j</kbd> - 向下滚动</li>
+                <li><kbd>k</kbd> - 向上滚动</li>
+                <li><kbd>d</kbd> - 向下滚动半页</li>
+                <li><kbd>u</kbd> - 向上滚动半页</li>
+                <li><kbd>Space</kbd> - 向下滚动一页</li>
+                <li><kbd>Shift+Space</kbd> - 向上滚动一页</li>
+            </ul>
+            
+            <div id="section2" style="margin-top: 300px;">
+                <h3>中间区域</h3>
+                <p>这里是页面的中间部分，继续测试滚动功能...</p>
+                <p>测试文本：Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            </div>
+            
+            <div id="section3" style="margin-top: 300px;">
+                <h3>底部区域</h3>
+                <p>这里是页面的底部区域。</p>
+                <p>如果你能看到这里，说明滚动功能正常工作！</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>7. 测试结果记录</h2>
+            <div class="instructions">
+                <strong>请记录测试结果：</strong>
+                <ul>
+                    <li>✅ 扩展图标点击正常</li>
+                    <li>✅ 弹出窗口显示正常</li>
+                    <li>✅ 链接提示功能正常</li>
+                    <li>✅ 键盘滚动功能正常</li>
+                    <li>✅ 命令栏功能正常</li>
+                    <li>✅ 搜索功能正常</li>
+                    <li>✅ 表单输入功能正常</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些测试用的 JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('rVim 测试页面已加载');
+            
+            // 为链接添加点击事件监听
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

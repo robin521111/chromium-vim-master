@@ -1,0 +1,167 @@
+<svg width="1280" height="800" viewBox="0 0 1280 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="800" fill="#f8f9fa"/>
+  
+  <!-- Browser window mockup -->
+  <rect x="80" y="60" width="1120" height="680" rx="12" fill="#ffffff" stroke="#e9ecef" stroke-width="2"/>
+  
+  <!-- Browser header -->
+  <rect x="80" y="60" width="1120" height="40" rx="12" fill="#343a40"/>
+  <rect x="80" y="88" width="1120" height="12" fill="#343a40"/>
+  
+  <!-- Traffic lights -->
+  <circle cx="105" cy="80" r="6" fill="#ff5f56"/>
+  <circle cx="125" cy="80" r="6" fill="#ffbd2e"/>
+  <circle cx="145" cy="80" r="6" fill="#27ca3f"/>
+  
+  <!-- Multiple tabs -->
+  <g transform="translate(170, 60)">
+    <rect x="0" y="0" width="120" height="28" fill="#ffffff" stroke="#dee2e6" rx="8 8 0 0"/>
+    <text x="60" y="18" font-family="Arial, sans-serif" font-size="10" fill="#212529" text-anchor="middle">GitHub</text>
+    <circle cx="105" cy="14" r="4" fill="#dc3545"/>
+    <text x="105" y="17" font-family="Arial, sans-serif" font-size="8" fill="#ffffff" text-anchor="middle">×</text>
+    
+    <rect x="120" y="0" width="120" height="28" fill="#e9ecef" stroke="#dee2e6" rx="8 8 0 0"/>
+    <text x="180" y="18" font-family="Arial, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">Vim Docs</text>
+    <circle cx="225" cy="14" r="4" fill="#6c757d"/>
+    <text x="225" y="17" font-family="Arial, sans-serif" font-size="8" fill="#ffffff" text-anchor="middle">×</text>
+    
+    <rect x="240" y="0" width="120" height="28" fill="#e9ecef" stroke="#dee2e6" rx="8 8 0 0"/>
+    <text x="300" y="18" font-family="Arial, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">Stack Overflow</text>
+    <circle cx="345" cy="14" r="4" fill="#6c757d"/>
+    <text x="345" y="17" font-family="Arial, sans-serif" font-size="8" fill="#ffffff" text-anchor="middle">×</text>
+    
+    <rect x="360" y="0" width="120" height="28" fill="#e9ecef" stroke="#dee2e6" rx="8 8 0 0"/>
+    <text x="420" y="18" font-family="Arial, sans-serif" font-size="10" fill="#6c757d" text-anchor="middle">Chrome Store</text>
+    <circle cx="465" cy="14" r="4" fill="#6c757d"/>
+    <text x="465" y="17" font-family="Arial, sans-serif" font-size="8" fill="#ffffff" text-anchor="middle">×</text>
+  </g>
+  
+  <!-- Address bar -->
+  <rect x="200" y="68" width="600" height="24" rx="12" fill="#f8f9fa" stroke="#dee2e6"/>
+  <text x="220" y="83" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">chrome://history/</text>
+  
+  <!-- cVim icon in toolbar -->
+  <rect x="1140" y="68" width="24" height="24" rx="4" fill="#2c3e50"/>
+  <text x="1152" y="78" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
+  <rect x="1146" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1150" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1154" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1158" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  
+  <!-- Main content area -->
+  <rect x="80" y="100" width="1120" height="640" fill="#ffffff"/>
+  
+  <!-- History page content -->
+  <g transform="translate(120, 140)">
+    <text x="0" y="30" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#212529">History</text>
+    
+    <!-- Search bar -->
+    <rect x="0" y="50" width="400" height="35" rx="4" fill="#f8f9fa" stroke="#dee2e6"/>
+    <text x="15" y="72" font-family="Arial, sans-serif" font-size="14" fill="#6c757d">Search history...</text>
+    
+    <!-- History entries with link hints -->
+    <g transform="translate(0, 110)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#495057">Today</text>
+      
+      <g transform="translate(0, 25)">
+        <rect x="0" y="0" width="1000" height="40" fill="#ffffff" stroke="#e9ecef" rx="4"/>
+        <text x="15" y="18" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#007bff">GitHub - 1995eaton/chromium-vim: Vim keybindings for Google Chrome</text>
+        <text x="15" y="32" font-family="Arial, sans-serif" font-size="10" fill="#6c757d">github.com/1995eaton/chromium-vim - 2:30 PM</text>
+        <circle cx="-10" cy="20" r="8" fill="#ff6d01"/>
+        <text x="-10" y="24" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">a</text>
+        
+        <rect x="0" y="50" width="1000" height="40" fill="#f8f9fa" stroke="#e9ecef" rx="4"/>
+        <text x="15" y="68" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#007bff">Vim Documentation - Official Vim Help</text>
+        <text x="15" y="82" font-family="Arial, sans-serif" font-size="10" fill="#6c757d">vim.org/docs - 1:45 PM</text>
+        <circle cx="-10" cy="70" r="8" fill="#ff6d01"/>
+        <text x="-10" y="74" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">s</text>
+        
+        <rect x="0" y="100" width="1000" height="40" fill="#ffffff" stroke="#e9ecef" rx="4"/>
+        <text x="15" y="118" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#007bff">Stack Overflow - How to use Vim keybindings in browser</text>
+        <text x="15" y="132" font-family="Arial, sans-serif" font-size="10" fill="#6c757d">stackoverflow.com/questions/... - 12:20 PM</text>
+        <circle cx="-10" cy="120" r="8" fill="#ff6d01"/>
+        <text x="-10" y="124" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">d</text>
+      </g>
+      
+      <text x="0" y="170" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#495057">Yesterday</text>
+      
+      <g transform="translate(0, 195)">
+        <rect x="0" y="0" width="1000" height="40" fill="#f8f9fa" stroke="#e9ecef" rx="4"/>
+        <text x="15" y="18" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#007bff">Chrome Web Store - cVim Extension</text>
+        <text x="15" y="32" font-family="Arial, sans-serif" font-size="10" fill="#6c757d">chrome.google.com/webstore/... - Yesterday 4:15 PM</text>
+        <circle cx="-10" cy="20" r="8" fill="#ff6d01"/>
+        <text x="-10" y="24" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">f</text>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Command bar showing history command -->
+  <rect x="200" y="450" width="880" height="50" rx="8" fill="#2c3e50" stroke="#34495e" stroke-width="2"/>
+  <text x="220" y="480" font-family="monospace" font-size="16" fill="#2ecc71" font-weight="bold">:</text>
+  <text x="240" y="480" font-family="monospace" font-size="16" fill="#ffffff">history</text>
+  <rect x="320" y="475" width="2" height="16" fill="#ffffff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0;0.8" dur="1s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Tab management shortcuts -->
+  <g transform="translate(200, 520)">
+    <rect x="0" y="0" width="880" height="100" rx="8" fill="#34495e" opacity="0.9"/>
+    
+    <text x="20" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">Tab &amp; History Management</text>
+    
+    <g transform="translate(30, 45)">
+      <rect x="0" y="0" width="25" height="25" rx="3" fill="#e74c3c"/>
+      <text x="12" y="16" font-family="monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">x</text>
+      <text x="35" y="16" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Close tab</text>
+      
+      <rect x="120" y="0" width="25" height="25" rx="3" fill="#3498db"/>
+      <text x="132" y="16" font-family="monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">J</text>
+      <text x="155" y="16" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Previous tab</text>
+      
+      <rect x="250" y="0" width="25" height="25" rx="3" fill="#3498db"/>
+      <text x="262" y="16" font-family="monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">K</text>
+      <text x="285" y="16" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Next tab</text>
+      
+      <rect x="370" y="0" width="25" height="25" rx="3" fill="#28a745"/>
+      <text x="382" y="16" font-family="monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">t</text>
+      <text x="405" y="16" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">New tab</text>
+      
+      <rect x="480" y="0" width="25" height="25" rx="3" fill="#f39c12"/>
+      <text x="492" y="16" font-family="monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">H</text>
+      <text x="515" y="16" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Back</text>
+      
+      <rect x="570" y="0" width="25" height="25" rx="3" fill="#f39c12"/>
+      <text x="582" y="16" font-family="monospace" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">L</text>
+      <text x="605" y="16" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">Forward</text>
+      
+      <rect x="680" y="0" width="40" height="25" rx="3" fill="#9b59b6"/>
+      <text x="700" y="16" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">:hist</text>
+      <text x="730" y="16" font-family="Arial, sans-serif" font-size="12" fill="#bdc3c7">History</text>
+    </g>
+  </g>
+  
+  <!-- Tab indicator -->
+  <g transform="translate(800, 120)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#6c757d">Active Tab: 1/4</text>
+    <rect x="0" y="10" width="200" height="4" fill="#e9ecef" rx="2"/>
+    <rect x="0" y="10" width="50" fill="#007bff" rx="2" height="4"/>
+  </g>
+  
+  <!-- Logo in corner -->
+  <g transform="translate(1100, 650)">
+    <rect x="0" y="0" width="80" height="80" rx="12" fill="#2c3e50"/>
+    <text x="40" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
+    <g transform="translate(40, 55)">
+      <rect x="-28" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="-23" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">h</text>
+      <rect x="-16" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="-11" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">j</text>
+      <rect x="-4" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="1" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">k</text>
+      <rect x="8" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="13" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">l</text>
+    </g>
+    <circle cx="65" cy="15" r="3" fill="#9b59b6"/>
+  </g>
+</svg>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 视觉模式和文本选择功能测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 25px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .test-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .test-section h2::before {
+            content: '👁️';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        .shortcut {
+            background: #34495e;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.pending { background: #f39c12; color: white; }
+        .status.testing { background: #3498db; color: white; }
+        .status.passed { background: #27ae60; color: white; }
+        .status.failed { background: #e74c3c; color: white; }
+        .instructions {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        .control-panel {
+            background: #ffeaa7;
+            border: 2px solid #fdcb6e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-red { background: #e74c3c; color: white; }
+        .text-sample {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .text-sample h3 {
+            margin-top: 0;
+            color: #e74c3c;
+        }
+        .text-sample p {
+            margin: 15px 0;
+        }
+        .code-sample {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+        .selection-indicator {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .visual-mode-demo {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .keyboard-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .shortcut-card {
+            background: white;
+            border: 2px solid #e74c3c;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .shortcut-card .key {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px;
+        }
+        .shortcut-card .desc {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .test-results {
+            background: #f1f2f6;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👁️ rVim 视觉模式和文本选择功能测试</h1>
+            <p>测试视觉模式、文本选择、复制粘贴等功能</p>
+            <div id="extension-status" class="status pending">🔄 检查扩展状态中...</div>
+        </div>
+        
+        <div class="content">
+            <div class="instructions">
+                <h3>📋 视觉模式测试说明</h3>
+                <p>本页面用于测试 rVim 的视觉模式和文本选择功能：</p>
+                <ol>
+                    <li>确保 rVim 扩展已安装并启用</li>
+                    <li>测试进入和退出视觉模式</li>
+                    <li>测试文本选择和高亮显示</li>
+                    <li>测试复制、粘贴和删除操作</li>
+                    <li>测试不同类型的视觉模式（字符、行、块）</li>
+                </ol>
+            </div>
+
+            <div class="visual-mode-demo">
+                <h2>🎯 视觉模式快速演示</h2>
+                <p>按 <strong>v</strong> 进入字符视觉模式，按 <strong>V</strong> 进入行视觉模式，按 <strong>Ctrl+v</strong> 进入块视觉模式</p>
+                <p>使用 <strong>hjkl</strong> 或方向键移动光标来选择文本，按 <strong>y</strong> 复制，按 <strong>d</strong> 删除</p>
+            </div>
+
+            <div class="control-panel">
+                <h3>🎮 测试控制面板</h3>
+                <p>
+                    <button class="btn-red" onclick="startVisualModeTest()">👁️ 开始视觉模式测试</button>
+                    <button class="btn-primary" onclick="startTextSelectionTest()">📝 开始文本选择测试</button>
+                    <button class="btn-success" onclick="checkVisualModeResults()">📊 查看测试结果</button>
+                    <button class="btn-warning" onclick="exportVisualModeResults()">💾 导出测试结果</button>
+                </p>
+                <p><strong>提示：</strong> 打开浏览器控制台查看详细的测试日志</p>
+            </div>
+
+            <div class="keyboard-shortcuts">
+                <div class="shortcut-card">
+                    <div class="key">v</div>
+                    <div class="desc">进入字符视觉模式</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key">V</div>
+                    <div class="desc">进入行视觉模式</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key">Ctrl+v</div>
+                    <div class="desc">进入块视觉模式</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key">y</div>
+                    <div class="desc">复制选中文本</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key">d</div>
+                    <div class="desc">删除选中文本</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key">p</div>
+                    <div class="desc">粘贴文本</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key">Esc</div>
+                    <div class="desc">退出视觉模式</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key">o</div>
+                    <div class="desc">切换选择方向</div>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>字符视觉模式测试</h2>
+                
+                <div class="test-item">
+                    <h3>进入字符视觉模式 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">v</span> 键</p>
+                    <p><strong>预期结果：</strong> 进入字符视觉模式，光标位置开始选择</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>字符选择移动 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在视觉模式下使用 <span class="shortcut">hjkl</span> 移动</p>
+                    <p><strong>预期结果：</strong> 文本被逐字符选中并高亮显示</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>复制选中文本 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 选中文本后按 <span class="shortcut">y</span></p>
+                    <p><strong>预期结果：</strong> 文本被复制，退出视觉模式</p>
+                </div>
+                
+                <div class="text-sample">
+                    <h3>字符选择测试文本</h3>
+                    <p>这是一段用于测试字符视觉模式的文本。请尝试选择这段文字中的任意部分，比如选择"字符视觉模式"这几个字。</p>
+                    <p>你可以使用 v 键进入字符视觉模式，然后用 hjkl 键移动光标来选择文本。选择完成后，按 y 键复制，或按 d 键删除。</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>行视觉模式测试</h2>
+                
+                <div class="test-item">
+                    <h3>进入行视觉模式 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">V</span> 键（Shift+v）</p>
+                    <p><strong>预期结果：</strong> 进入行视觉模式，整行被选中</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>多行选择 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在行视觉模式下使用 <span class="shortcut">jk</span> 移动</p>
+                    <p><strong>预期结果：</strong> 多行文本被选中并高亮显示</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>行复制和删除 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 选中行后按 <span class="shortcut">y</span> 或 <span class="shortcut">d</span></p>
+                    <p><strong>预期结果：</strong> 整行被复制或删除</p>
+                </div>
+                
+                <div class="text-sample">
+                    <h3>行选择测试文本</h3>
+                    <p>第一行：这是用于测试行视觉模式的第一行文本。</p>
+                    <p>第二行：请尝试选择这一行或多行文本。</p>
+                    <p>第三行：使用 V 键进入行视觉模式。</p>
+                    <p>第四行：然后用 j 和 k 键选择多行。</p>
+                    <p>第五行：最后按 y 复制或 d 删除选中的行。</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>块视觉模式测试</h2>
+                
+                <div class="test-item">
+                    <h3>进入块视觉模式 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">Ctrl+v</span></p>
+                    <p><strong>预期结果：</strong> 进入块视觉模式，可以选择矩形区域</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>矩形区域选择 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在块视觉模式下移动光标</p>
+                    <p><strong>预期结果：</strong> 选择矩形区域的文本</p>
+                </div>
+                
+                <div class="code-sample">
+                    <h3>块选择测试代码</h3>
+                    <pre>function testBlockSelection() {
+    const line1 = "第一行代码";
+    const line2 = "第二行代码";
+    const line3 = "第三行代码";
+    const line4 = "第四行代码";
+    return "测试完成";
+}</pre>
+                    <p>在上面的代码中，尝试使用 Ctrl+v 进入块视觉模式，然后选择一个矩形区域，比如所有的 "const" 关键字。</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>文本操作测试</h2>
+                
+                <div class="test-item">
+                    <h3>复制粘贴操作 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 选中文本，按 <span class="shortcut">y</span> 复制，移动光标，按 <span class="shortcut">p</span> 粘贴</p>
+                    <p><strong>预期结果：</strong> 文本被正确复制和粘贴</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>删除操作 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 选中文本，按 <span class="shortcut">d</span> 删除</p>
+                    <p><strong>预期结果：</strong> 选中的文本被删除</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>选择方向切换 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在视觉模式下按 <span class="shortcut">o</span></p>
+                    <p><strong>预期结果：</strong> 光标在选择区域的两端之间切换</p>
+                </div>
+                
+                <div class="text-sample">
+                    <h3>文本操作练习区</h3>
+                    <p>这里是一个可以自由编辑的文本区域。你可以在这里练习各种视觉模式操作：</p>
+                    <p>• 选择这行文字并复制到其他地方</p>
+                    <p>• 删除不需要的文本内容</p>
+                    <p>• 尝试块选择操作</p>
+                    <p>• 测试粘贴功能</p>
+                    <p>记住：v=字符模式，V=行模式，Ctrl+v=块模式</p>
+                </div>
+            </div>
+
+            <div class="selection-indicator">
+                <h3>📊 选择状态指示器</h3>
+                <p id="selection-info">当前没有文本被选中</p>
+                <div class="test-results" id="visual-test-results">
+                    <strong>测试结果将在这里显示...</strong>
+                </div>
+            </div>
+
+            <div class="warning">
+                <h3>⚠️ 测试注意事项</h3>
+                <ul>
+                    <li>确保页面焦点在文本区域，而不是在输入框中</li>
+                    <li>某些浏览器可能会拦截 Ctrl+v 快捷键，这是正常现象</li>
+                    <li>如果视觉模式不工作，请检查 rVim 扩展是否正确安装</li>
+                    <li>测试时请观察文本的高亮显示效果</li>
+                    <li>复制的文本应该能够在其他应用程序中粘贴</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载测试执行脚本 -->
+    <script src="test_execution_script.js"></script>
+    
+    <script>
+        // 视觉模式功能测试器
+        class VisualModeTester {
+            constructor() {
+                this.visualTests = {};
+                this.selectionTests = {};
+                this.currentTest = null;
+                this.selectionData = {
+                    text: '',
+                    startPos: null,
+                    endPos: null,
+                    mode: null
+                };
+                this.init();
+            }
+
+            init() {
+                console.log('👁️ 视觉模式测试器初始化中...');
+                this.setupEventListeners();
+                this.checkVisualModeSupport();
+            }
+
+            checkVisualModeSupport() {
+                console.log('🔍 检查视觉模式支持...');
+                
+                const capabilities = {
+                    '文本选择API': document.getSelection,
+                    '键盘事件': KeyboardEvent,
+                    '剪贴板API': navigator.clipboard,
+                    'rVim扩展': window.Command || window.Visual
+                };
+
+                console.log('📊 视觉模式支持检查结果:');
+                Object.entries(capabilities).forEach(([name, exists]) => {
+                    const status = exists ? '✅' : '❌';
+                    console.log(`${status} ${name}: ${exists ? '支持' : '不支持'}`);
+                });
+
+                return Object.values(capabilities).filter(Boolean).length >= 3;
+            }
+
+            setupEventListeners() {
+                // 监听键盘事件
+                document.addEventListener('keydown', (e) => {
+                    this.handleVisualModeKeyPress(e);
+                });
+
+                // 监听文本选择事件
+                document.addEventListener('selectionchange', () => {
+                    this.handleSelectionChange();
+                });
+
+                // 监听鼠标选择
+                document.addEventListener('mouseup', () => {
+                    this.handleMouseSelection();
+                });
+            }
+
+            handleVisualModeKeyPress(e) {
+                if (e.target.matches('input, textarea')) return;
+
+                const visualKeys = {
+                    'v': '字符视觉模式',
+                    'V': '行视觉模式',
+                    'y': '复制操作',
+                    'd': '删除操作',
+                    'p': '粘贴操作',
+                    'o': '切换选择方向',
+                    'Escape': '退出视觉模式'
+                };
+
+                // 检查 Ctrl+v (块视觉模式)
+                if (e.ctrlKey && e.key === 'v') {
+                    console.log('👁️ 块视觉模式快捷键: Ctrl+v');
+                    this.recordVisualAction('Ctrl+v', '块视觉模式');
+                    e.preventDefault();
+                    return;
+                }
+
+                if (visualKeys[e.key]) {
+                    console.log(`👁️ 视觉模式快捷键: ${e.key} (${visualKeys[e.key]})`);
+                    this.recordVisualAction(e.key, visualKeys[e.key]);
+                    
+                    // 对于某些关键操作，阻止默认行为
+                    if (['v', 'V', 'y', 'd'].includes(e.key)) {
+                        e.preventDefault();
+                    }
+                }
+            }
+
+            handleSelectionChange() {
+                const selection = document.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const selectedText = selection.toString();
+                    
+                    if (selectedText.length > 0) {
+                        this.selectionData = {
+                            text: selectedText,
+                            startPos: range.startOffset,
+                            endPos: range.endOffset,
+                            mode: this.detectSelectionMode(selectedText),
+                            timestamp: Date.now()
+                        };
+                        
+                        this.updateSelectionIndicator(selectedText);
+                        console.log('📝 文本选择变化:', this.selectionData);
+                    }
+                }
+            }
+
+            handleMouseSelection() {
+                const selection = document.getSelection();
+                const selectedText = selection.toString();
+                
+                if (selectedText.length > 0) {
+                    console.log('🖱️ 鼠标选择文本:', selectedText.substring(0, 50) + (selectedText.length > 50 ? '...' : ''));
+                    this.recordSelectionAction('mouse', selectedText.length);
+                }
+            }
+
+            detectSelectionMode(text) {
+                if (text.includes('\n')) {
+                    const lines = text.split('\n');
+                    if (lines.length > 1) {
+                        return lines.every(line => line.length > 0) ? '行模式' : '块模式';
+                    }
+                }
+                return '字符模式';
+            }
+
+            updateSelectionIndicator(text) {
+                const indicator = document.getElementById('selection-info');
+                if (indicator) {
+                    const preview = text.length > 100 ? text.substring(0, 100) + '...' : text;
+                    indicator.innerHTML = `
+                        <strong>已选择文本:</strong> "${preview}"<br>
+                        <strong>长度:</strong> ${text.length} 字符<br>
+                        <strong>模式:</strong> ${this.selectionData.mode}<br>
+                        <strong>时间:</strong> ${new Date().toLocaleTimeString()}
+                    `;
+                }
+            }
+
+            recordVisualAction(key, action) {
+                if (!this.visualTests.keyActions) {
+                    this.visualTests.keyActions = [];
+                }
+
+                this.visualTests.keyActions.push({
+                    key,
+                    action,
+                    timestamp: Date.now(),
+                    selectionActive: document.getSelection().toString().length > 0
+                });
+            }
+
+            recordSelectionAction(method, textLength) {
+                if (!this.selectionTests.selections) {
+                    this.selectionTests.selections = [];
+                }
+
+                this.selectionTests.selections.push({
+                    method,
+                    textLength,
+                    timestamp: Date.now()
+                });
+            }
+
+            startVisualModeTest() {
+                this.currentTest = '视觉模式测试';
+                console.log('👁️ 开始视觉模式测试...');
+                
+                if (window.tester) {
+                    window.tester.startTest('视觉模式测试');
+                }
+
+                this.updateTestStatus('视觉模式', 'testing');
+                
+                console.log(`
+📋 视觉模式测试步骤:
+1. 按 v 键进入字符视觉模式
+2. 按 V 键进入行视觉模式
+3. 按 Ctrl+v 进入块视觉模式
+4. 使用 hjkl 或方向键移动选择
+5. 按 y 复制，按 d 删除，按 p 粘贴
+6. 按 Esc 退出视觉模式
+
+💡 提示: 请在文本区域中进行测试，观察选择高亮效果`);
+            }
+
+            startTextSelectionTest() {
+                this.currentTest = '文本选择测试';
+                console.log('📝 开始文本选择测试...');
+                
+                if (window.tester) {
+                    window.tester.startTest('文本选择测试');
+                }
+
+                this.updateTestStatus('文本选择', 'testing');
+                
+                console.log(`
+📋 文本选择测试步骤:
+1. 使用鼠标拖拽选择文本
+2. 双击选择单词
+3. 三击选择整行
+4. 使用键盘快捷键选择
+5. 测试复制粘贴功能
+
+💡 提示: 选择的文本信息会在选择状态指示器中显示`);
+            }
+
+            updateTestStatus(testName, status) {
+                const statusElements = document.querySelectorAll('.status');
+                statusElements.forEach(el => {
+                    const testItem = el.closest('.test-item');
+                    if (testItem && testItem.querySelector('h3').textContent.includes(testName)) {
+                        el.className = `status ${status}`;
+                        el.textContent = status === 'passed' ? '✅ 通过' : 
+                                       status === 'failed' ? '❌ 失败' : 
+                                       status === 'testing' ? '🔄 测试中' : '⏳ 待测试';
+                    }
+                });
+            }
+
+            endTest(testName, status, notes = []) {
+                console.log(`✅ 测试完成: ${testName} (${status})`);
+                
+                if (window.tester) {
+                    window.tester.endTest(testName, status, notes);
+                }
+
+                this.updateTestStatus(testName, status);
+                this.currentTest = null;
+                
+                // 更新测试结果显示
+                this.updateTestResults();
+            }
+
+            updateTestResults() {
+                const resultsElement = document.getElementById('visual-test-results');
+                if (resultsElement) {
+                    const results = this.getVisualModeResults();
+                    resultsElement.innerHTML = `
+                        <strong>测试统计:</strong><br>
+                        • 视觉模式操作: ${results.summary.totalVisualActions} 次<br>
+                        • 文本选择: ${results.summary.totalSelections} 次<br>
+                        • 最后活动: ${results.summary.lastActivity ? new Date(results.summary.lastActivity).toLocaleTimeString() : '无'}<br>
+                        • 当前测试: ${this.currentTest || '无'}
+                    `;
+                }
+            }
+
+            getVisualModeResults() {
+                return {
+                    visualTests: this.visualTests,
+                    selectionTests: this.selectionTests,
+                    selectionData: this.selectionData,
+                    currentTest: this.currentTest,
+                    summary: this.generateSummary()
+                };
+            }
+
+            generateSummary() {
+                return {
+                    totalVisualActions: this.visualTests.keyActions ? this.visualTests.keyActions.length : 0,
+                    totalSelections: this.selectionTests.selections ? this.selectionTests.selections.length : 0,
+                    lastActivity: Math.max(
+                        ...(this.visualTests.keyActions || []).map(a => a.timestamp),
+                        ...(this.selectionTests.selections || []).map(s => s.timestamp)
+                    ) || null
+                };
+            }
+
+            // 模拟视觉模式操作
+            simulateVisualMode(mode) {
+                console.log(`🎭 模拟${mode}视觉模式...`);
+                
+                const selection = document.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const text = selection.toString();
+                    
+                    console.log(`📝 模拟选择文本: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+                    
+                    this.recordVisualAction(mode, `模拟${mode}模式选择`);
+                    return text;
+                }
+                
+                return null;
+            }
+
+            // 模拟复制操作
+            simulateCopy() {
+                const text = document.getSelection().toString();
+                if (text) {
+                    console.log(`📋 模拟复制操作: "${text.substring(0, 30)}${text.length > 30 ? '...' : ''}"`);
+                    
+                    // 尝试使用剪贴板 API
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            console.log('✅ 文本已复制到剪贴板');
+                        }).catch(err => {
+                            console.log('❌ 复制失败:', err);
+                        });
+                    }
+                    
+                    this.recordVisualAction('y', '复制操作');
+                    return text;
+                }
+                return null;
+            }
+        }
+
+        // 创建视觉模式测试器实例
+        window.visualModeTester = new VisualModeTester();
+
+        // 测试控制函数
+        function startVisualModeTest() {
+            window.visualModeTester.startVisualModeTest();
+        }
+
+        function startTextSelectionTest() {
+            window.visualModeTester.startTextSelectionTest();
+        }
+
+        function checkVisualModeResults() {
+            const results = window.visualModeTester.getVisualModeResults();
+            console.log('📊 视觉模式测试结果:', results);
+            return results;
+        }
+
+        function exportVisualModeResults() {
+            const results = checkVisualModeResults();
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `visual-mode-test-results-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.log('💾 视觉模式测试结果已导出');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const extensionLoaded = window.tester && window.tester.checkExtensionStatus();
+                const statusElement = document.getElementById('extension-status');
+                if (statusElement) {
+                    if (extensionLoaded) {
+                        statusElement.innerHTML = '🟢 扩展已加载，可以开始视觉模式测试';
+                        statusElement.className = 'status passed';
+                    } else {
+                        statusElement.innerHTML = '🔴 扩展未加载，请检查安装状态';
+                        statusElement.className = 'status failed';
+                    }
+                }
+
+                console.log('🎯 视觉模式测试页面已就绪');
+                console.log('💡 使用以下命令进行测试:');
+                console.log('  - startVisualModeTest() - 开始视觉模式测试');
+                console.log('  - startTextSelectionTest() - 开始文本选择测试');
+                console.log('  - checkVisualModeResults() - 查看测试结果');
+                console.log('  - exportVisualModeResults() - 导出测试结果');
+                
+                // 定期更新测试结果显示
+                setInterval(() => {
+                    window.visualModeTester.updateTestResults();
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

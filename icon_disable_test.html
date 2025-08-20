@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 禁用状态图标测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .icon-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 30px 0;
+        }
+        
+        .icon-section {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .enabled-section {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border: 2px solid #4CAF50;
+        }
+        
+        .disabled-section {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border: 2px solid #999999;
+        }
+        
+        .icon-display {
+            margin: 20px 0;
+        }
+        
+        .icon-display img {
+            margin: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .icon-19 {
+            width: 19px;
+            height: 19px;
+        }
+        
+        .icon-38 {
+            width: 38px;
+            height: 38px;
+        }
+        
+        .icon-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .features-list {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .features-list h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .features-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .features-list li::before {
+            content: "✨";
+            margin-right: 10px;
+        }
+        
+        .test-instructions {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .test-instructions h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .test-steps {
+            counter-reset: step-counter;
+        }
+        
+        .test-steps li {
+            counter-increment: step-counter;
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .test-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #ffc107;
+            color: #856404;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .status-enabled {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 rVim 禁用状态图标测试</h1>
+            <p>优化的禁用状态视觉效果展示与测试</p>
+        </div>
+        
+        <div class="content">
+            <div class="icon-comparison">
+                <div class="icon-section enabled-section">
+                    <h3>🟢 启用状态图标</h3>
+                    <div class="icon-display">
+                        <div>
+                            <img src="icons/19.png" alt="启用状态 19px" class="icon-19">
+                            <div class="icon-label">19×19 像素</div>
+                        </div>
+                        <div>
+                            <img src="icons/38.png" alt="启用状态 38px" class="icon-38">
+                            <div class="icon-label">38×38 像素</div>
+                        </div>
+                    </div>
+                    <p><strong>状态：</strong> <span class="status-indicator status-enabled">功能可用</span></p>
+                    <p>清晰、饱和的颜色，表示扩展正常工作</p>
+                </div>
+                
+                <div class="icon-section disabled-section">
+                    <h3>🔴 禁用状态图标</h3>
+                    <div class="icon-display">
+                        <div>
+                            <img src="icons/disabled-19.png" alt="禁用状态 19px" class="icon-19">
+                            <div class="icon-label">19×19 像素</div>
+                        </div>
+                        <div>
+                            <img src="icons/disabled-38.png" alt="禁用状态 38px" class="icon-38">
+                            <div class="icon-label">38×38 像素</div>
+                        </div>
+                    </div>
+                    <p><strong>状态：</strong> <span class="status-indicator status-disabled">功能禁用</span></p>
+                    <p>半透明效果 + 对角线，清晰传达禁用状态</p>
+                </div>
+            </div>
+            
+            <div class="features-list">
+                <h3>🎯 新禁用状态图标的优化特性</h3>
+                <ul>
+                    <li><strong>半透明效果：</strong>图标主体使用 40% 透明度，而不是完全灰色</li>
+                    <li><strong>视觉层次：</strong>保持原始图标的可识别性，同时明确表示禁用状态</li>
+                    <li><strong>对角线指示器：</strong>红色对角线清晰表示"禁用"状态</li>
+                    <li><strong>状态文字：</strong>小字体"OFF"/"DISABLED"提供额外的状态提示</li>
+                    <li><strong>渐进式设计：</strong>从启用到禁用的视觉过渡更加自然</li>
+                    <li><strong>多尺寸支持：</strong>19px 和 38px 两种尺寸保持一致的视觉效果</li>
+                </ul>
+            </div>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>对比项目</th>
+                        <th>旧版本（全灰色）</th>
+                        <th>新版本（半透明+指示器）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>视觉识别度</strong></td>
+                        <td>❌ 图标变得难以识别</td>
+                        <td>✅ 保持图标可识别性</td>
+                    </tr>
+                    <tr>
+                        <td><strong>状态传达</strong></td>
+                        <td>⚠️ 可能被误认为加载中</td>
+                        <td>✅ 明确表示禁用状态</td>
+                    </tr>
+                    <tr>
+                        <td><strong>用户体验</strong></td>
+                        <td>❌ 视觉反馈不够清晰</td>
+                        <td>✅ 清晰的视觉反馈</td>
+                    </tr>
+                    <tr>
+                        <td><strong>设计一致性</strong></td>
+                        <td>❌ 与现代UI设计不符</td>
+                        <td>✅ 符合现代设计规范</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="test-instructions">
+                <h3>🧪 测试说明</h3>
+                <p>要测试新的禁用状态图标效果，请按照以下步骤操作：</p>
+                <ol class="test-steps">
+                    <li>确保 rVim 扩展已安装并加载了最新的图标文件</li>
+                    <li>点击浏览器工具栏中的 rVim 图标打开弹出窗口</li>
+                    <li>点击 "Disable rVim" 按钮禁用扩展</li>
+                    <li>观察工具栏中的图标是否变为半透明的禁用状态</li>
+                    <li>再次点击图标，选择 "Enable rVim" 恢复正常状态</li>
+                    <li>验证图标是否正确切换回启用状态</li>
+                </ol>
+                <p><strong>预期结果：</strong>禁用状态下的图标应该显示为半透明效果，带有红色对角线，而不是简单的全灰色。</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🎨 rVim 扩展禁用状态图标优化 - 提供更好的用户体验</p>
+        </div>
+    </div>
+</body>
+</html>

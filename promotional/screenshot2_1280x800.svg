@@ -1,0 +1,100 @@
+<svg width="1280" height="800" viewBox="0 0 1280 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="800" fill="#f8f9fa"/>
+  
+  <!-- Browser window mockup -->
+  <rect x="80" y="60" width="1120" height="680" rx="12" fill="#ffffff" stroke="#e9ecef" stroke-width="2"/>
+  
+  <!-- Browser header -->
+  <rect x="80" y="60" width="1120" height="40" rx="12" fill="#343a40"/>
+  <rect x="80" y="88" width="1120" height="12" fill="#343a40"/>
+  
+  <!-- Traffic lights -->
+  <circle cx="105" cy="80" r="6" fill="#ff5f56"/>
+  <circle cx="125" cy="80" r="6" fill="#ffbd2e"/>
+  <circle cx="145" cy="80" r="6" fill="#27ca3f"/>
+  
+  <!-- Address bar -->
+  <rect x="200" y="68" width="600" height="24" rx="12" fill="#f8f9fa" stroke="#dee2e6"/>
+  <text x="220" y="83" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">https://github.com/1995eaton/chromium-vim</text>
+  
+  <!-- cVim icon in toolbar -->
+  <rect x="1140" y="68" width="24" height="24" rx="4" fill="#2c3e50"/>
+  <text x="1152" y="78" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
+  <rect x="1146" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1150" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1154" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  <rect x="1158" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
+  
+  <!-- Main content area -->
+  <rect x="80" y="100" width="1120" height="640" fill="#ffffff"/>
+  
+  <!-- GitHub page mockup -->
+  <rect x="100" y="120" width="1080" height="40" fill="#24292e"/>
+  <text x="120" y="143" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">1995eaton / chromium-vim</text>
+  
+  <!-- Repository content -->
+  <g transform="translate(120, 180)">
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#24292e">Vim Keybindings for Google Chrome</text>
+    <text x="0" y="50" font-family="Arial, sans-serif" font-size="14" fill="#586069">Add Vim-style keybindings to Google Chrome</text>
+    
+    <!-- File list with link hints -->
+    <g transform="translate(0, 80)">
+      <rect x="0" y="0" width="1000" height="30" fill="#f6f8fa" stroke="#e1e4e8"/>
+      <text x="10" y="20" font-family="monospace" font-size="12" fill="#0366d6">📁 background_scripts/</text>
+      <circle cx="-5" cy="15" r="8" fill="#ff6d01"/>
+      <text x="-5" y="19" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">a</text>
+      
+      <rect x="0" y="35" width="1000" height="30" fill="#ffffff" stroke="#e1e4e8"/>
+      <text x="10" y="55" font-family="monospace" font-size="12" fill="#0366d6">📁 content_scripts/</text>
+      <circle cx="-5" cy="50" r="8" fill="#ff6d01"/>
+      <text x="-5" y="54" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">s</text>
+      
+      <rect x="0" y="70" width="1000" height="30" fill="#f6f8fa" stroke="#e1e4e8"/>
+      <text x="10" y="90" font-family="monospace" font-size="12" fill="#0366d6">📄 manifest.json</text>
+      <circle cx="-5" cy="85" r="8" fill="#ff6d01"/>
+      <text x="-5" y="89" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">d</text>
+      
+      <rect x="0" y="105" width="1000" height="30" fill="#ffffff" stroke="#e1e4e8"/>
+      <text x="10" y="125" font-family="monospace" font-size="12" fill="#0366d6">📄 README.md</text>
+      <circle cx="-5" cy="120" r="8" fill="#ff6d01"/>
+      <text x="-5" y="124" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">f</text>
+    </g>
+  </g>
+  
+  <!-- Search bar active -->
+  <rect x="200" y="400" width="880" height="50" rx="8" fill="#2c3e50" stroke="#34495e" stroke-width="2"/>
+  <text x="220" y="430" font-family="monospace" font-size="16" fill="#f39c12" font-weight="bold">/</text>
+  <text x="240" y="430" font-family="monospace" font-size="16" fill="#ffffff">chromium-vim</text>
+  <rect x="380" y="425" width="2" height="16" fill="#ffffff" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0;0.8" dur="1s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Search results highlight -->
+  <rect x="120" y="200" width="200" height="20" fill="#fff3cd" stroke="#ffeaa7" stroke-width="1" opacity="0.8"/>
+  <rect x="120" y="270" width="150" height="20" fill="#fff3cd" stroke="#ffeaa7" stroke-width="1" opacity="0.8"/>
+  
+  <!-- Status indicator -->
+  <g transform="translate(200, 500)">
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#212529">Search Mode Active</text>
+    <text x="0" y="45" font-family="Arial, sans-serif" font-size="14" fill="#6c757d">Press 'n' for next match, 'N' for previous match</text>
+    <text x="0" y="70" font-family="Arial, sans-serif" font-size="14" fill="#6c757d">Press 'Esc' to exit search mode</text>
+  </g>
+  
+  <!-- Logo in corner -->
+  <g transform="translate(1100, 650)">
+    <rect x="0" y="0" width="80" height="80" rx="12" fill="#2c3e50"/>
+    <text x="40" y="30" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
+    <g transform="translate(40, 55)">
+      <rect x="-28" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="-23" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">h</text>
+      <rect x="-16" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="-11" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">j</text>
+      <rect x="-4" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="1" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">k</text>
+      <rect x="8" y="-5" width="10" height="10" rx="2" fill="#95a5a6" opacity="0.9"/>
+      <text x="13" y="2" font-family="monospace" font-size="6" font-weight="bold" fill="#ffffff" text-anchor="middle">l</text>
+    </g>
+    <circle cx="65" cy="15" r="3" fill="#f39c12"/>
+  </g>
+</svg>

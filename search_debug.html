@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim Search Function Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .test-content {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #eee;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .highlight {
+            background-color: yellow;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 rVim Search Function Debug Tool</h1>
+        
+        <div class="debug-section">
+            <h2>Extension Status Check</h2>
+            <div id="extension-status"></div>
+            <button onclick="checkExtensionStatus()">Check Extension Status</button>
+        </div>
+
+        <div class="debug-section">
+            <h2>Search Function Tests</h2>
+            <div id="search-status"></div>
+            <button onclick="testSearchFunction()">Test Search Function</button>
+            <button onclick="testKeyboardBindings()">Test Keyboard Bindings</button>
+            <button onclick="testFindObject()">Test Find Object</button>
+            <button onclick="runSearchFix()" style="background: #28a745;">🔧 Run Search Fix</button>
+            <button onclick="testAfterFix()" style="background: #17a2b8;">🧪 Test After Fix</button>
+        </div>
+
+        <div class="debug-section">
+            <h2>Manual Search Test</h2>
+            <p>Instructions:</p>
+            <ol>
+                <li>Press <kbd>/</kbd> to open search bar</li>
+                <li>Type "test" and press Enter</li>
+                <li>Press <kbd>n</kbd> to go to next result</li>
+                <li>Press <kbd>N</kbd> to go to previous result</li>
+            </ol>
+            <div id="manual-test-log"></div>
+        </div>
+
+        <div class="test-content">
+            <h2>Test Content for Search</h2>
+            <p>This is a test paragraph containing the word <span class="highlight">test</span> multiple times.</p>
+            <p>Here is another test sentence with the word test appearing again.</p>
+            <p>Testing the search functionality requires multiple test cases.</p>
+            <p>The test should find all instances of the test word in this test document.</p>
+            <ul>
+                <li>Test item 1</li>
+                <li>Test item 2</li>
+                <li>Test item 3</li>
+            </ul>
+            <div>
+                <h3>More Test Content</h3>
+                <p>Additional test content for comprehensive testing of the search test feature.</p>
+                <p>This test paragraph contains multiple test words for test purposes.</p>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2>Debug Log</h2>
+            <div id="debug-log" class="log"></div>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <!-- Initialize required globals for content scripts -->
+    <script>
+        // Initialize required global objects
+        window.settings = {
+            ignorecase: true,
+            smartcase: false,
+            regexp: false,
+            incsearch: true,
+            hud: true,
+            smoothscroll: true,
+            scrollstep: 60
+        };
+        
+        // Mock PORT function for testing
+        window.PORT = function(message, data) {
+            console.log('PORT message:', message, data);
+        };
+        
+        // Mock RUNTIME function for testing
+        window.RUNTIME = function(message, data) {
+            console.log('RUNTIME message:', message, data);
+        };
+        
+        // Mock Command object
+        window.Command = {
+            lastCommand: '',
+            history: []
+        };
+        
+        // Mock Mappings object
+        window.Mappings = {
+            defaults: {},
+            parseCustom: function() {}
+        };
+    </script>
+    
+    <!-- Load necessary content scripts for testing -->
+    <script src="content_scripts/security_utils.js"></script>
+    <script src="content_scripts/utils.js"></script>
+    <script src="content_scripts/dom.js"></script>
+    <script src="content_scripts/find.js"></script>
+    <script src="content_scripts/hud.js"></script>
+    <script src="content_scripts/status.js"></script>
+    <script src="search_fix.js"></script>
+    
+    <script>
+        let debugLog = document.getElementById('debug-log');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            debugLog.textContent += logEntry;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            debugLog.textContent = '';
+        }
+
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function checkExtensionStatus() {
+            log('🔍 Checking rVim extension status...');
+            
+            // Check if rVim objects exist
+            const checks = [
+                { name: 'Find object', exists: typeof window.Find !== 'undefined' },
+                { name: 'Command object', exists: typeof window.Command !== 'undefined' },
+                { name: 'Mappings object', exists: typeof window.Mappings !== 'undefined' },
+                { name: 'KeyHandler object', exists: typeof window.KeyHandler !== 'undefined' },
+                { name: 'commandMode variable', exists: typeof window.commandMode !== 'undefined' },
+                { name: 'insertMode variable', exists: typeof window.insertMode !== 'undefined' }
+            ];
+
+            let allGood = true;
+            let statusHtml = '';
+            
+            checks.forEach(check => {
+                const status = check.exists ? '✅' : '❌';
+                const type = check.exists ? 'success' : 'error';
+                statusHtml += `<div class="status ${type}">${status} ${check.name}: ${check.exists ? 'Available' : 'Missing'}</div>`;
+                log(`${status} ${check.name}: ${check.exists ? 'Available' : 'Missing'}`);
+                if (!check.exists) allGood = false;
+            });
+
+            if (allGood) {
+                statusHtml += '<div class="status success">🎉 All rVim components are loaded!</div>';
+                log('🎉 All rVim components are loaded!');
+            } else {
+                statusHtml += '<div class="status error">⚠️ Some rVim components are missing!</div>';
+                log('⚠️ Some rVim components are missing!');
+            }
+
+            document.getElementById('extension-status').innerHTML = statusHtml;
+        }
+
+        function testSearchFunction() {
+            log('🧪 Testing search function...');
+            
+            if (typeof window.Find === 'undefined') {
+                showStatus('search-status', '❌ Find object not available', 'error');
+                log('❌ Find object not available');
+                return;
+            }
+
+            try {
+                // Test Find.highlight function
+                log('Testing Find.highlight...');
+                window.Find.highlight({
+                    base: document.body,
+                    mode: '/',
+                    search: 'test',
+                    setIndex: true,
+                    executeSearch: false,
+                    saveSearch: true
+                });
+                
+                log(`Found ${window.Find.matches.length} matches for "test"`);
+                
+                if (window.Find.matches.length > 0) {
+                    showStatus('search-status', `✅ Search function working! Found ${window.Find.matches.length} matches`, 'success');
+                    log('✅ Search function is working correctly');
+                    
+                    // Test navigation
+                    log('Testing search navigation...');
+                    window.Find.search('/', 1);
+                    log('Navigated to first match');
+                } else {
+                    showStatus('search-status', '⚠️ Search function runs but finds no matches', 'warning');
+                    log('⚠️ Search function runs but finds no matches');
+                }
+            } catch (error) {
+                showStatus('search-status', `❌ Search function error: ${error.message}`, 'error');
+                log(`❌ Search function error: ${error.message}`);
+            }
+        }
+
+        function testKeyboardBindings() {
+            log('🎹 Testing keyboard bindings...');
+            
+            if (typeof window.Mappings === 'undefined') {
+                log('❌ Mappings object not available');
+                return;
+            }
+
+            // Check if search-related mappings exist
+            const searchMappings = [
+                { key: '/', action: 'openSearchBar' },
+                { key: '?', action: 'openSearchBarReverse' },
+                { key: 'n', action: 'nextSearchResult' },
+                { key: 'N', action: 'previousSearchResult' }
+            ];
+
+            searchMappings.forEach(mapping => {
+                const exists = window.Mappings.actions && 
+                              typeof window.Mappings.actions[mapping.action] === 'function';
+                const status = exists ? '✅' : '❌';
+                log(`${status} ${mapping.key} -> ${mapping.action}: ${exists ? 'Available' : 'Missing'}`);
+            });
+        }
+
+        function testFindObject() {
+            log('🔍 Testing Find object properties...');
+            
+            if (typeof window.Find === 'undefined') {
+                log('❌ Find object not available');
+                return;
+            }
+
+            const properties = ['matches', 'index', 'mode', 'lastSearch', 'highlight', 'search', 'clear'];
+            
+            properties.forEach(prop => {
+                const exists = window.Find.hasOwnProperty(prop) || typeof window.Find[prop] !== 'undefined';
+                const type = typeof window.Find[prop];
+                const status = exists ? '✅' : '❌';
+                log(`${status} Find.${prop}: ${exists ? `Available (${type})` : 'Missing'}`);
+            });
+
+            // Test current state
+            log(`Current Find state:`);
+            log(`- matches: ${window.Find.matches ? window.Find.matches.length : 'undefined'}`);
+            log(`- index: ${window.Find.index}`);
+            log(`- mode: ${window.Find.mode}`);
+            log(`- lastSearch: ${window.Find.lastSearch}`);
+        }
+
+        // Monitor keyboard events
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '/' || event.key === '?' || event.key === 'n' || event.key === 'N') {
+                log(`🎹 Detected search key: ${event.key}`);
+                
+                // Check if command mode is activated
+                setTimeout(() => {
+                    if (typeof window.commandMode !== 'undefined') {
+                        log(`Command mode: ${window.commandMode}`);
+                    }
+                }, 100);
+            }
+        });
+
+        function runSearchFix() {
+            log('🔧 Running search fix script...');
+            
+            // Trigger the fix script manually
+            const event = new KeyboardEvent('keydown', {
+                key: 'F',
+                ctrlKey: true,
+                shiftKey: true,
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+            
+            setTimeout(() => {
+                log('✅ Search fix script executed');
+                showStatus('search-status', '🔧 Search fix applied! Check console for details.', 'success');
+            }, 1000);
+        }
+
+        function testAfterFix() {
+            log('🧪 Testing search functionality after fix...');
+            
+            // Wait a moment for fixes to apply
+            setTimeout(() => {
+                testSearchFunction();
+                testFindObject();
+                
+                // Try a comprehensive search test
+                if (typeof window.Find !== 'undefined') {
+                    try {
+                        log('Testing comprehensive search...');
+                        
+                        // Clear any existing highlights
+                        if (window.Find.clear) {
+                            window.Find.clear();
+                        }
+                        
+                        // Test search with different terms
+                        const testTerms = ['test', 'content', 'search', 'function'];
+                        let totalMatches = 0;
+                        
+                        testTerms.forEach(term => {
+                            if (window.Find.highlight) {
+                                window.Find.highlight({
+                                    base: document.body,
+                                    mode: '/',
+                                    search: term,
+                                    setIndex: true,
+                                    executeSearch: false,
+                                    saveSearch: true
+                                });
+                                
+                                const matches = window.Find.matches ? window.Find.matches.length : 0;
+                                totalMatches += matches;
+                                log(`Found ${matches} matches for "${term}"`);
+                                
+                                // Test navigation if matches found
+                                if (matches > 0 && window.Find.search) {
+                                    window.Find.search('/', 1);
+                                    log(`Navigated to first match for "${term}"`);
+                                }
+                            }
+                        });
+                        
+                        if (totalMatches > 0) {
+                            showStatus('search-status', `🎉 Comprehensive test passed! Found ${totalMatches} total matches`, 'success');
+                            log(`🎉 Comprehensive search test passed with ${totalMatches} total matches`);
+                        } else {
+                            showStatus('search-status', '⚠️ Comprehensive test found no matches', 'warning');
+                            log('⚠️ Comprehensive search test found no matches');
+                        }
+                        
+                    } catch (error) {
+                        showStatus('search-status', `❌ Comprehensive test failed: ${error.message}`, 'error');
+                        log(`❌ Comprehensive search test failed: ${error.message}`);
+                    }
+                } else {
+                    showStatus('search-status', '❌ Find object still not available after fix', 'error');
+                    log('❌ Find object still not available after fix');
+                }
+            }, 500);
+        }
+
+        // Auto-run initial checks
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('🚀 Starting automatic diagnostics...');
+                checkExtensionStatus();
+                
+                // Auto-run fix if issues detected
+                setTimeout(() => {
+                    if (typeof window.Find === 'undefined' || 
+                        typeof window.Find.highlight !== 'function') {
+                        log('🔧 Issues detected, auto-running search fix...');
+                        runSearchFix();
+                    }
+                }, 2000);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

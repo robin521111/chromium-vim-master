@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 书签和历史记录功能测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 25px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .test-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .test-section h2::before {
+            content: '📚';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #9b59b6;
+        }
+        .shortcut {
+            background: #34495e;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.pending { background: #f39c12; color: white; }
+        .status.testing { background: #3498db; color: white; }
+        .status.passed { background: #27ae60; color: white; }
+        .status.failed { background: #e74c3c; color: white; }
+        .instructions {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        .control-panel {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-purple { background: #9b59b6; color: white; }
+        .sample-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .sample-link {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ecf0f1;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+        .sample-link:hover {
+            border-color: #9b59b6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.2);
+            text-decoration: none;
+            color: #2c3e50;
+        }
+        .sample-link h4 {
+            margin: 0 0 5px 0;
+            color: #9b59b6;
+        }
+        .sample-link p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        .command-examples {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .permissions-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 rVim 书签和历史记录功能测试</h1>
+            <p>测试书签管理、历史记录访问、搜索补全等功能</p>
+            <div id="extension-status" class="status pending">🔄 检查扩展状态中...</div>
+        </div>
+        
+        <div class="content">
+            <div class="instructions">
+                <h3>📋 书签和历史记录测试说明</h3>
+                <p>本页面用于测试 rVim 的书签和历史记录相关功能：</p>
+                <ol>
+                    <li>确保 rVim 扩展已安装并具有书签和历史记录权限</li>
+                    <li>测试命令栏中的书签搜索和补全功能</li>
+                    <li>测试历史记录搜索和导航功能</li>
+                    <li>验证书签添加和管理功能</li>
+                </ol>
+            </div>
+
+            <div class="permissions-info">
+                <h3>🔐 权限要求</h3>
+                <p>rVim 需要以下权限才能正常使用书签和历史记录功能：</p>
+                <ul>
+                    <li><strong>bookmarks</strong> - 读取和管理浏览器书签</li>
+                    <li><strong>history</strong> - 访问浏览历史记录</li>
+                    <li><strong>tabs</strong> - 在新标签页中打开链接</li>
+                </ul>
+                <p>如果这些权限未授予，相关功能可能无法正常工作。</p>
+            </div>
+
+            <div class="control-panel">
+                <h3>🎮 测试控制面板</h3>
+                <p>
+                    <button class="btn-purple" onclick="startBookmarkTest()">📚 开始书签功能测试</button>
+                    <button class="btn-primary" onclick="startHistoryTest()">📜 开始历史记录测试</button>
+                    <button class="btn-success" onclick="checkBookmarkHistoryResults()">📊 查看测试结果</button>
+                    <button class="btn-warning" onclick="exportBookmarkHistoryResults()">💾 导出测试结果</button>
+                </p>
+                <p><strong>提示：</strong> 打开浏览器控制台查看详细的测试日志</p>
+            </div>
+
+            <div class="test-section">
+                <h2>书签功能测试</h2>
+                
+                <div class="test-item">
+                    <h3>命令栏书签搜索 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">:</span> 打开命令栏，输入 <span class="shortcut">open</span> 或 <span class="shortcut">tabopen</span></p>
+                    <p><strong>预期结果：</strong> 应该显示书签搜索补全列表</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>书签关键词搜索 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在命令栏中输入书签的部分名称或URL</p>
+                    <p><strong>预期结果：</strong> 应该显示匹配的书签建议</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>书签快速访问 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 选择书签建议并按回车</p>
+                    <p><strong>预期结果：</strong> 应该导航到选中的书签页面</p>
+                </div>
+                
+                <div class="command-examples">
+                    <h4>书签命令示例：</h4>
+                    <p>:open github - 搜索包含 "github" 的书签</p>
+                    <p>:tabopen google - 在新标签页打开包含 "google" 的书签</p>
+                    <p>:open stackoverflow - 搜索技术相关书签</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>历史记录功能测试</h2>
+                
+                <div class="test-item">
+                    <h3>历史记录搜索 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在命令栏中输入之前访问过的网站名称</p>
+                    <p><strong>预期结果：</strong> 应该显示历史记录中的匹配项</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>历史记录补全 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 输入URL的部分内容</p>
+                    <p><strong>预期结果：</strong> 应该自动补全历史记录中的URL</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>最近访问优先 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 观察搜索结果的排序</p>
+                    <p><strong>预期结果：</strong> 最近访问的页面应该排在前面</p>
+                </div>
+                
+                <div class="command-examples">
+                    <h4>历史记录命令示例：</h4>
+                    <p>:open youtube - 搜索YouTube相关历史记录</p>
+                    <p>:tabopen reddit - 在新标签页打开Reddit历史记录</p>
+                    <p>:open localhost - 搜索本地开发服务器历史</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>搜索引擎集成测试</h2>
+                
+                <div class="test-item">
+                    <h3>Google搜索补全 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 输入 <span class="shortcut">:open google 搜索词</span></p>
+                    <p><strong>预期结果：</strong> 应该在Google中搜索指定内容</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>多搜索引擎支持 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 测试不同的搜索引擎关键词</p>
+                    <p><strong>预期结果：</strong> 应该支持多种搜索引擎</p>
+                </div>
+                
+                <div class="command-examples">
+                    <h4>搜索引擎命令示例：</h4>
+                    <p>:open google rVim extension - Google搜索</p>
+                    <p>:open bing chrome extensions - Bing搜索</p>
+                    <p>:open duckduckgo privacy browser - DuckDuckGo搜索</p>
+                    <p>:open wikipedia vim editor - Wikipedia搜索</p>
+                    <p>:open amazon chrome book - Amazon搜索</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>测试用示例链接</h2>
+                <p>以下链接可用于创建书签和历史记录，便于测试搜索功能：</p>
+                
+                <div class="sample-links">
+                    <a href="https://www.google.com" class="sample-link" target="_blank" rel="noopener">
+                        <h4>🔍 Google</h4>
+                        <p>全球最大的搜索引擎</p>
+                    </a>
+                    
+                    <a href="https://github.com" class="sample-link" target="_blank" rel="noopener">
+                        <h4>💻 GitHub</h4>
+                        <p>代码托管和协作平台</p>
+                    </a>
+                    
+                    <a href="https://stackoverflow.com" class="sample-link" target="_blank" rel="noopener">
+                        <h4>❓ Stack Overflow</h4>
+                        <p>程序员问答社区</p>
+                    </a>
+                    
+                    <a href="https://www.youtube.com" class="sample-link" target="_blank" rel="noopener">
+                        <h4>📺 YouTube</h4>
+                        <p>视频分享平台</p>
+                    </a>
+                    
+                    <a href="https://www.reddit.com" class="sample-link" target="_blank" rel="noopener">
+                        <h4>💬 Reddit</h4>
+                        <p>社交新闻聚合网站</p>
+                    </a>
+                    
+                    <a href="https://www.wikipedia.org" class="sample-link" target="_blank" rel="noopener">
+                        <h4>📖 Wikipedia</h4>
+                        <p>自由的百科全书</p>
+                    </a>
+                    
+                    <a href="https://www.amazon.com" class="sample-link" target="_blank" rel="noopener">
+                        <h4>🛒 Amazon</h4>
+                        <p>在线购物平台</p>
+                    </a>
+                    
+                    <a href="https://duckduckgo.com" class="sample-link" target="_blank" rel="noopener">
+                        <h4>🦆 DuckDuckGo</h4>
+                        <p>注重隐私的搜索引擎</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="warning">
+                <h3>⚠️ 测试注意事项</h3>
+                <ul>
+                    <li>首次测试前，请访问上述示例链接以创建历史记录</li>
+                    <li>将一些链接添加到书签以测试书签搜索功能</li>
+                    <li>如果命令栏不显示补全建议，请检查扩展权限设置</li>
+                    <li>某些功能可能需要重新加载页面或重启浏览器才能生效</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载测试执行脚本 -->
+    <script src="test_execution_script.js"></script>
+    
+    <script>
+        // 书签和历史记录功能测试器
+        class BookmarkHistoryTester {
+            constructor() {
+                this.bookmarkTests = {};
+                this.historyTests = {};
+                this.currentTest = null;
+                this.init();
+            }
+
+            init() {
+                console.log('📚 书签和历史记录测试器初始化中...');
+                this.checkPermissions();
+                this.setupEventListeners();
+            }
+
+            checkPermissions() {
+                console.log('🔐 检查扩展权限...');
+                
+                // 检查是否有访问书签和历史记录的能力
+                const capabilities = {
+                    '命令模式': window.Command,
+                    '书签访问': chrome && chrome.bookmarks,
+                    '历史记录访问': chrome && chrome.history,
+                    '标签页管理': chrome && chrome.tabs
+                };
+
+                console.log('📊 权限检查结果:');
+                Object.entries(capabilities).forEach(([name, exists]) => {
+                    const status = exists ? '✅' : '❌';
+                    console.log(`${status} ${name}: ${exists ? '可用' : '不可用'}`);
+                });
+
+                return Object.values(capabilities).some(Boolean);
+            }
+
+            setupEventListeners() {
+                // 监听命令模式相关的键盘事件
+                document.addEventListener('keydown', (e) => {
+                    if (!e.target.matches('input, textarea')) {
+                        this.handleCommandKeyPress(e);
+                    }
+                });
+
+                // 监听页面导航事件
+                window.addEventListener('beforeunload', () => {
+                    this.recordPageVisit(window.location.href, document.title);
+                });
+            }
+
+            handleCommandKeyPress(e) {
+                const commandKeys = {
+                    ':': '打开命令栏',
+                    'o': '快速打开',
+                    't': '新标签页'
+                };
+
+                if (commandKeys[e.key]) {
+                    console.log(`📚 命令快捷键: ${e.key} (${commandKeys[e.key]})`);
+                    this.recordCommandAction(e.key, commandKeys[e.key]);
+                }
+            }
+
+            recordCommandAction(key, action) {
+                if (!this.bookmarkTests.commandActions) {
+                    this.bookmarkTests.commandActions = [];
+                }
+
+                this.bookmarkTests.commandActions.push({
+                    key,
+                    action,
+                    timestamp: Date.now()
+                });
+            }
+
+            recordPageVisit(url, title) {
+                if (!this.historyTests.pageVisits) {
+                    this.historyTests.pageVisits = [];
+                }
+
+                this.historyTests.pageVisits.push({
+                    url,
+                    title,
+                    timestamp: Date.now()
+                });
+
+                console.log(`📜 记录页面访问: ${title} (${url})`);
+            }
+
+            startBookmarkTest() {
+                this.currentTest = '书签功能测试';
+                console.log('📚 开始书签功能测试...');
+                
+                if (window.tester) {
+                    window.tester.startTest('书签功能测试');
+                }
+
+                this.updateTestStatus('书签功能', 'testing');
+                
+                // 提供测试指导
+                console.log(`
+📋 书签功能测试步骤:
+1. 按 : 键打开命令栏
+2. 输入 'open' 或 'tabopen'
+3. 输入书签关键词（如 'github', 'google'）
+4. 观察是否显示书签补全建议
+5. 选择建议并按回车测试导航
+
+💡 提示: 如果没有书签，请先访问一些网站并添加书签`);
+            }
+
+            startHistoryTest() {
+                this.currentTest = '历史记录测试';
+                console.log('📜 开始历史记录测试...');
+                
+                if (window.tester) {
+                    window.tester.startTest('历史记录测试');
+                }
+
+                this.updateTestStatus('历史记录', 'testing');
+                
+                console.log(`
+📋 历史记录测试步骤:
+1. 按 : 键打开命令栏
+2. 输入 'open' 或 'tabopen'
+3. 输入之前访问过的网站名称
+4. 观察是否显示历史记录补全
+5. 验证最近访问的页面是否排在前面
+
+💡 提示: 请先访问页面上的示例链接以创建历史记录`);
+            }
+
+            updateTestStatus(testName, status) {
+                const statusElements = document.querySelectorAll('.status');
+                statusElements.forEach(el => {
+                    const testItem = el.closest('.test-item');
+                    if (testItem && testItem.querySelector('h3').textContent.includes(testName)) {
+                        el.className = `status ${status}`;
+                        el.textContent = status === 'passed' ? '✅ 通过' : 
+                                       status === 'failed' ? '❌ 失败' : 
+                                       status === 'testing' ? '🔄 测试中' : '⏳ 待测试';
+                    }
+                });
+            }
+
+            endTest(testName, status, notes = []) {
+                console.log(`✅ 测试完成: ${testName} (${status})`);
+                
+                if (window.tester) {
+                    window.tester.endTest(testName, status, notes);
+                }
+
+                this.updateTestStatus(testName, status);
+                this.currentTest = null;
+            }
+
+            getBookmarkHistoryResults() {
+                return {
+                    bookmarkTests: this.bookmarkTests,
+                    historyTests: this.historyTests,
+                    currentTest: this.currentTest,
+                    summary: this.generateSummary()
+                };
+            }
+
+            generateSummary() {
+                return {
+                    totalCommandActions: this.bookmarkTests.commandActions ? this.bookmarkTests.commandActions.length : 0,
+                    totalPageVisits: this.historyTests.pageVisits ? this.historyTests.pageVisits.length : 0,
+                    lastActivity: Math.max(
+                        ...(this.bookmarkTests.commandActions || []).map(a => a.timestamp),
+                        ...(this.historyTests.pageVisits || []).map(v => v.timestamp)
+                    )
+                };
+            }
+
+            // 模拟书签搜索测试
+            simulateBookmarkSearch(query) {
+                console.log(`🔍 模拟书签搜索: "${query}"`);
+                
+                // 模拟常见书签
+                const mockBookmarks = [
+                    { title: 'GitHub', url: 'https://github.com' },
+                    { title: 'Google', url: 'https://www.google.com' },
+                    { title: 'Stack Overflow', url: 'https://stackoverflow.com' },
+                    { title: 'YouTube', url: 'https://www.youtube.com' }
+                ];
+
+                const results = mockBookmarks.filter(bookmark => 
+                    bookmark.title.toLowerCase().includes(query.toLowerCase()) ||
+                    bookmark.url.toLowerCase().includes(query.toLowerCase())
+                );
+
+                console.log(`📚 找到 ${results.length} 个匹配的书签:`, results);
+                return results;
+            }
+
+            // 模拟历史记录搜索测试
+            simulateHistorySearch(query) {
+                console.log(`🔍 模拟历史记录搜索: "${query}"`);
+                
+                // 使用实际的页面访问记录
+                const visits = this.historyTests.pageVisits || [];
+                const results = visits.filter(visit => 
+                    visit.title.toLowerCase().includes(query.toLowerCase()) ||
+                    visit.url.toLowerCase().includes(query.toLowerCase())
+                );
+
+                console.log(`📜 找到 ${results.length} 个匹配的历史记录:`, results);
+                return results;
+            }
+        }
+
+        // 创建书签历史记录测试器实例
+        window.bookmarkHistoryTester = new BookmarkHistoryTester();
+
+        // 测试控制函数
+        function startBookmarkTest() {
+            window.bookmarkHistoryTester.startBookmarkTest();
+        }
+
+        function startHistoryTest() {
+            window.bookmarkHistoryTester.startHistoryTest();
+        }
+
+        function checkBookmarkHistoryResults() {
+            const results = window.bookmarkHistoryTester.getBookmarkHistoryResults();
+            console.log('📊 书签和历史记录测试结果:', results);
+            return results;
+        }
+
+        function exportBookmarkHistoryResults() {
+            const results = checkBookmarkHistoryResults();
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bookmark-history-test-results-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.log('💾 书签和历史记录测试结果已导出');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const extensionLoaded = window.tester && window.tester.checkExtensionStatus();
+                const statusElement = document.getElementById('extension-status');
+                if (statusElement) {
+                    if (extensionLoaded) {
+                        statusElement.innerHTML = '🟢 扩展已加载，可以开始书签和历史记录测试';
+                        statusElement.className = 'status passed';
+                    } else {
+                        statusElement.innerHTML = '🔴 扩展未加载，请检查安装状态';
+                        statusElement.className = 'status failed';
+                    }
+                }
+
+                console.log('🎯 书签和历史记录测试页面已就绪');
+                console.log('💡 使用以下命令进行测试:');
+                console.log('  - startBookmarkTest() - 开始书签功能测试');
+                console.log('  - startHistoryTest() - 开始历史记录测试');
+                console.log('  - checkBookmarkHistoryResults() - 查看测试结果');
+                console.log('  - exportBookmarkHistoryResults() - 导出测试结果');
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

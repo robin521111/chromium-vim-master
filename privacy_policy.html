@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 扩展隐私政策</title>
+    
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .language-selector select {
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 3em;
+            font-weight: 300;
+        }
+        .header .subtitle {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            background: #f8f9fa;
+        }
+        .section h2 {
+            color: #495057;
+            margin-top: 0;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .section h3 {
+            color: #6c757d;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+        .highlight-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .highlight-box h4 {
+            color: #1976d2;
+            margin-top: 0;
+        }
+        .warning-box {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .warning-box h4 {
+            color: #f57c00;
+            margin-top: 0;
+        }
+        .success-box {
+            background: #e8f5e8;
+            border: 2px solid #28a745;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .success-box h4 {
+            color: #28a745;
+            margin-top: 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin: 8px 0;
+            color: #495057;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .data-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        .contact-info {
+            background: #fff8e1;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .contact-info h3 {
+            color: #f57c00;
+            margin-top: 0;
+        }
+        .last-updated {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 30px 0;
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+        }
+        .toc {
+            background: #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .toc h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .privacy-summary {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .privacy-summary h3 {
+            color: #155724;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        .privacy-summary .summary-text {
+            font-size: 1.1em;
+            color: #155724;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <label for="languageSelect" style="display: none;">Select Language</label>
+        <select id="languageSelect" title="Select Language" onchange="switchLanguage(this.value)">
+            <option value="zh-CN">中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="es">Español</option>
+        </select>
+    </div>
+    
+    <!-- Chinese Content -->
+    <div class="content-section active" id="content-zh-CN">
+    <div class="container">
+        <div class="header">
+            <h1>🔒 rVim 扩展隐私政策</h1>
+            <div class="subtitle">保护您的隐私是我们的首要任务</div>
+        </div>
+        
+        <div class="content">
+            <div class="last-updated">
+                <strong>最后更新时间：</strong> 2024年1月15日 | <strong>生效日期：</strong> 2024年1月22日
+            </div>
+
+            <!-- 隐私政策摘要 -->
+            <div class="privacy-summary">
+                <h3>🛡️ 隐私保护承诺</h3>
+                <div class="summary-text">
+                    rVim 扩展致力于保护用户隐私。我们仅收集必要的功能数据，不收集个人身份信息，
+                    所有数据均在本地处理，不会传输到外部服务器。
+                </div>
+            </div>
+
+            <!-- 目录 -->
+            <div class="toc">
+                <h3>📋 目录</h3>
+                <ul>
+                    <li><a href="#section1">1. 信息收集范围</a></li>
+                    <li><a href="#section2">2. 数据使用目的</a></li>
+                    <li><a href="#section3">3. 数据存储和安全</a></li>
+                    <li><a href="#section4">4. 数据共享政策</a></li>
+                    <li><a href="#section5">5. 用户权利</a></li>
+                    <li><a href="#section6">6. Cookie和本地存储</a></li>
+                    <li><a href="#section7">7. 第三方服务</a></li>
+                    <li><a href="#section8">8. 未成年人保护</a></li>
+                    <li><a href="#section9">9. 隐私政策更新</a></li>
+                    <li><a href="#section10">10. 联系方式</a></li>
+                </ul>
+            </div>
+
+            <!-- 第1节：信息收集范围 -->
+            <div class="section" id="section1">
+                <h2>1. 信息收集范围</h2>
+                
+                <div class="success-box">
+                    <h4>🔒 隐私保护原则</h4>
+                    <p>rVim 扩展遵循数据最小化原则，仅收集维持基本功能所必需的数据，不收集任何个人身份信息。</p>
+                </div>
+
+                <h3>1.1 我们收集的数据类型</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>数据类型</th>
+                            <th>收集内容</th>
+                            <th>收集目的</th>
+                            <th>存储位置</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>用户设置</strong></td>
+                            <td>快捷键配置、主题偏好、功能开关</td>
+                            <td>保存用户个性化配置</td>
+                            <td>浏览器本地存储</td>
+                        </tr>
+                        <tr>
+                            <td><strong>书签数据</strong></td>
+                            <td>书签标题、URL、文件夹结构</td>
+                            <td>提供书签管理功能</td>
+                            <td>浏览器书签API</td>
+                        </tr>
+                        <tr>
+                            <td><strong>浏览历史</strong></td>
+                            <td>访问过的网页URL和标题</td>
+                            <td>提供历史记录搜索</td>
+                            <td>浏览器历史API</td>
+                        </tr>
+                        <tr>
+                            <td><strong>搜索记录</strong></td>
+                            <td>页面内搜索关键词</td>
+                            <td>改进搜索体验</td>
+                            <td>浏览器本地存储</td>
+                        </tr>
+                        <tr>
+                            <td><strong>使用统计</strong></td>
+                            <td>功能使用频率（匿名）</td>
+                            <td>优化扩展性能</td>
+                            <td>浏览器本地存储</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>1.2 我们不收集的数据</h3>
+                <ul>
+                    <li>❌ 个人身份信息（姓名、邮箱、电话等）</li>
+                    <li>❌ 敏感个人数据（密码、信用卡信息等）</li>
+                    <li>❌ 设备唯一标识符</li>
+                    <li>❌ 地理位置信息</li>
+                    <li>❌ 网页内容或表单数据</li>
+                    <li>❌ 其他扩展或应用的数据</li>
+                </ul>
+            </div>
+
+            <!-- 第2节：数据使用目的 -->
+            <div class="section" id="section2">
+                <h2>2. 数据使用目的</h2>
+                
+                <h3>2.1 核心功能实现</h3>
+                <ul>
+                    <li><strong>导航增强：</strong>使用键盘快捷键配置提供Vim风格的网页导航</li>
+                    <li><strong>搜索功能：</strong>利用搜索历史改进页面内搜索体验</li>
+                    <li><strong>书签管理：</strong>通过书签数据提供快速访问和管理功能</li>
+                    <li><strong>历史记录：</strong>使用浏览历史提供智能导航建议</li>
+                    <li><strong>个性化设置：</strong>保存用户偏好以提供一致的使用体验</li>
+                </ul>
+
+                <h3>2.2 性能优化</h3>
+                <ul>
+                    <li><strong>功能改进：</strong>分析使用统计以优化常用功能</li>
+                    <li><strong>错误修复：</strong>识别和解决功能异常</li>
+                    <li><strong>兼容性提升：</strong>确保在不同网站上的稳定运行</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>📊 数据处理原则</h4>
+                    <ul>
+                        <li>所有数据处理均在用户设备本地进行</li>
+                        <li>不会将用户数据传输到外部服务器</li>
+                        <li>数据仅用于扩展功能实现，不用于其他目的</li>
+                        <li>遵循数据最小化和目的限制原则</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 第3节：数据存储和安全 -->
+            <div class="section" id="section3">
+                <h2>3. 数据存储和安全</h2>
+                
+                <h3>3.1 存储方式</h3>
+                <ul>
+                    <li><strong>本地存储：</strong>用户设置和搜索记录存储在浏览器本地存储中</li>
+                    <li><strong>浏览器API：</strong>书签和历史数据通过Chrome扩展API访问</li>
+                    <li><strong>同步存储：</strong>用户可选择将设置同步到Chrome账户（需用户授权）</li>
+                </ul>
+
+                <h3>3.2 安全措施</h3>
+                <div class="success-box">
+                    <h4>🔐 数据保护措施</h4>
+                    <ul>
+                        <li><strong>权限最小化：</strong>仅请求必要的浏览器权限</li>
+                        <li><strong>本地处理：</strong>所有数据处理在用户设备本地完成</li>
+                        <li><strong>加密存储：</strong>敏感配置数据采用浏览器内置加密</li>
+                        <li><strong>访问控制：</strong>严格限制数据访问范围</li>
+                        <li><strong>定期清理：</strong>自动清理过期的临时数据</li>
+                    </ul>
+                </div>
+
+                <h3>3.3 数据保留期限</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>数据类型</th>
+                            <th>保留期限</th>
+                            <th>清理方式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>用户设置</td>
+                            <td>直到用户主动删除或卸载扩展</td>
+                            <td>用户手动清理或扩展卸载时自动清理</td>
+                        </tr>
+                        <tr>
+                            <td>搜索记录</td>
+                            <td>30天</td>
+                            <td>自动清理过期记录</td>
+                        </tr>
+                        <tr>
+                            <td>使用统计</td>
+                            <td>7天</td>
+                            <td>自动清理过期统计</td>
+                        </tr>
+                        <tr>
+                            <td>临时缓存</td>
+                            <td>24小时</td>
+                            <td>自动清理</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 第4节：数据共享政策 -->
+            <div class="section" id="section4">
+                <h2>4. 数据共享政策</h2>
+                
+                <div class="success-box">
+                    <h4>🚫 不共享承诺</h4>
+                    <p><strong>rVim 扩展不会与任何第三方共享用户数据。</strong>所有数据均在用户设备本地处理和存储。</p>
+                </div>
+
+                <h3>4.1 数据不共享原则</h3>
+                <ul>
+                    <li>❌ 不向第三方出售用户数据</li>
+                    <li>❌ 不与广告商共享数据</li>
+                    <li>❌ 不向数据分析公司提供数据</li>
+                    <li>❌ 不与其他扩展或应用共享数据</li>
+                </ul>
+
+                <h3>4.2 例外情况</h3>
+                <div class="warning-box">
+                    <h4>⚖️ 法律要求</h4>
+                    <p>仅在以下极端情况下可能需要配合：</p>
+                    <ul>
+                        <li>法院命令或法律强制要求</li>
+                        <li>保护用户或公众安全的紧急情况</li>
+                        <li>防止非法活动或欺诈行为</li>
+                    </ul>
+                    <p><strong>注意：</strong>由于我们不收集个人身份信息，即使在上述情况下也无法提供用户身份相关数据。</p>
+                </div>
+            </div>
+
+            <!-- 第5节：用户权利 -->
+            <div class="section" id="section5">
+                <h2>5. 用户权利</h2>
+                
+                <h3>5.1 数据控制权</h3>
+                <ul>
+                    <li><strong>访问权：</strong>可随时查看扩展存储的所有数据</li>
+                    <li><strong>修改权：</strong>可随时修改个人设置和配置</li>
+                    <li><strong>删除权：</strong>可随时清除所有扩展数据</li>
+                    <li><strong>导出权：</strong>可导出设置配置用于备份</li>
+                    <li><strong>限制权：</strong>可禁用特定功能的数据收集</li>
+                </ul>
+
+                <h3>5.2 权利行使方式</h3>
+                <div class="highlight-box">
+                    <h4>🛠️ 数据管理操作</h4>
+                    <ul>
+                        <li><strong>查看数据：</strong>右键扩展图标 → 选项 → 数据管理</li>
+                        <li><strong>清除数据：</strong>扩展设置 → 重置所有设置</li>
+                        <li><strong>导出设置：</strong>扩展设置 → 导出配置</li>
+                        <li><strong>禁用功能：</strong>扩展设置 → 功能开关</li>
+                        <li><strong>完全卸载：</strong>Chrome扩展管理 → 移除扩展</li>
+                    </ul>
+                </div>
+
+                <h3>5.3 数据可携性</h3>
+                <p>用户可以：</p>
+                <ul>
+                    <li>导出个人设置配置文件</li>
+                    <li>在其他设备上导入配置</li>
+                    <li>备份和恢复扩展设置</li>
+                    <li>迁移到其他类似扩展（如果支持）</li>
+                </ul>
+            </div>
+
+            <!-- 第6节：Cookie和本地存储 -->
+            <div class="section" id="section6">
+                <h2>6. Cookie和本地存储</h2>
+                
+                <h3>6.1 本地存储使用</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>存储类型</th>
+                            <th>用途</th>
+                            <th>数据内容</th>
+                            <th>过期时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>localStorage</td>
+                            <td>保存用户设置</td>
+                            <td>快捷键配置、主题设置</td>
+                            <td>永久（直到用户清除）</td>
+                        </tr>
+                        <tr>
+                            <td>sessionStorage</td>
+                            <td>临时状态保存</td>
+                            <td>当前会话状态</td>
+                            <td>浏览器会话结束</td>
+                        </tr>
+                        <tr>
+                            <td>chrome.storage.sync</td>
+                            <td>设置同步</td>
+                            <td>用户配置（可选）</td>
+                            <td>用户控制</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>6.2 Cookie政策</h3>
+                <div class="success-box">
+                    <h4>🍪 Cookie使用说明</h4>
+                    <p><strong>rVim 扩展不使用Cookie。</strong>所有数据存储均通过浏览器扩展API和本地存储实现。</p>
+                </div>
+            </div>
+
+            <!-- 第7节：第三方服务 -->
+            <div class="section" id="section7">
+                <h2>7. 第三方服务</h2>
+                
+                <div class="success-box">
+                    <h4>🔒 独立运行</h4>
+                    <p><strong>rVim 扩展完全独立运行，不依赖任何第三方服务。</strong></p>
+                </div>
+
+                <h3>7.1 无第三方集成</h3>
+                <ul>
+                    <li>❌ 不使用第三方分析服务</li>
+                    <li>❌ 不集成广告网络</li>
+                    <li>❌ 不连接外部API</li>
+                    <li>❌ 不使用云端服务</li>
+                    <li>❌ 不嵌入第三方脚本</li>
+                </ul>
+
+                <h3>7.2 浏览器API使用</h3>
+                <p>扩展仅使用Chrome浏览器提供的标准API：</p>
+                <ul>
+                    <li><strong>chrome.bookmarks：</strong>访问和管理书签</li>
+                    <li><strong>chrome.history：</strong>访问浏览历史</li>
+                    <li><strong>chrome.storage：</strong>存储扩展设置</li>
+                    <li><strong>chrome.tabs：</strong>管理浏览器标签页</li>
+                    <li><strong>chrome.activeTab：</strong>与当前标签页交互</li>
+                </ul>
+            </div>
+
+            <!-- 第8节：未成年人保护 -->
+            <div class="section" id="section8">
+                <h2>8. 未成年人保护</h2>
+                
+                <h3>8.1 年龄限制</h3>
+                <div class="warning-box">
+                    <h4>👶 未成年人使用须知</h4>
+                    <ul>
+                        <li>13岁以下儿童需要监护人同意方可使用</li>
+                        <li>13-18岁未成年人建议在监护人指导下使用</li>
+                        <li>监护人有权要求查看或删除未成年人的使用数据</li>
+                    </ul>
+                </div>
+
+                <h3>8.2 特殊保护措施</h3>
+                <ul>
+                    <li>不收集可识别未成年人身份的信息</li>
+                    <li>不向未成年人展示不适当内容</li>
+                    <li>提供家长控制功能（如果适用）</li>
+                    <li>监护人可随时要求删除相关数据</li>
+                </ul>
+
+                <h3>8.3 监护人权利</h3>
+                <p>监护人可以：</p>
+                <ul>
+                    <li>查看未成年人的扩展使用情况</li>
+                    <li>修改或删除相关设置</li>
+                    <li>禁用特定功能</li>
+                    <li>完全卸载扩展</li>
+                </ul>
+            </div>
+
+            <!-- 第9节：隐私政策更新 -->
+            <div class="section" id="section9">
+                <h2>9. 隐私政策更新</h2>
+                
+                <h3>9.1 更新机制</h3>
+                <ul>
+                    <li><strong>重大变更：</strong>通过扩展内通知提前30天告知用户</li>
+                    <li><strong>常规更新：</strong>在扩展设置页面发布更新说明</li>
+                    <li><strong>紧急修正：</strong>立即生效并及时通知用户</li>
+                </ul>
+
+                <h3>9.2 用户选择权</h3>
+                <div class="highlight-box">
+                    <h4>✅ 更新后的选择</h4>
+                    <ul>
+                        <li>继续使用即表示接受更新后的政策</li>
+                        <li>不同意更新可选择卸载扩展</li>
+                        <li>可在更新生效前导出个人数据</li>
+                        <li>重大变更提供30天考虑期</li>
+                    </ul>
+                </div>
+
+                <h3>9.3 版本历史</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>版本</th>
+                            <th>更新日期</th>
+                            <th>主要变更</th>
+                            <th>生效日期</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>v1.0</td>
+                            <td>2024-01-15</td>
+                            <td>初始版本发布</td>
+                            <td>2024-01-22</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 第10节：联系方式 -->
+            <div class="section" id="section10">
+                <h2>10. 联系方式</h2>
+                
+                <div class="contact-info">
+                    <h3>📞 联系我们</h3>
+                    <p>如有任何隐私相关问题或建议，请通过以下方式联系我们：</p>
+                    
+                    <div style="text-align: left; margin: 20px 0;">
+                        <p><strong>📧 电子邮箱：</strong> privacy@rvim-extension.com</p>
+                        <p><strong>🌐 项目主页：</strong> https://github.com/rvim-extension</p>
+                        <p><strong>📋 问题反馈：</strong> https://github.com/rvim-extension/issues</p>
+                        <p><strong>📚 帮助文档：</strong> https://rvim-extension.com/help</p>
+                    </div>
+                    
+                    <p><strong>响应时间：</strong>我们将在收到您的询问后7个工作日内回复。</p>
+                </div>
+
+                <h3>10.1 数据保护官</h3>
+                <p>如需联系我们的数据保护官，请发送邮件至：dpo@rvim-extension.com</p>
+
+                <h3>10.2 监管机构</h3>
+                <p>如果您对我们的隐私做法有任何担忧，您也可以联系相关的数据保护监管机构。</p>
+            </div>
+
+            <!-- 法律声明 -->
+            <div class="section">
+                <h2>📜 法律声明</h2>
+                
+                <div class="highlight-box">
+                    <h4>⚖️ 适用法律</h4>
+                    <p>本隐私政策符合以下法律法规要求：</p>
+                    <ul>
+                        <li><strong>GDPR：</strong>欧盟通用数据保护条例</li>
+                        <li><strong>CCPA：</strong>加州消费者隐私法案</li>
+                        <li><strong>PIPEDA：</strong>加拿大个人信息保护和电子文档法</li>
+                        <li><strong>Chrome Web Store政策：</strong>Google Chrome网上应用店开发者政策</li>
+                    </ul>
+                </div>
+
+                <h3>管辖权和争议解决</h3>
+                <p>本隐私政策的解释和执行适用相关司法管辖区的法律。任何争议将通过友好协商解决，协商不成的，可通过法律途径解决。</p>
+            </div>
+
+            <div class="last-updated">
+                <strong>声明：</strong>本隐私政策是我们对用户隐私保护承诺的重要组成部分。我们将严格遵守本政策的各项规定，确保用户数据的安全和隐私。
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- English Content -->
+    <div class="content-section" id="content-en">
+    <div class="container">
+        <div class="header">
+            <h1>🔒 rVim Extension Privacy Policy</h1>
+            <div class="subtitle">Protecting your privacy is our top priority</div>
+        </div>
+        
+        <div class="content">
+            <div class="last-updated">
+                <strong>Last Updated:</strong> January 15, 2024 | <strong>Effective Date:</strong> January 22, 2024
+            </div>
+
+            <div class="privacy-summary">
+                <h3>🛡️ Privacy Protection Commitment</h3>
+                <div class="summary-text">
+                    The rVim extension is committed to protecting user privacy. We only collect necessary functional data, 
+                    do not collect personal identification information, and all data is processed locally without transmission to external servers.
+                </div>
+            </div>
+            
+            <div class="section">
+                 <h2>1. 📊 Information Collection Scope</h2>
+                 <div class="subsection">
+                     <h3>1.1 Data We Collect</h3>
+                     <ul>
+                         <li><strong>Extension Settings:</strong> User preferences and configuration data</li>
+                         <li><strong>Keyboard Shortcuts:</strong> Custom key mappings and commands</li>
+                         <li><strong>Usage Statistics:</strong> Anonymous feature usage data for improvement</li>
+                     </ul>
+                 </div>
+                 <div class="subsection">
+                     <h3>1.2 Data We DO NOT Collect</h3>
+                     <ul>
+                         <li>Personal identification information (name, email, address)</li>
+                         <li>Browsing history or website content</li>
+                         <li>Passwords or sensitive authentication data</li>
+                         <li>Financial or payment information</li>
+                     </ul>
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>2. 🎯 Data Usage Purpose</h2>
+                 <p>All collected data is used exclusively for:</p>
+                 <ul>
+                     <li>Maintaining extension functionality and user preferences</li>
+                     <li>Improving user experience and performance</li>
+                     <li>Providing technical support when requested</li>
+                     <li>Developing new features based on usage patterns</li>
+                 </ul>
+             </div>
+             
+             <div class="section">
+                 <h2>3. 🔐 Data Storage and Security</h2>
+                 <div class="subsection">
+                     <h3>3.1 Local Storage</h3>
+                     <p>All data is stored locally on your device using Chrome's secure storage APIs. No data is transmitted to external servers.</p>
+                 </div>
+                 <div class="subsection">
+                     <h3>3.2 Security Measures</h3>
+                     <ul>
+                         <li>Data encryption using browser-native security protocols</li>
+                         <li>Secure API usage following Chrome extension best practices</li>
+                         <li>Regular security audits and updates</li>
+                     </ul>
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>4. 🤝 Data Sharing Policy</h2>
+                 <p><strong>We do not share, sell, or transfer your data to third parties.</strong> Your data remains on your device and under your control.</p>
+             </div>
+             
+             <div class="section">
+                 <h2>5. 👤 Your Rights</h2>
+                 <ul>
+                     <li><strong>Access:</strong> View all stored data through extension settings</li>
+                     <li><strong>Modify:</strong> Change or update your preferences at any time</li>
+                     <li><strong>Delete:</strong> Remove all extension data by uninstalling</li>
+                     <li><strong>Export:</strong> Backup your settings for migration</li>
+                 </ul>
+             </div>
+            
+            <div class="contact-info">
+                <h3>📞 Contact Us</h3>
+                <p>For any privacy-related questions or suggestions, please contact us:</p>
+                <p><strong>📧 Email:</strong> privacy@rvim-extension.com</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Japanese Content -->
+    <div class="content-section" id="content-ja">
+    <div class="container">
+        <div class="header">
+            <h1>🔒 rVim拡張機能プライバシーポリシー</h1>
+            <div class="subtitle">お客様のプライバシー保護が最優先事項です</div>
+        </div>
+        
+        <div class="content">
+            <div class="last-updated">
+                <strong>最終更新日：</strong> 2024年1月15日 | <strong>発効日：</strong> 2024年1月22日
+            </div>
+
+            <div class="privacy-summary">
+                <h3>🛡️ プライバシー保護の約束</h3>
+                <div class="summary-text">
+                     rVim拡張機能は、ユーザーのプライバシー保護に取り組んでいます。必要な機能データのみを収集し、
+                     個人識別情報は収集せず、すべてのデータはローカルで処理され、外部サーバーに送信されることはありません。
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>1. 📊 情報収集範囲</h2>
+                 <div class="subsection">
+                     <h3>1.1 収集するデータ</h3>
+                     <ul>
+                         <li><strong>拡張機能設定:</strong> ユーザー設定と構成データ</li>
+                         <li><strong>キーボードショートカット:</strong> カスタムキーマッピングとコマンド</li>
+                         <li><strong>使用統計:</strong> 改善のための匿名機能使用データ</li>
+                     </ul>
+                 </div>
+                 <div class="subsection">
+                     <h3>1.2 収集しないデータ</h3>
+                     <ul>
+                         <li>個人識別情報（氏名、メール、住所）</li>
+                         <li>閲覧履歴やウェブサイトコンテンツ</li>
+                         <li>パスワードや機密認証データ</li>
+                         <li>金融や支払い情報</li>
+                     </ul>
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>2. 🎯 データ使用目的</h2>
+                 <p>収集されたすべてのデータは以下の目的でのみ使用されます：</p>
+                 <ul>
+                     <li>拡張機能の機能とユーザー設定の維持</li>
+                     <li>ユーザーエクスペリエンスとパフォーマンスの向上</li>
+                     <li>要求された際の技術サポートの提供</li>
+                     <li>使用パターンに基づく新機能の開発</li>
+                 </ul>
+             </div>
+             
+             <div class="contact-info">
+                 <h3>📞 お問い合わせ</h3>
+                 <p>プライバシーに関するご質問やご提案がございましたら、お気軽にお問い合わせください：</p>
+                 <p><strong>📧 メール:</strong> privacy@rvim-extension.com</p>
+             </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Korean Content -->
+    <div class="content-section" id="content-ko">
+    <div class="container">
+        <div class="header">
+            <h1>🔒 rVim 확장 프로그램 개인정보 보호정책</h1>
+            <div class="subtitle">귀하의 개인정보 보호가 최우선 과제입니다</div>
+        </div>
+        
+        <div class="content">
+            <div class="last-updated">
+                <strong>최종 업데이트:</strong> 2024년 1월 15일 | <strong>시행일:</strong> 2024년 1월 22일
+            </div>
+
+            <div class="privacy-summary">
+                <h3>🛡️ 개인정보 보호 약속</h3>
+                <div class="summary-text">
+                     rVim 확장 프로그램은 사용자 개인정보 보호에 최선을 다하고 있습니다. 필요한 기능 데이터만 수집하며,
+                     개인 식별 정보는 수집하지 않고, 모든 데이터는 로컬에서 처리되어 외부 서버로 전송되지 않습니다.
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>1. 📊 정보 수집 범위</h2>
+                 <div class="subsection">
+                     <h3>1.1 수집하는 데이터</h3>
+                     <ul>
+                         <li><strong>확장 프로그램 설정:</strong> 사용자 기본 설정 및 구성 데이터</li>
+                         <li><strong>키보드 단축키:</strong> 사용자 정의 키 매핑 및 명령</li>
+                         <li><strong>사용 통계:</strong> 개선을 위한 익명 기능 사용 데이터</li>
+                     </ul>
+                 </div>
+                 <div class="subsection">
+                     <h3>1.2 수집하지 않는 데이터</h3>
+                     <ul>
+                         <li>개인 식별 정보 (이름, 이메일, 주소)</li>
+                         <li>브라우징 기록 또는 웹사이트 콘텐츠</li>
+                         <li>비밀번호 또는 민감한 인증 데이터</li>
+                         <li>금융 또는 결제 정보</li>
+                     </ul>
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>2. 🎯 데이터 사용 목적</h2>
+                 <p>수집된 모든 데이터는 다음 목적으로만 사용됩니다:</p>
+                 <ul>
+                     <li>확장 프로그램 기능 및 사용자 기본 설정 유지</li>
+                     <li>사용자 경험 및 성능 향상</li>
+                     <li>요청 시 기술 지원 제공</li>
+                     <li>사용 패턴을 기반으로 한 새로운 기능 개발</li>
+                 </ul>
+             </div>
+             
+             <div class="contact-info">
+                 <h3>📞 문의하기</h3>
+                 <p>개인정보 보호 관련 질문이나 제안사항이 있으시면 다음을 통해 연락해 주세요:</p>
+                 <p><strong>📧 이메일:</strong> privacy@rvim-extension.com</p>
+             </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- French Content -->
+    <div class="content-section" id="content-fr">
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Politique de confidentialité de l'extension rVim</h1>
+            <div class="subtitle">Protéger votre vie privée est notre priorité absolue</div>
+        </div>
+        
+        <div class="content">
+            <div class="last-updated">
+                <strong>Dernière mise à jour :</strong> 15 janvier 2024 | <strong>Date d'entrée en vigueur :</strong> 22 janvier 2024
+            </div>
+
+            <div class="privacy-summary">
+                <h3>🛡️ Engagement de protection de la vie privée</h3>
+                <div class="summary-text">
+                     L'extension rVim s'engage à protéger la vie privée des utilisateurs. Nous ne collectons que les données fonctionnelles nécessaires,
+                     ne collectons pas d'informations d'identification personnelle, et toutes les données sont traitées localement sans transmission vers des serveurs externes.
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>1. 📊 Portée de la collecte d'informations</h2>
+                 <div class="subsection">
+                     <h3>1.1 Données que nous collectons</h3>
+                     <ul>
+                         <li><strong>Paramètres d'extension :</strong> Préférences utilisateur et données de configuration</li>
+                         <li><strong>Raccourcis clavier :</strong> Mappages de touches et commandes personnalisés</li>
+                         <li><strong>Statistiques d'utilisation :</strong> Données anonymes d'utilisation des fonctionnalités pour amélioration</li>
+                     </ul>
+                 </div>
+                 <div class="subsection">
+                     <h3>1.2 Données que nous ne collectons PAS</h3>
+                     <ul>
+                         <li>Informations d'identification personnelle (nom, email, adresse)</li>
+                         <li>Historique de navigation ou contenu de sites web</li>
+                         <li>Mots de passe ou données d'authentification sensibles</li>
+                         <li>Informations financières ou de paiement</li>
+                     </ul>
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>2. 🎯 Objectif d'utilisation des données</h2>
+                 <p>Toutes les données collectées sont utilisées exclusivement pour :</p>
+                 <ul>
+                     <li>Maintenir les fonctionnalités de l'extension et les préférences utilisateur</li>
+                     <li>Améliorer l'expérience utilisateur et les performances</li>
+                     <li>Fournir un support technique sur demande</li>
+                     <li>Développer de nouvelles fonctionnalités basées sur les modèles d'utilisation</li>
+                 </ul>
+             </div>
+             
+             <div class="contact-info">
+                 <h3>📞 Nous contacter</h3>
+                 <p>Pour toute question ou suggestion liée à la confidentialité, veuillez nous contacter :</p>
+                 <p><strong>📧 Email :</strong> privacy@rvim-extension.com</p>
+             </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- German Content -->
+    <div class="content-section" id="content-de">
+    <div class="container">
+        <div class="header">
+            <h1>🔒 rVim Erweiterung Datenschutzrichtlinie</h1>
+            <div class="subtitle">Der Schutz Ihrer Privatsphäre hat oberste Priorität</div>
+        </div>
+        
+        <div class="content">
+            <div class="last-updated">
+                <strong>Letzte Aktualisierung:</strong> 15. Januar 2024 | <strong>Inkrafttreten:</strong> 22. Januar 2024
+            </div>
+
+            <div class="privacy-summary">
+                <h3>🛡️ Datenschutz-Verpflichtung</h3>
+                <div class="summary-text">
+                     Die rVim-Erweiterung verpflichtet sich zum Schutz der Benutzerprivatsphäre. Wir sammeln nur notwendige Funktionsdaten,
+                     sammeln keine persönlichen Identifikationsinformationen, und alle Daten werden lokal verarbeitet ohne Übertragung an externe Server.
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>1. 📊 Umfang der Datensammlung</h2>
+                 <div class="subsection">
+                     <h3>1.1 Daten, die wir sammeln</h3>
+                     <ul>
+                         <li><strong>Erweiterungseinstellungen:</strong> Benutzereinstellungen und Konfigurationsdaten</li>
+                         <li><strong>Tastaturkürzel:</strong> Benutzerdefinierte Tastenzuordnungen und Befehle</li>
+                         <li><strong>Nutzungsstatistiken:</strong> Anonyme Funktionsnutzungsdaten zur Verbesserung</li>
+                     </ul>
+                 </div>
+                 <div class="subsection">
+                     <h3>1.2 Daten, die wir NICHT sammeln</h3>
+                     <ul>
+                         <li>Persönliche Identifikationsinformationen (Name, E-Mail, Adresse)</li>
+                         <li>Browserverlauf oder Website-Inhalte</li>
+                         <li>Passwörter oder sensible Authentifizierungsdaten</li>
+                         <li>Finanz- oder Zahlungsinformationen</li>
+                     </ul>
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>2. 🎯 Zweck der Datennutzung</h2>
+                 <p>Alle gesammelten Daten werden ausschließlich verwendet für:</p>
+                 <ul>
+                     <li>Aufrechterhaltung der Erweiterungsfunktionalität und Benutzereinstellungen</li>
+                     <li>Verbesserung der Benutzererfahrung und Leistung</li>
+                     <li>Bereitstellung technischer Unterstützung auf Anfrage</li>
+                     <li>Entwicklung neuer Funktionen basierend auf Nutzungsmustern</li>
+                 </ul>
+             </div>
+             
+             <div class="contact-info">
+                 <h3>📞 Kontakt</h3>
+                 <p>Bei Fragen oder Anregungen zum Datenschutz kontaktieren Sie uns bitte:</p>
+                 <p><strong>📧 E-Mail:</strong> privacy@rvim-extension.com</p>
+             </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Spanish Content -->
+    <div class="content-section" id="content-es">
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Política de Privacidad de la Extensión rVim</h1>
+            <div class="subtitle">Proteger su privacidad es nuestra máxima prioridad</div>
+        </div>
+        
+        <div class="content">
+            <div class="last-updated">
+                <strong>Última actualización:</strong> 15 de enero de 2024 | <strong>Fecha de vigencia:</strong> 22 de enero de 2024
+            </div>
+
+            <div class="privacy-summary">
+                <h3>🛡️ Compromiso de Protección de Privacidad</h3>
+                <div class="summary-text">
+                     La extensión rVim se compromete a proteger la privacidad del usuario. Solo recopilamos datos funcionales necesarios,
+                     no recopilamos información de identificación personal, y todos los datos se procesan localmente sin transmisión a servidores externos.
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>1. 📊 Alcance de la recopilación de información</h2>
+                 <div class="subsection">
+                     <h3>1.1 Datos que recopilamos</h3>
+                     <ul>
+                         <li><strong>Configuración de extensión:</strong> Preferencias del usuario y datos de configuración</li>
+                         <li><strong>Atajos de teclado:</strong> Mapeos de teclas y comandos personalizados</li>
+                         <li><strong>Estadísticas de uso:</strong> Datos anónimos de uso de funciones para mejora</li>
+                     </ul>
+                 </div>
+                 <div class="subsection">
+                     <h3>1.2 Datos que NO recopilamos</h3>
+                     <ul>
+                         <li>Información de identificación personal (nombre, correo, dirección)</li>
+                         <li>Historial de navegación o contenido de sitios web</li>
+                         <li>Contraseñas o datos de autenticación sensibles</li>
+                         <li>Información financiera o de pago</li>
+                     </ul>
+                 </div>
+             </div>
+             
+             <div class="section">
+                 <h2>2. 🎯 Propósito del uso de datos</h2>
+                 <p>Todos los datos recopilados se utilizan exclusivamente para:</p>
+                 <ul>
+                     <li>Mantener la funcionalidad de la extensión y las preferencias del usuario</li>
+                     <li>Mejorar la experiencia del usuario y el rendimiento</li>
+                     <li>Proporcionar soporte técnico cuando se solicite</li>
+                     <li>Desarrollar nuevas funciones basadas en patrones de uso</li>
+                 </ul>
+             </div>
+             
+             <div class="contact-info">
+                 <h3>📞 Contáctanos</h3>
+                 <p>Para cualquier pregunta o sugerencia relacionada con la privacidad, por favor contáctenos:</p>
+                 <p><strong>📧 Correo electrónico:</strong> privacy@rvim-extension.com</p>
+             </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // Language switching functionality
+        function switchLanguage(lang) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected language content
+            const targetSection = document.getElementById(`content-${lang}`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+            
+            // Save language preference
+            localStorage.setItem('rvim-privacy-lang', lang);
+        }
+        
+        // Load saved language preference
+        function loadLanguagePreference() {
+            const savedLang = localStorage.getItem('rvim-privacy-lang') || 'zh-CN';
+            const selector = document.getElementById('languageSelect');
+            if (selector) {
+                selector.value = savedLang;
+                switchLanguage(savedLang);
+            }
+        }
+
+        // 隐私政策管理器
+        class PrivacyPolicyManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                console.log('🔒 隐私政策页面已加载');
+                this.addScrollToTopButton();
+                this.highlightCurrentSection();
+                this.addPrintFunction();
+            }
+
+            addScrollToTopButton() {
+                const button = document.createElement('button');
+                button.innerHTML = '⬆️ 返回顶部';
+                button.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: #667eea;
+                    color: white;
+                    border: none;
+                    border-radius: 50px;
+                    padding: 15px 20px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    display: none;
+                `;
+                
+                button.onclick = () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                
+                document.body.appendChild(button);
+                
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        button.style.display = 'block';
+                    } else {
+                        button.style.display = 'none';
+                    }
+                });
+            }
+
+            highlightCurrentSection() {
+                const sections = document.querySelectorAll('.section');
+                const tocLinks = document.querySelectorAll('.toc a');
+                
+                window.addEventListener('scroll', () => {
+                    let current = '';
+                    
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.clientHeight;
+                        
+                        if (window.scrollY >= sectionTop - 100) {
+                            current = section.getAttribute('id');
+                        }
+                    });
+                    
+                    tocLinks.forEach(link => {
+                        link.style.fontWeight = 'normal';
+                        link.style.color = '#667eea';
+                        
+                        if (link.getAttribute('href') === `#${current}`) {
+                            link.style.fontWeight = 'bold';
+                            link.style.color = '#764ba2';
+                        }
+                    });
+                });
+            }
+
+            addPrintFunction() {
+                const printButton = document.createElement('button');
+                printButton.innerHTML = '🖨️ 打印政策';
+                printButton.style.cssText = `
+                    position: fixed;
+                    bottom: 80px;
+                    right: 20px;
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    border-radius: 50px;
+                    padding: 15px 20px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                `;
+                
+                printButton.onclick = () => {
+                    window.print();
+                };
+                
+                document.body.appendChild(printButton);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            new PrivacyPolicyManager();
+            loadLanguagePreference();
+            
+            console.log('🔒 rVim 扩展隐私政策');
+            console.log('📋 本政策符合 Chrome Web Store 要求');
+            console.log('🛡️ 保护用户隐私是我们的首要任务');
+        });
+    </script>
+</body>
+</html>

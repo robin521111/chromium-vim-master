@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 命令行模式和自定义命令测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 25px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .test-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .test-section h2::before {
+            content: '⌨️';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #f39c12;
+        }
+        .shortcut {
+            background: #34495e;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .command {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.pending { background: #f39c12; color: white; }
+        .status.testing { background: #3498db; color: white; }
+        .status.passed { background: #27ae60; color: white; }
+        .status.failed { background: #e74c3c; color: white; }
+        .instructions {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        .control-panel {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-orange { background: #f39c12; color: white; }
+        .command-examples {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .command-examples h4 {
+            margin-top: 0;
+            color: #f39c12;
+        }
+        .command-examples p {
+            margin: 8px 0;
+            padding: 5px;
+            background: #ffffff;
+            border-radius: 4px;
+            border-left: 3px solid #f39c12;
+        }
+        .command-simulator {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .command-input {
+            background: #34495e;
+            color: #ecf0f1;
+            border: 1px solid #7f8c8d;
+            border-radius: 4px;
+            padding: 10px;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .command-output {
+            background: #1a252f;
+            color: #2ecc71;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            min-height: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .command-history {
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .command-card {
+            background: white;
+            border: 2px solid #f39c12;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .command-card h4 {
+            margin: 0 0 10px 0;
+            color: #f39c12;
+        }
+        .command-card .cmd {
+            background: #f39c12;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            display: inline-block;
+            margin: 2px;
+        }
+        .test-results {
+            background: #f1f2f6;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⌨️ rVim 命令行模式和自定义命令测试</h1>
+            <p>测试命令行模式、自定义命令、命令补全等功能</p>
+            <div id="extension-status" class="status pending">🔄 检查扩展状态中...</div>
+        </div>
+        
+        <div class="content">
+            <div class="instructions">
+                <h3>📋 命令行模式测试说明</h3>
+                <p>本页面用于测试 rVim 的命令行模式和自定义命令功能：</p>
+                <ol>
+                    <li>确保 rVim 扩展已安装并启用</li>
+                    <li>测试进入和退出命令行模式</li>
+                    <li>测试内置命令的执行</li>
+                    <li>测试命令补全和历史记录</li>
+                    <li>测试自定义命令和映射</li>
+                </ol>
+            </div>
+
+            <div class="control-panel">
+                <h3>🎮 测试控制面板</h3>
+                <p>
+                    <button class="btn-orange" onclick="startCommandModeTest()">⌨️ 开始命令模式测试</button>
+                    <button class="btn-primary" onclick="startCustomCommandTest()">🔧 开始自定义命令测试</button>
+                    <button class="btn-success" onclick="checkCommandResults()">📊 查看测试结果</button>
+                    <button class="btn-warning" onclick="exportCommandResults()">💾 导出测试结果</button>
+                </p>
+                <p><strong>提示：</strong> 打开浏览器控制台查看详细的测试日志</p>
+            </div>
+
+            <div class="command-simulator">
+                <h3>💻 命令行模拟器</h3>
+                <p>在下面的输入框中输入命令进行测试：</p>
+                <input type="text" class="command-input" id="command-input" placeholder="输入命令（如 :open google.com 或 :help）..." />
+                <div class="command-output" id="command-output">等待命令输入...</div>
+                <button class="btn-primary" onclick="executeCommand()">执行命令</button>
+                <button class="btn-warning" onclick="clearCommandOutput()">清空输出</button>
+            </div>
+
+            <div class="test-section">
+                <h2>基础命令行模式测试</h2>
+                
+                <div class="test-item">
+                    <h3>进入命令行模式 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">:</span> 键</p>
+                    <p><strong>预期结果：</strong> 显示命令行输入框，光标定位到输入框</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>命令补全功能 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 输入命令的部分内容，按 <span class="shortcut">Tab</span></p>
+                    <p><strong>预期结果：</strong> 显示命令补全建议</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>命令历史记录 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在命令行中按 <span class="shortcut">↑</span> 和 <span class="shortcut">↓</span></p>
+                    <p><strong>预期结果：</strong> 可以浏览之前执行过的命令</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>退出命令行模式 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">Esc</span> 键</p>
+                    <p><strong>预期结果：</strong> 命令行消失，返回正常模式</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>内置命令测试</h2>
+                
+                <div class="command-grid">
+                    <div class="command-card">
+                        <h4>导航命令</h4>
+                        <div class="cmd">:open [url]</div>
+                        <div class="cmd">:tabopen [url]</div>
+                        <div class="cmd">:winopen [url]</div>
+                        <p>在当前标签页、新标签页或新窗口中打开URL</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>标签页管理</h4>
+                        <div class="cmd">:tabnew</div>
+                        <div class="cmd">:tabclose</div>
+                        <div class="cmd">:tabnext</div>
+                        <div class="cmd">:tabprevious</div>
+                        <p>创建、关闭、切换标签页</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>书签命令</h4>
+                        <div class="cmd">:bookmark</div>
+                        <div class="cmd">:bookmarks</div>
+                        <div class="cmd">:delbookmark</div>
+                        <p>添加、查看、删除书签</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>历史记录</h4>
+                        <div class="cmd">:history</div>
+                        <div class="cmd">:clearhistory</div>
+                        <p>查看和清除浏览历史</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>设置命令</h4>
+                        <div class="cmd">:set [option]</div>
+                        <div class="cmd">:settings</div>
+                        <div class="cmd">:reset</div>
+                        <p>修改设置和配置</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>帮助命令</h4>
+                        <div class="cmd">:help</div>
+                        <div class="cmd">:version</div>
+                        <div class="cmd">:about</div>
+                        <p>获取帮助和版本信息</p>
+                    </div>
+                </div>
+                
+                <div class="command-examples">
+                    <h4>常用命令示例：</h4>
+                    <p>:open github.com - 打开GitHub</p>
+                    <p>:tabopen google.com - 在新标签页打开Google</p>
+                    <p>:set hintcharacters=asdfghjkl - 设置链接提示字符</p>
+                    <p>:bookmark add - 添加当前页面到书签</p>
+                    <p>:help navigation - 查看导航帮助</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>自定义命令和映射测试</h2>
+                
+                <div class="test-item">
+                    <h3>创建自定义命令 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 使用 <span class="command">:command</span> 创建自定义命令</p>
+                    <p><strong>预期结果：</strong> 自定义命令被成功创建并可以执行</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>键盘映射 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 使用 <span class="command">:map</span> 创建键盘映射</p>
+                    <p><strong>预期结果：</strong> 映射的按键组合能够执行指定操作</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>命令别名 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 使用 <span class="command">:alias</span> 创建命令别名</p>
+                    <p><strong>预期结果：</strong> 别名能够正确执行原始命令</p>
+                </div>
+                
+                <div class="command-examples">
+                    <h4>自定义命令示例：</h4>
+                    <p>:command gh open github.com - 创建GitHub快捷命令</p>
+                    <p>:map &lt;C-t&gt; :tabnew - 映射Ctrl+t为新建标签页</p>
+                    <p>:alias g google - 创建Google搜索别名</p>
+                    <p>:command search tabopen google.com/search?q= - 创建搜索命令</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>命令执行和错误处理测试</h2>
+                
+                <div class="test-item">
+                    <h3>有效命令执行 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 执行有效的内置命令</p>
+                    <p><strong>预期结果：</strong> 命令正确执行，产生预期效果</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>无效命令处理 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 执行不存在的命令</p>
+                    <p><strong>预期结果：</strong> 显示错误信息，不会崩溃</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>参数验证 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 使用错误的参数执行命令</p>
+                    <p><strong>预期结果：</strong> 显示参数错误信息</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>命令中断 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在命令执行过程中按 <span class="shortcut">Esc</span></p>
+                    <p><strong>预期结果：</strong> 命令被中断，返回正常模式</p>
+                </div>
+            </div>
+
+            <div class="command-history">
+                <h3>📜 命令历史记录</h3>
+                <div id="command-history-list">暂无命令历史...</div>
+            </div>
+
+            <div class="test-results">
+                <h3>📊 测试结果</h3>
+                <div id="command-test-results">测试结果将在这里显示...</div>
+            </div>
+
+            <div class="warning">
+                <h3>⚠️ 测试注意事项</h3>
+                <ul>
+                    <li>确保页面焦点不在输入框中，以便正确触发命令模式</li>
+                    <li>某些命令可能需要特定权限才能执行</li>
+                    <li>自定义命令和映射可能需要重新加载页面才能生效</li>
+                    <li>命令执行失败时，请检查控制台的错误信息</li>
+                    <li>测试时请注意观察命令行的显示和隐藏</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载测试执行脚本 -->
+    <script src="test_execution_script.js"></script>
+    
+    <script>
+        // 命令行模式功能测试器
+        class CommandModeTester {
+            constructor() {
+                this.commandTests = {};
+                this.customCommands = {};
+                this.commandHistory = [];
+                this.currentTest = null;
+                this.commandModeActive = false;
+                this.init();
+            }
+
+            init() {
+                console.log('⌨️ 命令行模式测试器初始化中...');
+                this.setupEventListeners();
+                this.checkCommandModeSupport();
+                this.initializeBuiltinCommands();
+            }
+
+            checkCommandModeSupport() {
+                console.log('🔍 检查命令行模式支持...');
+                
+                const capabilities = {
+                    '命令模式': window.Command,
+                    '键盘事件': KeyboardEvent,
+                    '历史API': window.history,
+                    'rVim扩展': window.cVim || window.Command
+                };
+
+                console.log('📊 命令行模式支持检查结果:');
+                Object.entries(capabilities).forEach(([name, exists]) => {
+                    const status = exists ? '✅' : '❌';
+                    console.log(`${status} ${name}: ${exists ? '支持' : '不支持'}`);
+                });
+
+                return Object.values(capabilities).filter(Boolean).length >= 2;
+            }
+
+            initializeBuiltinCommands() {
+                // 模拟内置命令
+                this.builtinCommands = {
+                    'open': { description: '在当前标签页打开URL', usage: ':open [url]' },
+                    'tabopen': { description: '在新标签页打开URL', usage: ':tabopen [url]' },
+                    'winopen': { description: '在新窗口打开URL', usage: ':winopen [url]' },
+                    'tabnew': { description: '创建新标签页', usage: ':tabnew' },
+                    'tabclose': { description: '关闭当前标签页', usage: ':tabclose' },
+                    'tabnext': { description: '切换到下一个标签页', usage: ':tabnext' },
+                    'tabprevious': { description: '切换到上一个标签页', usage: ':tabprevious' },
+                    'bookmark': { description: '书签操作', usage: ':bookmark [add|list|delete]' },
+                    'history': { description: '查看历史记录', usage: ':history' },
+                    'set': { description: '设置选项', usage: ':set [option=value]' },
+                    'help': { description: '显示帮助信息', usage: ':help [topic]' },
+                    'version': { description: '显示版本信息', usage: ':version' },
+                    'command': { description: '创建自定义命令', usage: ':command [name] [action]' },
+                    'map': { description: '创建键盘映射', usage: ':map [key] [action]' },
+                    'alias': { description: '创建命令别名', usage: ':alias [alias] [command]' }
+                };
+
+                console.log('📚 已初始化内置命令:', Object.keys(this.builtinCommands));
+            }
+
+            setupEventListeners() {
+                // 监听命令模式相关的键盘事件
+                document.addEventListener('keydown', (e) => {
+                    if (!e.target.matches('input, textarea')) {
+                        this.handleCommandModeKeyPress(e);
+                    }
+                });
+
+                // 监听命令输入框事件
+                const commandInput = document.getElementById('command-input');
+                if (commandInput) {
+                    commandInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            this.executeCommand();
+                        } else if (e.key === 'Tab') {
+                            e.preventDefault();
+                            this.handleCommandCompletion();
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            this.navigateCommandHistory(-1);
+                        } else if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            this.navigateCommandHistory(1);
+                        }
+                    });
+                }
+            }
+
+            handleCommandModeKeyPress(e) {
+                const commandKeys = {
+                    ':': '进入命令模式',
+                    'Escape': '退出命令模式'
+                };
+
+                if (commandKeys[e.key]) {
+                    console.log(`⌨️ 命令模式快捷键: ${e.key} (${commandKeys[e.key]})`);
+                    this.recordCommandAction(e.key, commandKeys[e.key]);
+                    
+                    if (e.key === ':') {
+                        this.enterCommandMode();
+                        e.preventDefault();
+                    } else if (e.key === 'Escape') {
+                        this.exitCommandMode();
+                    }
+                }
+            }
+
+            enterCommandMode() {
+                this.commandModeActive = true;
+                console.log('🎯 进入命令模式');
+                
+                // 聚焦到命令输入框
+                const commandInput = document.getElementById('command-input');
+                if (commandInput) {
+                    commandInput.focus();
+                    commandInput.value = ':';
+                }
+                
+                this.recordCommandAction('enter', '进入命令模式');
+            }
+
+            exitCommandMode() {
+                this.commandModeActive = false;
+                console.log('🚪 退出命令模式');
+                
+                // 移除命令输入框焦点
+                const commandInput = document.getElementById('command-input');
+                if (commandInput) {
+                    commandInput.blur();
+                }
+                
+                this.recordCommandAction('exit', '退出命令模式');
+            }
+
+            executeCommand() {
+                const commandInput = document.getElementById('command-input');
+                const commandOutput = document.getElementById('command-output');
+                
+                if (!commandInput || !commandOutput) return;
+                
+                let command = commandInput.value.trim();
+                if (command.startsWith(':')) {
+                    command = command.substring(1);
+                }
+                
+                if (!command) return;
+                
+                console.log(`🚀 执行命令: ${command}`);
+                this.addToCommandHistory(command);
+                
+                const result = this.processCommand(command);
+                this.displayCommandResult(command, result);
+                
+                // 清空输入框
+                commandInput.value = ':';
+            }
+
+            processCommand(command) {
+                const parts = command.split(' ');
+                const cmd = parts[0];
+                const args = parts.slice(1);
+                
+                // 检查内置命令
+                if (this.builtinCommands[cmd]) {
+                    return this.executeBuiltinCommand(cmd, args);
+                }
+                
+                // 检查自定义命令
+                if (this.customCommands[cmd]) {
+                    return this.executeCustomCommand(cmd, args);
+                }
+                
+                // 未知命令
+                return {
+                    success: false,
+                    message: `未知命令: ${cmd}`,
+                    suggestion: this.suggestCommand(cmd)
+                };
+            }
+
+            executeBuiltinCommand(cmd, args) {
+                console.log(`📦 执行内置命令: ${cmd}`, args);
+                
+                switch (cmd) {
+                    case 'open':
+                    case 'tabopen':
+                    case 'winopen':
+                        if (args.length === 0) {
+                            return { success: false, message: '缺少URL参数' };
+                        }
+                        return this.simulateNavigation(cmd, args[0]);
+                    
+                    case 'tabnew':
+                        return { success: true, message: '已创建新标签页' };
+                    
+                    case 'tabclose':
+                        return { success: true, message: '已关闭当前标签页' };
+                    
+                    case 'help':
+                        return this.showHelp(args[0]);
+                    
+                    case 'version':
+                        return { success: true, message: 'rVim 测试版本 1.0.0' };
+                    
+                    case 'set':
+                        return this.handleSetCommand(args);
+                    
+                    case 'command':
+                        return this.createCustomCommand(args);
+                    
+                    case 'map':
+                        return this.createKeyMapping(args);
+                    
+                    case 'alias':
+                        return this.createCommandAlias(args);
+                    
+                    default:
+                        return { success: true, message: `已执行命令: ${cmd}` };
+                }
+            }
+
+            executeCustomCommand(cmd, args) {
+                console.log(`🔧 执行自定义命令: ${cmd}`, args);
+                const customCmd = this.customCommands[cmd];
+                
+                return {
+                    success: true,
+                    message: `执行自定义命令: ${cmd} -> ${customCmd.action}`
+                };
+            }
+
+            simulateNavigation(method, url) {
+                // 确保URL有协议
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                
+                console.log(`🌐 模拟导航: ${method} -> ${url}`);
+                
+                return {
+                    success: true,
+                    message: `${method === 'open' ? '当前标签页' : method === 'tabopen' ? '新标签页' : '新窗口'}打开: ${url}`
+                };
+            }
+
+            showHelp(topic) {
+                if (topic && this.builtinCommands[topic]) {
+                    const cmd = this.builtinCommands[topic];
+                    return {
+                        success: true,
+                        message: `${topic}: ${cmd.description}\n用法: ${cmd.usage}`
+                    };
+                }
+                
+                const helpText = Object.entries(this.builtinCommands)
+                    .map(([name, cmd]) => `${name}: ${cmd.description}`)
+                    .join('\n');
+                
+                return {
+                    success: true,
+                    message: `可用命令:\n${helpText}`
+                };
+            }
+
+            handleSetCommand(args) {
+                if (args.length === 0) {
+                    return { success: false, message: '缺少设置参数' };
+                }
+                
+                const setting = args.join(' ');
+                console.log(`⚙️ 设置选项: ${setting}`);
+                
+                return {
+                    success: true,
+                    message: `已设置: ${setting}`
+                };
+            }
+
+            createCustomCommand(args) {
+                if (args.length < 2) {
+                    return { success: false, message: '用法: :command [name] [action]' };
+                }
+                
+                const name = args[0];
+                const action = args.slice(1).join(' ');
+                
+                this.customCommands[name] = { action };
+                console.log(`🔧 创建自定义命令: ${name} -> ${action}`);
+                
+                return {
+                    success: true,
+                    message: `已创建自定义命令: ${name}`
+                };
+            }
+
+            createKeyMapping(args) {
+                if (args.length < 2) {
+                    return { success: false, message: '用法: :map [key] [action]' };
+                }
+                
+                const key = args[0];
+                const action = args.slice(1).join(' ');
+                
+                console.log(`🗝️ 创建键盘映射: ${key} -> ${action}`);
+                
+                return {
+                    success: true,
+                    message: `已创建键盘映射: ${key} -> ${action}`
+                };
+            }
+
+            createCommandAlias(args) {
+                if (args.length < 2) {
+                    return { success: false, message: '用法: :alias [alias] [command]' };
+                }
+                
+                const alias = args[0];
+                const command = args.slice(1).join(' ');
+                
+                this.customCommands[alias] = { action: command };
+                console.log(`🏷️ 创建命令别名: ${alias} -> ${command}`);
+                
+                return {
+                    success: true,
+                    message: `已创建命令别名: ${alias} -> ${command}`
+                };
+            }
+
+            suggestCommand(cmd) {
+                const allCommands = [...Object.keys(this.builtinCommands), ...Object.keys(this.customCommands)];
+                const suggestions = allCommands.filter(c => c.includes(cmd) || cmd.includes(c));
+                
+                if (suggestions.length > 0) {
+                    return `建议命令: ${suggestions.join(', ')}`;
+                }
+                
+                return '输入 :help 查看可用命令';
+            }
+
+            handleCommandCompletion() {
+                const commandInput = document.getElementById('command-input');
+                if (!commandInput) return;
+                
+                let input = commandInput.value;
+                if (input.startsWith(':')) {
+                    input = input.substring(1);
+                }
+                
+                const allCommands = [...Object.keys(this.builtinCommands), ...Object.keys(this.customCommands)];
+                const matches = allCommands.filter(cmd => cmd.startsWith(input));
+                
+                if (matches.length === 1) {
+                    commandInput.value = ':' + matches[0] + ' ';
+                } else if (matches.length > 1) {
+                    console.log('📝 命令补全建议:', matches);
+                    this.displayCommandResult('tab补全', {
+                        success: true,
+                        message: `补全建议: ${matches.join(', ')}`
+                    });
+                }
+            }
+
+            navigateCommandHistory(direction) {
+                if (this.commandHistory.length === 0) return;
+                
+                if (!this.historyIndex) {
+                    this.historyIndex = this.commandHistory.length;
+                }
+                
+                this.historyIndex += direction;
+                this.historyIndex = Math.max(0, Math.min(this.historyIndex, this.commandHistory.length));
+                
+                const commandInput = document.getElementById('command-input');
+                if (commandInput && this.historyIndex < this.commandHistory.length) {
+                    commandInput.value = ':' + this.commandHistory[this.historyIndex];
+                }
+            }
+
+            addToCommandHistory(command) {
+                this.commandHistory.push(command);
+                this.historyIndex = this.commandHistory.length;
+                
+                // 更新历史记录显示
+                this.updateCommandHistoryDisplay();
+                
+                this.recordCommandAction('execute', command);
+            }
+
+            updateCommandHistoryDisplay() {
+                const historyElement = document.getElementById('command-history-list');
+                if (historyElement) {
+                    const recentHistory = this.commandHistory.slice(-10).reverse();
+                    historyElement.innerHTML = recentHistory.length > 0 
+                        ? recentHistory.map(cmd => `<div>:${cmd}</div>`).join('')
+                        : '暂无命令历史...';
+                }
+            }
+
+            displayCommandResult(command, result) {
+                const commandOutput = document.getElementById('command-output');
+                if (!commandOutput) return;
+                
+                const timestamp = new Date().toLocaleTimeString();
+                const status = result.success ? '✅' : '❌';
+                const output = `[${timestamp}] ${status} :${command}\n${result.message}${result.suggestion ? '\n' + result.suggestion : ''}\n\n`;
+                
+                commandOutput.textContent += output;
+                commandOutput.scrollTop = commandOutput.scrollHeight;
+            }
+
+            clearCommandOutput() {
+                const commandOutput = document.getElementById('command-output');
+                if (commandOutput) {
+                    commandOutput.textContent = '输出已清空...\n';
+                }
+            }
+
+            recordCommandAction(action, details) {
+                if (!this.commandTests.actions) {
+                    this.commandTests.actions = [];
+                }
+
+                this.commandTests.actions.push({
+                    action,
+                    details,
+                    timestamp: Date.now()
+                });
+            }
+
+            startCommandModeTest() {
+                this.currentTest = '命令模式测试';
+                console.log('⌨️ 开始命令模式测试...');
+                
+                if (window.tester) {
+                    window.tester.startTest('命令模式测试');
+                }
+
+                this.updateTestStatus('命令模式', 'testing');
+                
+                console.log(`
+📋 命令模式测试步骤:
+1. 按 : 键进入命令模式
+2. 输入各种内置命令进行测试
+3. 使用 Tab 键测试命令补全
+4. 使用 ↑↓ 键测试命令历史
+5. 按 Esc 键退出命令模式
+
+💡 提示: 可以在命令模拟器中直接测试命令`);
+            }
+
+            startCustomCommandTest() {
+                this.currentTest = '自定义命令测试';
+                console.log('🔧 开始自定义命令测试...');
+                
+                if (window.tester) {
+                    window.tester.startTest('自定义命令测试');
+                }
+
+                this.updateTestStatus('自定义命令', 'testing');
+                
+                console.log(`
+📋 自定义命令测试步骤:
+1. 使用 :command 创建自定义命令
+2. 使用 :map 创建键盘映射
+3. 使用 :alias 创建命令别名
+4. 测试创建的自定义命令是否正常工作
+
+💡 示例命令:
+  :command gh open github.com
+  :map <C-t> :tabnew
+  :alias g google`);
+            }
+
+            updateTestStatus(testName, status) {
+                const statusElements = document.querySelectorAll('.status');
+                statusElements.forEach(el => {
+                    const testItem = el.closest('.test-item');
+                    if (testItem && testItem.querySelector('h3').textContent.includes(testName)) {
+                        el.className = `status ${status}`;
+                        el.textContent = status === 'passed' ? '✅ 通过' : 
+                                       status === 'failed' ? '❌ 失败' : 
+                                       status === 'testing' ? '🔄 测试中' : '⏳ 待测试';
+                    }
+                });
+            }
+
+            getCommandResults() {
+                return {
+                    commandTests: this.commandTests,
+                    customCommands: this.customCommands,
+                    commandHistory: this.commandHistory,
+                    currentTest: this.currentTest,
+                    summary: this.generateSummary()
+                };
+            }
+
+            generateSummary() {
+                return {
+                    totalActions: this.commandTests.actions ? this.commandTests.actions.length : 0,
+                    totalCommands: this.commandHistory.length,
+                    customCommandsCount: Object.keys(this.customCommands).length,
+                    lastActivity: this.commandTests.actions && this.commandTests.actions.length > 0 
+                        ? Math.max(...this.commandTests.actions.map(a => a.timestamp))
+                        : null
+                };
+            }
+
+            updateTestResults() {
+                const resultsElement = document.getElementById('command-test-results');
+                if (resultsElement) {
+                    const results = this.getCommandResults();
+                    resultsElement.innerHTML = `
+                        <strong>测试统计:</strong><br>
+                        • 命令操作: ${results.summary.totalActions} 次<br>
+                        • 执行命令: ${results.summary.totalCommands} 个<br>
+                        • 自定义命令: ${results.summary.customCommandsCount} 个<br>
+                        • 最后活动: ${results.summary.lastActivity ? new Date(results.summary.lastActivity).toLocaleTimeString() : '无'}<br>
+                        • 当前测试: ${this.currentTest || '无'}
+                    `;
+                }
+            }
+        }
+
+        // 创建命令模式测试器实例
+        window.commandModeTester = new CommandModeTester();
+
+        // 测试控制函数
+        function startCommandModeTest() {
+            window.commandModeTester.startCommandModeTest();
+        }
+
+        function startCustomCommandTest() {
+            window.commandModeTester.startCustomCommandTest();
+        }
+
+        function executeCommand() {
+            window.commandModeTester.executeCommand();
+        }
+
+        function clearCommandOutput() {
+            window.commandModeTester.clearCommandOutput();
+        }
+
+        function checkCommandResults() {
+            const results = window.commandModeTester.getCommandResults();
+            console.log('📊 命令模式测试结果:', results);
+            return results;
+        }
+
+        function exportCommandResults() {
+            const results = checkCommandResults();
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `command-mode-test-results-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.log('💾 命令模式测试结果已导出');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const extensionLoaded = window.tester && window.tester.checkExtensionStatus();
+                const statusElement = document.getElementById('extension-status');
+                if (statusElement) {
+                    if (extensionLoaded) {
+                        statusElement.innerHTML = '🟢 扩展已加载，可以开始命令模式测试';
+                        statusElement.className = 'status passed';
+                    } else {
+                        statusElement.innerHTML = '🔴 扩展未加载，请检查安装状态';
+                        statusElement.className = 'status failed';
+                    }
+                }
+
+                console.log('🎯 命令模式测试页面已就绪');
+                console.log('💡 使用以下命令进行测试:');
+                console.log('  - startCommandModeTest() - 开始命令模式测试');
+                console.log('  - startCustomCommandTest() - 开始自定义命令测试');
+                console.log('  - checkCommandResults() - 查看测试结果');
+                console.log('  - exportCommandResults() - 导出测试结果');
+                
+                // 定期更新测试结果显示
+                setInterval(() => {
+                    window.commandModeTester.updateTestResults();
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

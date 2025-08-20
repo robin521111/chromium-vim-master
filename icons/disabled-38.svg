@@ -1,0 +1,21 @@
+<svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+  <!-- 半透明背景圆形 -->
+  <circle cx="19" cy="19" r="17" fill="#666666" fill-opacity="0.3" stroke="#999999" stroke-width="2" stroke-opacity="0.5"/>
+  
+  <!-- rVim logo 主体 - 半透明效果 -->
+  <g opacity="0.4">
+    <!-- 字母 r -->
+    <path d="M8 10 L8 26 M8 10 L14 10 Q17 10 17 14 Q17 18 14 18 L8 18 M14 18 L17 26" 
+          stroke="#333333" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- 字母 V -->
+    <path d="M20 10 L24 26 M28 10 L24 26" 
+          stroke="#333333" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- 禁用状态指示器 - 对角线 -->
+  <line x1="6" y1="6" x2="32" y2="32" stroke="#cc0000" stroke-width="3" stroke-opacity="0.8" stroke-linecap="round"/>
+  
+  <!-- 禁用状态文字提示 -->
+  <text x="19" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="#999999" opacity="0.7">DISABLED</text>
+</svg>

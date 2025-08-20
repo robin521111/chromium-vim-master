@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim Features & Configuration</title>
+    <link rel="stylesheet" href="features.css">
+    <link rel="stylesheet" href="../content_scripts/main.css">
+    <script src="../content_scripts/utils.js"></script>
+    <script src="features.js"></script>
+</head>
+<body>
+    <div id="container">
+        <!-- Header -->
+        <header id="header">
+            <div class="header-content">
+                <h1 id="main-title">rVim Features & Configuration</h1>
+                <div class="language-switcher">
+                    <button id="lang-en" class="lang-btn active" data-lang="en">English</button>
+                    <button id="lang-zh" class="lang-btn" data-lang="zh">中文</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav id="navigation">
+            <ul class="nav-tabs">
+                <li><a href="#features" class="nav-link active" data-section="features">Features</a></li>
+                <li><a href="#appearance" class="nav-link" data-section="appearance">Appearance</a></li>
+                <li><a href="#keyboard" class="nav-link" data-section="keyboard">Keyboard</a></li>
+                <li><a href="#advanced" class="nav-link" data-section="advanced">Advanced</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Features Section -->
+            <section id="features" class="content-section active">
+                <h2 class="section-title" data-i18n="features.title">Core Features</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔗</div>
+                        <h3 data-i18n="features.hints.title">Link Hints</h3>
+                        <p data-i18n="features.hints.desc">Press 'f' to show numbered hints for all clickable elements. Press 'F' to open links in new tabs.</p>
+                        <div class="feature-demo">
+                            <kbd>f</kbd> <span data-i18n="features.hints.current">Current tab</span><br>
+                            <kbd>F</kbd> <span data-i18n="features.hints.new">New tab</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">⌨️</div>
+                        <h3 data-i18n="features.navigation.title">Vim Navigation</h3>
+                        <p data-i18n="features.navigation.desc">Navigate pages using familiar Vim keybindings for efficient browsing.</p>
+                        <div class="feature-demo">
+                            <kbd>j/k</kbd> <span data-i18n="features.navigation.scroll">Scroll down/up</span><br>
+                            <kbd>gg/G</kbd> <span data-i18n="features.navigation.top">Top/Bottom</span><br>
+                            <kbd>H/L</kbd> <span data-i18n="features.navigation.history">Back/Forward</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3 data-i18n="features.search.title">Search & Find</h3>
+                        <p data-i18n="features.search.desc">Powerful search capabilities with regex support and quick navigation.</p>
+                        <div class="feature-demo">
+                            <kbd>/</kbd> <span data-i18n="features.search.page">Search in page</span><br>
+                            <kbd>o</kbd> <span data-i18n="features.search.omni">Omnibar search</span><br>
+                            <kbd>b</kbd> <span data-i18n="features.search.bookmarks">Search bookmarks</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📑</div>
+                        <h3 data-i18n="features.tabs.title">Tab Management</h3>
+                        <p data-i18n="features.tabs.desc">Efficiently manage browser tabs with keyboard shortcuts.</p>
+                        <div class="feature-demo">
+                            <kbd>t</kbd> <span data-i18n="features.tabs.new">New tab</span><br>
+                            <kbd>x</kbd> <span data-i18n="features.tabs.close">Close tab</span><br>
+                            <kbd>J/K</kbd> <span data-i18n="features.tabs.switch">Switch tabs</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">✂️</div>
+                        <h3 data-i18n="features.visual.title">Visual Mode</h3>
+                        <p data-i18n="features.visual.desc">Select and copy text using visual selection mode.</p>
+                        <div class="feature-demo">
+                            <kbd>v</kbd> <span data-i18n="features.visual.char">Character mode</span><br>
+                            <kbd>V</kbd> <span data-i18n="features.visual.line">Line mode</span><br>
+                            <kbd>y</kbd> <span data-i18n="features.visual.copy">Copy selection</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">⚙️</div>
+                        <h3 data-i18n="features.commands.title">Command Mode</h3>
+                        <p data-i18n="features.commands.desc">Execute powerful commands through the command bar.</p>
+                        <div class="feature-demo">
+                            <kbd>:</kbd> <span data-i18n="features.commands.open">Open command bar</span><br>
+                            <code>:open</code> <span data-i18n="features.commands.url">Open URL</span><br>
+                            <code>:set</code> <span data-i18n="features.commands.settings">Change settings</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appearance Section -->
+            <section id="appearance" class="content-section">
+                <h2 class="section-title" data-i18n="appearance.title">Appearance Settings</h2>
+                
+                <div class="settings-grid">
+                    <!-- Link Hints Styling -->
+                    <div class="setting-group">
+                        <h3 data-i18n="appearance.hints.title">Link Hints Style</h3>
+                        
+                        <div class="setting-item">
+                            <label for="hint-bg-color" data-i18n="appearance.hints.bg_color">Background Color:</label>
+                            <input type="color" id="hint-bg-color" value="#90EE90" title="Select background color for link hints">
+                            <span class="color-preview" id="hint-bg-preview"></span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="hint-border-color" data-i18n="appearance.hints.border_color">Border Color:</label>
+                            <input type="color" id="hint-border-color" value="#32CD32" title="Select border color for link hints">
+                            <span class="color-preview" id="hint-border-preview"></span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="hint-text-color" data-i18n="appearance.hints.text_color">Text Color:</label>
+                            <input type="color" id="hint-text-color" value="#000000" title="Select text color for link hints">
+                            <span class="color-preview" id="hint-text-preview"></span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="hint-font-size" data-i18n="appearance.hints.font_size">Font Size:</label>
+                            <input type="range" id="hint-font-size" min="8" max="20" value="11" title="Adjust font size for link hints">
+                            <span class="range-value" id="hint-font-size-value">11px</span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="hint-border-radius" data-i18n="appearance.hints.border_radius">Border Radius:</label>
+                            <input type="range" id="hint-border-radius" min="0" max="10" value="3" title="Adjust border radius for link hints">
+                            <span class="range-value" id="hint-border-radius-value">3px</span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="hint-opacity" data-i18n="appearance.hints.opacity">Opacity:</label>
+                            <input type="range" id="hint-opacity" min="0.5" max="1" step="0.1" value="0.9" title="Adjust opacity for link hints">
+                            <span class="range-value" id="hint-opacity-value">0.9</span>
+                        </div>
+                        
+                        <div class="preview-area">
+                            <h4 data-i18n="appearance.hints.preview">Preview:</h4>
+                            <div class="hint-preview" id="hint-preview">42</div>
+                        </div>
+                    </div>
+
+                    <!-- Command Bar Styling -->
+                    <div class="setting-group">
+                        <h3 data-i18n="appearance.command.title">Command Bar Style</h3>
+                        
+                        <div class="setting-item">
+                            <label for="cmd-bg-color" data-i18n="appearance.command.bg_color">Background Color:</label>
+                            <input type="color" id="cmd-bg-color" value="#1e1e1e" title="Select background color for command bar">
+                            <span class="color-preview" id="cmd-bg-preview"></span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="cmd-text-color" data-i18n="appearance.command.text_color">Text Color:</label>
+                            <input type="color" id="cmd-text-color" value="#ffffff" title="Select text color for command bar">
+                            <span class="color-preview" id="cmd-text-preview"></span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="cmd-font-family" data-i18n="appearance.command.font_family">Font Family:</label>
+                            <select id="cmd-font-family" title="Select font family for command bar">
+                                <option value="monospace">Monospace</option>
+                                <option value="'Courier New', monospace">Courier New</option>
+                                <option value="'Monaco', monospace">Monaco</option>
+                                <option value="'Consolas', monospace">Consolas</option>
+                            </select>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="cmd-font-size" data-i18n="appearance.command.font_size">Font Size:</label>
+                            <input type="range" id="cmd-font-size" min="10" max="24" value="14" title="Adjust font size for command bar">
+                            <span class="range-value" id="cmd-font-size-value">14px</span>
+                        </div>
+                    </div>
+
+                    <!-- Theme Settings -->
+                    <div class="setting-group">
+                        <h3 data-i18n="appearance.theme.title">Theme Settings</h3>
+                        
+                        <div class="setting-item">
+                            <label for="theme-mode" data-i18n="appearance.theme.mode">Theme Mode:</label>
+                            <select id="theme-mode" title="Select theme mode">
+                                <option value="auto" data-i18n="appearance.theme.auto">Auto</option>
+                                <option value="light" data-i18n="appearance.theme.light">Light</option>
+                                <option value="dark" data-i18n="appearance.theme.dark">Dark</option>
+                            </select>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="accent-color" data-i18n="appearance.theme.accent">Accent Color:</label>
+                            <input type="color" id="accent-color" value="#007acc" title="Select accent color for theme">
+                            <span class="color-preview" id="accent-preview"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Keyboard Section -->
+            <section id="keyboard" class="content-section">
+                <h2 class="section-title" data-i18n="keyboard.title">Keyboard Settings</h2>
+                
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <h3 data-i18n="keyboard.general.title">General Settings</h3>
+                        
+                        <div class="setting-item">
+                            <label for="scroll-speed" data-i18n="keyboard.general.scroll_speed">Scroll Speed:</label>
+                            <input type="range" id="scroll-speed" min="1" max="10" value="3" title="Adjust scrolling speed">
+                            <span class="range-value" id="scroll-speed-value">3</span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="smooth-scroll" data-i18n="keyboard.general.smooth_scroll">Smooth Scrolling:</label>
+                            <input type="checkbox" id="smooth-scroll" checked title="Enable smooth scrolling">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="case-sensitive" data-i18n="keyboard.general.case_sensitive">Case Sensitive Search:</label>
+                            <input type="checkbox" id="case-sensitive" title="Enable case sensitive search">
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3 data-i18n="keyboard.hints.title">Link Hints Settings</h3>
+                        
+                        <div class="setting-item">
+                            <label for="hint-characters" data-i18n="keyboard.hints.characters">Hint Characters:</label>
+                            <input type="text" id="hint-characters" value="asdfghjkl" placeholder="asdfghjkl" title="Characters used for link hints">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="hint-delay" data-i18n="keyboard.hints.delay">Hint Delay (ms):</label>
+                            <input type="range" id="hint-delay" min="0" max="1000" step="50" value="100" title="Delay before showing hints">
+                            <span class="range-value" id="hint-delay-value">100ms</span>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="auto-follow" data-i18n="keyboard.hints.auto_follow">Auto Follow Single Hint:</label>
+                            <input type="checkbox" id="auto-follow" checked title="Automatically follow when only one hint is visible">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advanced Section -->
+            <section id="advanced" class="content-section">
+                <h2 class="section-title" data-i18n="advanced.title">Advanced Settings</h2>
+                
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <h3 data-i18n="advanced.performance.title">Performance</h3>
+                        
+                        <div class="setting-item">
+                            <label for="enable-animations" data-i18n="advanced.performance.animation">Enable Animations:</label>
+                            <input type="checkbox" id="enable-animations" checked title="Enable UI animations">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="prefetch-links" data-i18n="advanced.performance.prefetch">Prefetch Links:</label>
+                            <input type="checkbox" id="prefetch-links" title="Prefetch links for faster loading">
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3 data-i18n="advanced.security.title">Security</h3>
+                        
+                        <div class="setting-item">
+                            <label for="block-ads" data-i18n="advanced.security.block_ads">Block Ads:</label>
+                            <input type="checkbox" id="block-ads" title="Block advertisements">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="safe-mode" data-i18n="advanced.security.safe_mode">Safe Mode:</label>
+                            <input type="checkbox" id="safe-mode" checked title="Enable safe mode for security">
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3 data-i18n="advanced.export.title">Import/Export</h3>
+                        
+                        <div class="setting-item">
+                            <button id="export-settings" class="action-btn" data-i18n="advanced.export.export">Export Settings</button>
+                            <button id="import-settings" class="action-btn" data-i18n="advanced.export.import">Import Settings</button>
+                            <input type="file" id="import-file" accept=".json" style="display: none;">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <button id="reset-all" class="action-btn danger" data-i18n="advanced.export.reset">Reset All Settings</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer id="footer">
+            <div class="footer-content">
+                <div class="save-actions">
+                    <button id="save-settings" class="btn primary" data-i18n="common.save">Save Settings</button>
+                    <button id="cancel-settings" class="btn secondary" data-i18n="common.cancel">Cancel</button>
+                    <button id="apply-settings" class="btn" data-i18n="common.apply">Apply</button>
+                </div>
+                <div class="footer-info">
+                    <span data-i18n="common.version">Version</span> <span id="version-info">1.0.0</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background with rounded corners -->
+  <rect width="38" height="38" rx="6" fill="#1a252f"/>
+  
+  <!-- Main vim text - larger for 38px size -->
+  <text x="19" y="26" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#00ff88" text-anchor="middle">vim</text>
+  
+  <!-- Chrome indicator - proportionally sized -->
+  <circle cx="30" cy="8" r="3.5" fill="#4fc3f7"/>
+  
+  <!-- Subtle highlight border for definition -->
+  <rect width="38" height="38" rx="6" fill="none" stroke="#34495e" stroke-width="1"/>
+</svg>

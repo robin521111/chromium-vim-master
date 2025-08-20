@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F键链接提示测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-links {
+            margin: 20px 0;
+        }
+        .test-links a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: #007cba;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .test-links a:hover {
+            background-color: #005a87;
+        }
+        .instructions {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-left: 4px solid #007cba;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔗 F键链接提示功能测试</h1>
+        
+        <div class="instructions">
+            <h3>📋 测试说明</h3>
+            <ol>
+                <li><strong>确保rVim扩展已启用</strong> - 检查浏览器工具栏中的rVim图标</li>
+                <li><strong>按下F键</strong> - 应该看到页面上所有链接都显示黄色提示框</li>
+                <li><strong>输入提示字母</strong> - 可以通过输入字母来选择链接</li>
+                <li><strong>按Esc键</strong> - 退出链接提示模式</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 测试链接区域</h2>
+            <p>按下 <kbd>F</kbd> 键，应该看到下面每个链接都显示一个黄色的提示框：</p>
+            
+            <div class="test-links">
+                <a href="#section1">测试链接 A</a>
+                <a href="#section2">测试链接 B</a>
+                <a href="#section3">测试链接 C</a>
+                <a href="https://www.google.com" target="_blank" rel="noopener">Google</a>
+                <a href="https://www.github.com" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://www.stackoverflow.com" target="_blank" rel="noopener">Stack Overflow</a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 更多测试链接</h2>
+            <p>这里有更多链接用于测试：</p>
+            <ul>
+                <li><a href="#test1">内部链接 1</a></li>
+                <li><a href="#test2">内部链接 2</a></li>
+                <li><a href="#test3">内部链接 3</a></li>
+                <li><a href="mailto:test@example.com">邮件链接</a></li>
+                <li><a href="tel:+1234567890">电话链接</a></li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 测试结果检查</h2>
+            <div id="test-results">
+                <div class="info">
+                    <strong>预期行为：</strong>
+                    <ul>
+                        <li>按F键后，每个链接旁边应该显示黄色提示框</li>
+                        <li>提示框包含字母或数字标识</li>
+                        <li>输入对应字母可以激活链接</li>
+                        <li>按Esc可以退出提示模式</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🛠️ 故障排除</h2>
+            <div class="info">
+                <strong>如果F键不工作，请检查：</strong>
+                <ul>
+                    <li>rVim扩展是否已启用</li>
+                    <li>当前页面是否在扩展的黑名单中</li>
+                    <li>浏览器控制台是否有错误信息</li>
+                    <li>是否有其他扩展冲突</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 锚点目标 -->
+        <div id="section1" style="margin-top: 100px;">
+            <h3>Section 1</h3>
+            <p>这是测试链接A的目标位置。</p>
+        </div>
+
+        <div id="section2" style="margin-top: 100px;">
+            <h3>Section 2</h3>
+            <p>这是测试链接B的目标位置。</p>
+        </div>
+
+        <div id="section3" style="margin-top: 100px;">
+            <h3>Section 3</h3>
+            <p>这是测试链接C的目标位置。</p>
+        </div>
+
+        <div id="test1" style="margin-top: 100px;">
+            <h3>Test 1</h3>
+            <p>这是内部链接1的目标位置。</p>
+        </div>
+
+        <div id="test2" style="margin-top: 100px;">
+            <h3>Test 2</h3>
+            <p>这是内部链接2的目标位置。</p>
+        </div>
+
+        <div id="test3" style="margin-top: 100px;">
+            <h3>Test 3</h3>
+            <p>这是内部链接3的目标位置。</p>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('F键测试页面已加载');
+            
+            // 检查rVim是否已加载
+            setTimeout(function() {
+                if (window.rVim || window.cVim) {
+                    console.log('✅ rVim扩展已检测到');
+                } else {
+                    console.log('❌ 未检测到rVim扩展');
+                }
+            }, 1000);
+            
+            // 为内部链接添加平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+
+        // 监听键盘事件来检测F键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                console.log('检测到F键按下，等待链接提示显示...');
+                
+                // 检查是否有链接提示容器出现
+                setTimeout(function() {
+                    const hintContainer = document.getElementById('rVim-link-container');
+                    if (hintContainer) {
+                        console.log('✅ 链接提示容器已创建');
+                        const hints = hintContainer.querySelectorAll('.rVim-link-hint');
+                        console.log('✅ 找到 ' + hints.length + ' 个链接提示');
+                    } else {
+                        console.log('❌ 未找到链接提示容器');
+                    }
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

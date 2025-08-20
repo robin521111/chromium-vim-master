@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 搜索功能专项测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 25px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .test-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .test-section h2::before {
+            content: '🔍';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        .shortcut {
+            background: #34495e;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.pending { background: #f39c12; color: white; }
+        .status.testing { background: #3498db; color: white; }
+        .status.passed { background: #27ae60; color: white; }
+        .status.failed { background: #e74c3c; color: white; }
+        .search-content {
+            background: #fff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #ecf0f1;
+        }
+        .highlight-demo {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .instructions {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        .regex-examples {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .text-sample {
+            columns: 2;
+            column-gap: 30px;
+            text-align: justify;
+            margin: 20px 0;
+        }
+        .control-panel {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 rVim 搜索功能专项测试</h1>
+            <p>全面测试页面内搜索、正则表达式、高亮显示等功能</p>
+            <div id="extension-status" class="status pending">🔄 检查扩展状态中...</div>
+        </div>
+        
+        <div class="content">
+            <div class="instructions">
+                <h3>📋 搜索功能测试说明</h3>
+                <p>本页面专门用于测试 rVim 的搜索功能。请按照以下步骤进行：</p>
+                <ol>
+                    <li>确保 rVim 扩展已正确安装并启用</li>
+                    <li>使用 <span class="shortcut">/</span> 键开始搜索</li>
+                    <li>输入搜索关键词并按回车</li>
+                    <li>使用 <span class="shortcut">n</span> 和 <span class="shortcut">N</span> 在结果间导航</li>
+                    <li>测试不同的搜索模式和选项</li>
+                </ol>
+            </div>
+
+            <div class="control-panel">
+                <h3>🎮 搜索测试控制面板</h3>
+                <p>
+                    <button class="btn-primary" onclick="startSearchTest('基础搜索')">🔍 开始基础搜索测试</button>
+                    <button class="btn-warning" onclick="startSearchTest('正则表达式搜索')">📝 开始正则表达式测试</button>
+                    <button class="btn-success" onclick="checkSearchResults()">📊 查看搜索结果</button>
+                    <button class="btn-danger" onclick="exportSearchTestResults()">💾 导出测试结果</button>
+                </p>
+                <p><strong>提示：</strong> 打开浏览器控制台查看详细的搜索测试日志</p>
+            </div>
+
+            <div class="test-section">
+                <h2>基础搜索功能测试</h2>
+                
+                <div class="test-item">
+                    <h3>搜索模式激活 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">/</span> 键激活搜索模式</p>
+                    <p><strong>预期结果：</strong> 应该显示搜索输入框或搜索提示</p>
+                    <p><strong>测试关键词：</strong> "测试"、"search"、"功能"</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>搜索高亮显示 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 搜索 "测试" 关键词</p>
+                    <p><strong>预期结果：</strong> 页面中所有 "测试" 文字应该被高亮显示</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>搜索结果导航 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 搜索后使用 <span class="shortcut">n</span> (下一个) 和 <span class="shortcut">N</span> (上一个)</p>
+                    <p><strong>预期结果：</strong> 应该能够在不同的搜索结果之间跳转</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>大小写敏感性测试</h2>
+                
+                <div class="test-item">
+                    <h3>大小写不敏感搜索 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 搜索 "TEST" (大写)</p>
+                    <p><strong>预期结果：</strong> 应该匹配 "test"、"Test"、"TEST" 等不同大小写形式</p>
+                </div>
+                
+                <div class="search-content">
+                    <h4>大小写测试样本文本：</h4>
+                    <p>这里包含各种大小写的 <span class="highlight-demo">test</span> 单词：</p>
+                    <ul>
+                        <li>小写：test, testing, tester</li>
+                        <li>首字母大写：Test, Testing, Tester</li>
+                        <li>全大写：TEST, TESTING, TESTER</li>
+                        <li>混合大小写：tEsT, TeStInG, tEsTeR</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>正则表达式搜索测试</h2>
+                
+                <div class="warning">
+                    <strong>⚠️ 注意：</strong> 正则表达式功能需要在 rVim 设置中启用。如果不支持，这些测试可能会失败。
+                </div>
+                
+                <div class="test-item">
+                    <h3>简单正则表达式 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 搜索正则表达式 <span class="shortcut">\d+</span> (匹配数字)</p>
+                    <p><strong>预期结果：</strong> 应该高亮显示页面中的所有数字</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>复杂正则表达式 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 搜索 <span class="shortcut">[a-zA-Z]+@[a-zA-Z]+\.[a-zA-Z]+</span> (匹配邮箱)</p>
+                    <p><strong>预期结果：</strong> 应该高亮显示邮箱地址</p>
+                </div>
+                
+                <div class="regex-examples">
+                    <h4>正则表达式测试样本：</h4>
+                    <p>数字测试：123, 456, 789, 2024, 3.14, 99.99</p>
+                    <p>邮箱测试：user@example.com, test@gmail.com, admin@company.org</p>
+                    <p>电话测试：(123) 456-7890, 555-1234, +1-800-555-0199</p>
+                    <p>URL测试：https://www.google.com, http://github.com, ftp://files.example.com</p>
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h2>搜索性能和边界测试</h2>
+                
+                <div class="test-item">
+                    <h3>长文档搜索 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 在下方长文档中搜索 "性能"</p>
+                    <p><strong>预期结果：</strong> 搜索应该快速完成并正确高亮所有匹配项</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>特殊字符搜索 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 搜索特殊字符如 "@"、"#"、"$"、"%"</p>
+                    <p><strong>预期结果：</strong> 应该能够正确搜索和高亮特殊字符</p>
+                </div>
+                
+                <div class="test-item">
+                    <h3>空搜索和清除 <span class="status pending">待测试</span></h3>
+                    <p><strong>测试步骤：</strong> 按 <span class="shortcut">Esc</span> 或清空搜索</p>
+                    <p><strong>预期结果：</strong> 所有高亮应该被清除，搜索模式退出</p>
+                </div>
+            </div>
+
+            <div class="search-content">
+                <h3>📄 长文档搜索测试内容</h3>
+                <div class="text-sample">
+                    <p>rVim 是一个功能强大的 Chrome 浏览器扩展，它为网页浏览带来了 Vim 风格的键盘导航体验。这个扩展的核心功能之一就是高效的页面内搜索功能，它不仅支持基本的文本搜索，还提供了正则表达式搜索、大小写敏感控制等高级特性。</p>
+                    
+                    <p>搜索功能的<span class="highlight-demo">性能</span>优化是 rVim 开发团队的重点关注领域。通过使用高效的算法和优化的数据结构，rVim 能够在包含大量文本的网页中快速定位搜索结果。无论是搜索单个单词、短语，还是复杂的正则表达式模式，rVim 都能提供流畅的搜索体验。</p>
+                    
+                    <p>在测试搜索功能时，我们需要验证以下几个关键方面：首先是搜索的准确性，确保所有匹配的文本都能被正确识别和高亮显示；其次是搜索的<span class="highlight-demo">性能</span>，即使在长文档中也能快速响应；第三是搜索结果的导航功能，用户应该能够轻松地在不同的匹配结果之间跳转。</p>
+                    
+                    <p>特殊字符的处理也是搜索功能测试的重要部分。rVim 需要能够正确处理各种特殊字符，包括但不限于：@ # $ % ^ & * ( ) - _ + = [ ] { } | \ : ; " ' < > , . ? / ~ `。这些字符在不同的上下文中可能有特殊含义，搜索功能必须能够准确识别和匹配它们。</p>
+                    
+                    <p>正则表达式搜索是 rVim 的高级功能之一，它允许用户使用强大的模式匹配来查找复杂的文本结构。例如，用户可以搜索所有的邮箱地址、电话号码、URL 链接等。这种功能对于开发者和高级用户来说特别有用，因为它大大提高了信息检索的效率和精确度。</p>
+                    
+                    <p>搜索结果的高亮显示是用户体验的重要组成部分。rVim 使用醒目的颜色和样式来标记匹配的文本，确保用户能够快速识别搜索结果。同时，当前选中的搜索结果会使用不同的高亮样式，帮助用户了解当前的位置。</p>
+                    
+                    <p>在进行<span class="highlight-demo">性能</span>测试时，我们会使用包含数千个单词的长文档来验证搜索功能的响应速度。即使在这样的文档中，rVim 的搜索功能也应该能够在毫秒级别内完成搜索并显示结果。这种快速响应对于提供良好的用户体验至关重要。</p>
+                    
+                    <p>搜索功能的可用性测试也很重要。用户界面应该直观易用，搜索快捷键应该符合 Vim 用户的习惯。搜索模式的进入和退出应该流畅自然，不会干扰用户的正常浏览体验。</p>
+                    
+                    <p>最后，搜索功能的兼容性测试确保它能够在各种不同的网页环境中正常工作。无论是静态 HTML 页面、动态生成的内容，还是复杂的单页应用程序，rVim 的搜索功能都应该能够可靠地工作。</p>
+                    
+                    <p>通过全面的测试，我们可以确保 rVim 的搜索功能不仅功能完整，而且<span class="highlight-demo">性能</span>优异，为用户提供最佳的搜索体验。这种严格的测试方法是确保软件质量的关键，也是 rVim 项目成功的重要因素。</p>
+                </div>
+            </div>
+
+            <div class="search-content">
+                <h3>🎯 特殊字符测试区域</h3>
+                <p>特殊字符样本：@ # $ % ^ & * ( ) - _ + = [ ] { } | \ : ; " ' < > , . ? / ~ `</p>
+                <p>邮箱地址：admin@example.com, user@test.org, support@company.net</p>
+                <p>价格信息：$19.99, €25.50, ¥100, £15.75</p>
+                <p>百分比：50%, 75%, 100%, 25.5%</p>
+                <p>编程符号：function() { return true; }, array[0], object.property</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载测试执行脚本 -->
+    <script src="test_execution_script.js"></script>
+    
+    <script>
+        // 搜索功能专项测试器
+        class SearchFunctionTester {
+            constructor() {
+                this.searchTests = {};
+                this.currentSearchTest = null;
+                this.init();
+            }
+
+            init() {
+                console.log('🔍 搜索功能测试器初始化中...');
+                this.checkSearchCapabilities();
+                this.setupSearchEventListeners();
+            }
+
+            checkSearchCapabilities() {
+                const capabilities = {
+                    'Find对象': window.Find,
+                    '搜索设置': window.settings && window.settings.search,
+                    'HUD显示': window.HUD,
+                    '高亮功能': window.Find && window.Find.highlight
+                };
+
+                console.log('🔍 搜索功能检查结果:');
+                Object.entries(capabilities).forEach(([name, exists]) => {
+                    const status = exists ? '✅' : '❌';
+                    console.log(`${status} ${name}: ${exists ? '可用' : '不可用'}`);
+                });
+
+                return Object.values(capabilities).some(Boolean);
+            }
+
+            setupSearchEventListeners() {
+                // 监听搜索相关的键盘事件
+                document.addEventListener('keydown', (e) => {
+                    if (!e.target.matches('input, textarea')) {
+                        this.handleSearchKeyPress(e);
+                    }
+                });
+
+                // 监听搜索高亮变化
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                            this.detectSearchHighlights();
+                        }
+                    });
+                });
+
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['class', 'style']
+                });
+            }
+
+            handleSearchKeyPress(e) {
+                const searchKeys = {
+                    '/': '开始搜索',
+                    'n': '下一个搜索结果',
+                    'N': '上一个搜索结果',
+                    'Escape': '退出搜索模式'
+                };
+
+                if (searchKeys[e.key]) {
+                    console.log(`🔍 搜索快捷键: ${e.key} (${searchKeys[e.key]})`);
+                    this.recordSearchAction(e.key, searchKeys[e.key]);
+                }
+            }
+
+            detectSearchHighlights() {
+                // 检测页面中的搜索高亮元素
+                const highlightSelectors = [
+                    '.highlight',
+                    '.search-highlight', 
+                    '.find-highlight',
+                    '[style*="background"]',
+                    '.cVim-search-highlight'
+                ];
+
+                let highlightCount = 0;
+                highlightSelectors.forEach(selector => {
+                    const elements = document.querySelectorAll(selector);
+                    highlightCount += elements.length;
+                });
+
+                if (highlightCount > 0) {
+                    console.log(`🎯 检测到 ${highlightCount} 个搜索高亮元素`);
+                    this.recordSearchHighlight(highlightCount);
+                }
+            }
+
+            recordSearchAction(key, action) {
+                if (!this.searchTests.actions) {
+                    this.searchTests.actions = [];
+                }
+
+                this.searchTests.actions.push({
+                    key,
+                    action,
+                    timestamp: Date.now()
+                });
+            }
+
+            recordSearchHighlight(count) {
+                if (!this.searchTests.highlights) {
+                    this.searchTests.highlights = [];
+                }
+
+                this.searchTests.highlights.push({
+                    count,
+                    timestamp: Date.now()
+                });
+            }
+
+            startSearchTest(testName) {
+                this.currentSearchTest = testName;
+                console.log(`🧪 开始搜索测试: ${testName}`);
+                
+                if (window.tester) {
+                    window.tester.startTest(`搜索功能-${testName}`);
+                }
+
+                // 更新UI状态
+                this.updateTestStatus(testName, 'testing');
+            }
+
+            endSearchTest(testName, status, notes = []) {
+                console.log(`✅ 搜索测试完成: ${testName} (${status})`);
+                
+                if (window.tester) {
+                    window.tester.endTest(`搜索功能-${testName}`, status, notes);
+                }
+
+                this.updateTestStatus(testName, status);
+                this.currentSearchTest = null;
+            }
+
+            updateTestStatus(testName, status) {
+                const statusElements = document.querySelectorAll('.status');
+                statusElements.forEach(el => {
+                    const testItem = el.closest('.test-item');
+                    if (testItem && testItem.querySelector('h3').textContent.includes(testName)) {
+                        el.className = `status ${status}`;
+                        el.textContent = status === 'passed' ? '✅ 通过' : 
+                                       status === 'failed' ? '❌ 失败' : 
+                                       status === 'testing' ? '🔄 测试中' : '⏳ 待测试';
+                    }
+                });
+            }
+
+            getSearchTestResults() {
+                return {
+                    searchTests: this.searchTests,
+                    currentTest: this.currentSearchTest,
+                    summary: this.generateSearchSummary()
+                };
+            }
+
+            generateSearchSummary() {
+                return {
+                    totalActions: this.searchTests.actions ? this.searchTests.actions.length : 0,
+                    totalHighlights: this.searchTests.highlights ? this.searchTests.highlights.length : 0,
+                    lastActivity: Math.max(
+                        ...(this.searchTests.actions || []).map(a => a.timestamp),
+                        ...(this.searchTests.highlights || []).map(h => h.timestamp)
+                    )
+                };
+            }
+        }
+
+        // 创建搜索测试器实例
+        window.searchTester = new SearchFunctionTester();
+
+        // 测试控制函数
+        function startSearchTest(testName) {
+            window.searchTester.startSearchTest(testName);
+        }
+
+        function checkSearchResults() {
+            const results = window.searchTester.getSearchTestResults();
+            console.log('📊 搜索测试结果:', results);
+            return results;
+        }
+
+        function exportSearchTestResults() {
+            const results = checkSearchResults();
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `search-test-results-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            console.log('💾 搜索测试结果已导出');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查扩展状态
+            setTimeout(() => {
+                const extensionLoaded = window.tester && window.tester.checkExtensionStatus();
+                const statusElement = document.getElementById('extension-status');
+                if (statusElement) {
+                    if (extensionLoaded) {
+                        statusElement.innerHTML = '🟢 扩展已加载，可以开始搜索测试';
+                        statusElement.className = 'status passed';
+                    } else {
+                        statusElement.innerHTML = '🔴 扩展未加载，请检查安装状态';
+                        statusElement.className = 'status failed';
+                    }
+                }
+
+                console.log('🎯 搜索功能测试页面已就绪');
+                console.log('💡 使用以下命令进行测试:');
+                console.log('  - startSearchTest("测试名") - 开始特定搜索测试');
+                console.log('  - checkSearchResults() - 查看搜索测试结果');
+                console.log('  - exportSearchTestResults() - 导出搜索测试结果');
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
