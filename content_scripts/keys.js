@@ -618,12 +618,36 @@ if (HAS_EVENT_KEY_SUPPORT) {
 }
 
 var KeyHandler = {
+  // 性能监控
+  _performanceStats: {
+    totalEvents: 0,
+    slowEvents: 0,
+    averageTime: 0,
+    maxTime: 0
+  },
+  
+  // 响应时间优化缓存
+  _eventCache: new Map(),
+  _lastEventTime: 0,
+  
   down: function(key, event) {
+    // 性能监控开始
+    var startTime = performance.now();
+    var eventKey = key + '_' + event.which + '_' + event.shiftKey + '_' + event.ctrlKey;
+    
+    // 防抖处理：避免重复事件
+    var currentTime = Date.now();
+    if (currentTime - this._lastEventTime < 10 && this._eventCache.has(eventKey)) {
+      return this._eventCache.get(eventKey);
+    }
+    this._lastEventTime = currentTime;
+    
     if (HAS_EVENT_KEY_SUPPORT) {
       if (Hints.active) {
         event.preventDefault();
         if (event.which === 18) {
           Hints.changeFocus();
+          this._recordPerformance(startTime);
           return;
         }
       }
@@ -633,12 +657,15 @@ var KeyHandler = {
 
       if (Mappings.keyPassesLeft) {
         Mappings.keyPassesLeft--;
+        this._recordPerformance(startTime);
         return true;
       }
     }
 
-    if (['Control', 'Alt', 'Meta', 'Shift'].indexOf(key) !== -1)
+    if (['Control', 'Alt', 'Meta', 'Shift'].indexOf(key) !== -1) {
+      this._recordPerformance(startTime);
       return false;
+    }
 
     KeyHandler.shiftKey = event.shiftKey;
 
@@ -855,8 +882,75 @@ var KeyHandler = {
         }
       });
     }
+    
+    // 记录性能并缓存结果
+    var result = true;
+    this._eventCache.set(eventKey, result);
+    this._recordPerformance(startTime);
+    
+    // 清理过期缓存
+    if (this._eventCache.size > 100) {
+      var keys = Array.from(this._eventCache.keys());
+      for (var i = 0; i < 50; i++) {
+        this._eventCache.delete(keys[i]);
+      }
+    }
+    
+    return result;
   },
-  up: function(key, event) {
+  
+  // 性能记录函数
+  _recordPerformance: function(startTime) {
+    var duration = performance.now() - startTime;
+    var stats = this._performanceStats;
+    
+    stats.totalEvents++;
+    stats.averageTime = (stats.averageTime * (stats.totalEvents - 1) + duration) / stats.totalEvents;
+    
+    if (duration > stats.maxTime) {
+      stats.maxTime = duration;
+    }
+    
+    if (duration > 200) {
+      stats.slowEvents++;
+      console.warn('Slow keyboard event detected:', duration.toFixed(2) + 'ms');
+    }
+    
+    // 每1000个事件报告一次性能统计
+    if (stats.totalEvents % 1000 === 0) {
+      console.log('Keyboard Performance Stats:', {
+        totalEvents: stats.totalEvents,
+        averageTime: stats.averageTime.toFixed(2) + 'ms',
+        maxTime: stats.maxTime.toFixed(2) + 'ms',
+        slowEventRate: ((stats.slowEvents / stats.totalEvents) * 100).toFixed(2) + '%'
+      });
+    }
+  },
+  
+  // 获取性能统计
+  getPerformanceStats: function() {
+    return {
+      totalEvents: this._performanceStats.totalEvents,
+      averageTime: this._performanceStats.averageTime.toFixed(2) + 'ms',
+      maxTime: this._performanceStats.maxTime.toFixed(2) + 'ms',
+      slowEventRate: ((this._performanceStats.slowEvents / this._performanceStats.totalEvents) * 100).toFixed(2) + '%',
+      cacheSize: this._eventCache.size
+    };
+  },
+  
+  // 重置性能统计
+   resetPerformanceStats: function() {
+     this._performanceStats = {
+       totalEvents: 0,
+       slowEvents: 0,
+       averageTime: 0,
+       maxTime: 0
+     };
+     this._eventCache.clear();
+     console.log('Keyboard performance stats reset');
+   },
+   
+   up: function(key, event) {
     if (Command.commandBarFocused() ||
         (!insertMode && Mappings.queue.length && Mappings.validMatch)) {
       event.stopImmediatePropagation();

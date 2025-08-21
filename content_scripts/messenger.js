@@ -1,14 +1,58 @@
 var port = chrome.runtime.connect({name: 'main'});
-port.onDisconnect.addListener(function() {
-  window.portDestroyed = true;
-  chrome.runtime.sendMessage = function() {};
-  chrome.runtime.connect = function() {};
-  Command.hide();
-  removeListeners();
-  Visual.exit();
-  Find.clear();
-  Command.destroy();
-});
+var portReconnectAttempts = 0;
+var maxReconnectAttempts = 5;
+var reconnectDelay = 1000;
+
+function attemptPortReconnection() {
+  if (portReconnectAttempts >= maxReconnectAttempts) {
+    console.error('rVim: 达到最大重连次数，停止重连');
+    return;
+  }
+  
+  portReconnectAttempts++;
+  console.log(`rVim: 尝试重新连接端口 #${portReconnectAttempts}`);
+  
+  setTimeout(function() {
+    try {
+      port = chrome.runtime.connect({name: 'main'});
+      setupPortListeners();
+      window.portDestroyed = false;
+      portReconnectAttempts = 0;
+      console.log('rVim: 端口重连成功');
+    } catch (error) {
+      console.error('rVim: 端口重连失败:', error);
+      attemptPortReconnection();
+    }
+  }, reconnectDelay * portReconnectAttempts);
+}
+
+function setupPortListeners() {
+  port.onDisconnect.addListener(function() {
+    console.log('rVim: 端口连接断开');
+    window.portDestroyed = true;
+    
+    // 检查是否是正常断开还是错误断开
+    if (chrome.runtime.lastError) {
+      console.error('rVim: 端口断开错误:', chrome.runtime.lastError.message);
+      // 尝试重新连接
+      attemptPortReconnection();
+    } else {
+      // 正常断开，清理资源
+      chrome.runtime.sendMessage = function() {};
+      chrome.runtime.connect = function() {};
+      Command.hide();
+      removeListeners();
+      Visual.exit();
+      Find.clear();
+      Command.destroy();
+    }
+  });
+  
+  port.onMessage.addListener(handlePortMessage);
+}
+
+// 初始设置端口监听器
+setupPortListeners();
 
 (function() {
   var $ = function(FN, caller) {
@@ -32,7 +76,7 @@ port.onDisconnect.addListener(function() {
   };
 })();
 
-port.onMessage.addListener(function(response) {
+function handlePortMessage(response) {
   var key;
   switch (response.type) {
   case 'hello':
@@ -166,7 +210,7 @@ port.onMessage.addListener(function(response) {
     }
     break;
   }
-});
+}
 
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   switch (request.action) {

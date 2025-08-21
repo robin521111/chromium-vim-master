@@ -18,6 +18,13 @@ Actions = (function() {
 
   var _ = {};
 
+  // 处理连接健康检查
+  _.ping = function(o) {
+    if (o.callback) {
+      o.callback({status: 'ok', timestamp: Date.now()});
+    }
+  };
+
   _.updateLastCommand = function(o) {
     lastCommand = o.request.data;
     if (!lastCommand) {

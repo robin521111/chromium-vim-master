@@ -490,6 +490,35 @@ Command.complete = function(value) {
 };
 
 Command.execute = function(value, repeats) {
+  // 边界条件检查
+  if (!value || typeof value !== 'string' || value.trim() === '') {
+    if (typeof ErrorHandler !== 'undefined') {
+      ErrorHandler.showError('invalid_command', '命令不能为空', 3);
+    } else {
+      HUD.display('Command cannot be empty', 3000, 'error');
+    }
+    return;
+  }
+  
+  // 使用安全执行包装命令处理
+  if (typeof ErrorHandler !== 'undefined' && ErrorHandler.safeExecute) {
+    return ErrorHandler.safeExecute(function() {
+      return Command._performExecute(value, repeats);
+    }, '命令执行', function() {
+      // 降级：基础命令处理
+      HUD.display('命令功能降级运行', 2);
+      return Command._basicExecute(value, repeats);
+    });
+  } else {
+    return Command._performExecute(value, repeats);
+  }
+};
+
+Command._performExecute = function(value, repeats) {
+  // 显示命令执行进度
+  if (typeof HUD !== 'undefined' && HUD.showProgress) {
+    HUD.showProgress(25, '执行命令', 1);
+  }
 
   if (value.indexOf('@%') !== -1) {
     RUNTIME('getRootUrl', function(url) {
@@ -497,6 +526,9 @@ Command.execute = function(value, repeats) {
     });
     return;
   }
+  
+  // 记录最后执行的命令
+  this.lastCommand = value;
   if (value.indexOf('@"') !== -1) {
     RUNTIME('getPaste', function(paste) {
       Command.execute(value.split('@"').join(paste), repeats);
@@ -558,8 +590,25 @@ Command.execute = function(value, repeats) {
 
   this.history.index = {};
 
+  // 处理无效命令
+  var commandFound = false;
+  
+  if (value.charAt(0) === ':') {
+    // Allow silent commands
+    if (value.replace(/^:\s+/, '').charAt(0) === '!') {
+      commandFound = true;
+      value = value.replace(/^:\s+!/, '').trim();
+      RUNTIME('openLink', {
+        url: value,
+        tab: tab
+      });
+      return;
+    }
+  }
+  
   switch (value) {
   case 'nohlsearch':
+    commandFound = true;
     Find.clear();
     HUD.hide();
     return;
@@ -896,8 +945,78 @@ Command.execute = function(value, repeats) {
 
   if (/^script +/.test(value)) {
     RUNTIME('runScript', {code: value.slice(7)});
+    return;
   }
+  
+  // 处理无效命令
+     if (!commandFound && typeof ErrorHandler !== 'undefined') {
+       ErrorHandler.handleCommandError(split[0], '无效命令');
+       
+       // 智能帮助建议
+       if (typeof HelpSystem !== 'undefined') {
+         HelpSystem.smartSuggest('invalid_command');
+       }
+     } else if (!commandFound) {
+       HUD.display('无效命令: ' + split[0], 3000, 'error');
+       
+       // 智能帮助建议
+       if (typeof HelpSystem !== 'undefined') {
+         HelpSystem.smartSuggest('invalid_command');
+       }
+     } else {
+       // 命令执行成功，显示完成进度
+       if (typeof HUD !== 'undefined' && HUD.showProgress) {
+         HUD.showProgress(100, '命令完成');
+       }
+     }
 
+};
+
+Command._basicExecute = function(value, repeats) {
+  // 基础降级命令处理，用于错误恢复
+  try {
+    var split = value.split(' ');
+    var command = split[0];
+    
+    // 只处理最基本的命令
+    switch (command) {
+      case 'nohlsearch':
+      case 'noh':
+        Find.clear();
+        HUD.display('搜索高亮已清除 (基础模式)');
+        break;
+      case 'help':
+        HUD.display('帮助功能暂时不可用');
+        break;
+      case 'settings':
+        HUD.display('设置功能暂时不可用');
+        break;
+      default:
+        HUD.display('命令不可用: ' + command + ' (基础模式)', 3);
+        break;
+    }
+  } catch (e) {
+    HUD.display('命令执行失败', 3);
+    console.error('Basic command execution failed:', e);
+  }
+};
+
+/**
+ * 检查系统依赖项
+ */
+Command.checkSystemHealth = function() {
+  if (typeof ErrorHandler !== 'undefined' && ErrorHandler.checkDependencies) {
+    var deps = {
+      'HUD': typeof HUD,
+      'Find': typeof Find,
+      'Mappings': typeof Mappings,
+      'Settings': typeof Settings
+    };
+    
+    return ErrorHandler.checkDependencies(deps);
+  }
+  
+  return { allAvailable: true, available: [], missing: [] };
 };
 
 Command.show = function(search, value, complete) {
@@ -928,9 +1047,13 @@ Command.show = function(search, value, complete) {
   if (search) {
     this.type = 'search';
     SecurityUtils.safeSetContent(this.modeIdentifier, search);
+    // Display search mode notification
+    HUD.display('Search mode activated', 1000, 'normal');
   } else {
     this.type = 'action';
     SecurityUtils.safeSetContent(this.modeIdentifier, ':');
+    // Display command mode notification
+    HUD.display('Command mode activated', 1000, 'warning');
   }
   if (value) {
     this.input.value = value;
@@ -939,7 +1062,19 @@ Command.show = function(search, value, complete) {
   if (Status.active) {
     Status.hide();
   }
+  // Add animation for command bar
+  this.bar.style.opacity = '0';
+  this.bar.style.transform = 'translateY(10px)';
   this.bar.style.display = 'inline-block';
+  
+  // Force reflow
+  this.bar.offsetHeight;
+  
+  // Apply animation
+  this.bar.style.opacity = '1';
+  this.bar.style.transform = 'translateY(0)';
+  this.bar.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
+  
   setTimeout(function() {
     this.input.focus();
     if (complete !== null) {

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索功能测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 20px;
+        }
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .highlight {
+            background-color: rgb(170, 94, 228);
+            padding: 2px;
+        }
+        .instructions {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>rVim 搜索功能测试页面</h1>
+        
+        <div class="instructions">
+            <h3>测试说明：</h3>
+            <ul>
+                <li>按 <strong>/</strong> 键开始搜索</li>
+                <li>按 <strong>?</strong> 键开始反向搜索</li>
+                <li>按 <strong>n</strong> 键跳转到下一个搜索结果</li>
+                <li>按 <strong>N</strong> 键跳转到上一个搜索结果</li>
+                <li>按 <strong>Esc</strong> 键退出搜索模式</li>
+            </ul>
+            <p><strong>预期效果：</strong>搜索状态应该显示在右下角，格式为 "当前结果 / 总结果数"</p>
+        </div>
+
+        <div class="test-section">
+            <h2>测试内容区域 1</h2>
+            <p>这是第一个测试段落，包含一些<span class="highlight">测试</span>文本。我们可以搜索"测试"这个词来验证搜索功能是否正常工作。</p>
+            <p>这里还有更多的测试内容，包括英文单词 test 和中文词汇。搜索功能应该能够找到所有匹配的结果。</p>
+        </div>
+
+        <div class="test-section">
+            <h2>测试内容区域 2</h2>
+            <p>第二个测试区域包含不同的内容。这里有一些重复的词汇：test, test, test。</p>
+            <p>还有一些中文测试内容：测试、测试、测试。搜索功能应该能够正确计数并显示结果。</p>
+            <ul>
+                <li>列表项 1 - 包含 test 词汇</li>
+                <li>列表项 2 - 包含测试词汇</li>
+                <li>列表项 3 - 包含 search 词汇</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>测试内容区域 3</h2>
+            <p>这个区域用于测试长文本搜索。Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Test word appears here multiple times: test, TEST, Test.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+        </div>
+
+        <div class="test-section">
+            <h2>测试内容区域 4</h2>
+            <p>最后一个测试区域包含混合内容。这里有中英文混合的测试文本。</p>
+            <p>Search functionality should work with both English and Chinese characters. 搜索功能应该支持中英文字符。</p>
+            <p>特殊字符测试：@#$%^&*()_+-=[]{}|;':",./<>? 以及数字 123456789。</p>
+        </div>
+
+        <div class="test-section">
+            <h2>问题检查清单</h2>
+            <ol>
+                <li>搜索状态是否显示在右下角？</li>
+                <li>搜索状态格式是否正确（如 "1 / 5"）？</li>
+                <li>用户输入的搜索内容是否在搜索框中正确显示？</li>
+                <li>搜索结果高亮是否正常？</li>
+                <li>n/N 键导航是否正常工作？</li>
+                <li>搜索状态是否实时更新？</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
