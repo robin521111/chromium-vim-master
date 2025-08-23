@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUD Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-links { margin: 20px 0; }
+        .test-links a { display: block; margin: 10px 0; }
+        .debug-info { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        .log { background: #fff; border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>HUD Debug Test</h1>
+    
+    <div class="test-links">
+        <a href="#test1">Test Link 1</a>
+        <a href="#test2">Test Link 2</a>
+        <a href="#test3">Test Link 3</a>
+        <a href="https://www.google.com">Google</a>
+        <a href="https://www.github.com">GitHub</a>
+    </div>
+    
+    <div class="debug-info">
+        <button onclick="testFKey()">Test F Key (createHint)</button>
+        <button onclick="testFTabbed()">Test F Tabbed</button>
+        <button onclick="testFWindow()">Test F Window</button>
+        <button onclick="checkSettings()">Check Settings</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div class="log" id="log"></div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            logDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+        
+        function testFKey() {
+            log('=== Testing F Key (createHint) ===');
+            
+            if (typeof Hints === 'undefined') {
+                log('Hints object not available', 'error');
+                return;
+            }
+            
+            log('Calling Hints.create() without parameters...');
+            try {
+                Hints.create();
+                log('Hints.create() called successfully', 'success');
+                
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        log('Container created successfully', 'success');
+                    } else {
+                        log('Container not created', 'error');
+                    }
+                }, 100);
+            } catch (e) {
+                log(`Error calling Hints.create(): ${e.message}`, 'error');
+            }
+        }
+        
+        function testFTabbed() {
+            log('=== Testing F Tabbed ===');
+            
+            if (typeof Hints === 'undefined') {
+                log('Hints object not available', 'error');
+                return;
+            }
+            
+            log('Calling Hints.create("tabbed")...');
+            try {
+                Hints.create('tabbed');
+                log('Hints.create("tabbed") called successfully', 'success');
+            } catch (e) {
+                log(`Error calling Hints.create("tabbed"): ${e.message}`, 'error');
+            }
+        }
+        
+        function testFWindow() {
+            log('=== Testing F Window ===');
+            
+            if (typeof Hints === 'undefined') {
+                log('Hints object not available', 'error');
+                return;
+            }
+            
+            log('Calling Hints.create("window")...');
+            try {
+                Hints.create('window');
+                log('Hints.create("window") called successfully', 'success');
+            } catch (e) {
+                log(`Error calling Hints.create("window"): ${e.message}`, 'error');
+            }
+        }
+        
+        function checkSettings() {
+            log('=== Checking Settings ===');
+            
+            if (typeof settings !== 'undefined') {
+                log(`settings.hud: ${settings.hud}`);
+                log(`settings object exists: ${typeof settings}`);
+            } else {
+                log('settings object not available', 'error');
+            }
+            
+            if (typeof HUD !== 'undefined') {
+                log('HUD object available', 'success');
+            } else {
+                log('HUD object not available', 'error');
+            }
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('Page loaded, checking extension status...');
+                checkSettings();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

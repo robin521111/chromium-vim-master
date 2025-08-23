@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>扩展诊断工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            border: 1px solid #ddd;
+            margin: 15px 0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .section-header {
+            background: #007bff;
+            color: white;
+            padding: 12px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-header:hover {
+            background: #0056b3;
+        }
+        .section-content {
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        .status-label {
+            font-weight: 500;
+        }
+        .status-value {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .test-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .test-link {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .test-link:hover {
+            background: #0056b3;
+        }
+        .console-output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 4px;
+        }
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .hint-container {
+            position: relative;
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Chromium Vim 扩展诊断工具</h1>
+        <p>此工具用于诊断F功能链接提示无法显示的问题</p>
+        
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('extension-status')">
+                📋 扩展状态检查
+            </div>
+            <div class="section-content" id="extension-status">
+                <div id="extension-status-content">
+                    <div class="status-item">
+                        <span class="status-label">正在检查扩展状态...</span>
+                        <span class="status-value status-info">检查中</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('script-injection')">
+                💉 脚本注入检查
+            </div>
+            <div class="section-content" id="script-injection">
+                <div id="script-injection-content">
+                    <div class="status-item">
+                        <span class="status-label">正在检查脚本注入...</span>
+                        <span class="status-value status-info">检查中</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('event-listeners')">
+                🎯 事件监听检查
+            </div>
+            <div class="section-content" id="event-listeners">
+                <div id="event-listeners-content">
+                    <div class="status-item">
+                        <span class="status-label">正在检查事件监听...</span>
+                        <span class="status-value status-info">检查中</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('test-area')">
+                🧪 测试区域
+            </div>
+            <div class="section-content" id="test-area">
+                <div class="test-links">
+                    <a href="#test1" class="test-link">测试链接 1</a>
+                    <a href="#test2" class="test-link">测试链接 2</a>
+                    <button class="test-link">测试按钮 1</button>
+                    <button class="test-link" onclick="alert('按钮点击')">测试按钮 2</button>
+                    <input type="button" value="输入按钮" class="test-link">
+                    <div class="test-link" onclick="alert('DIV点击')" style="display: inline-block;">可点击DIV</div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-primary" onclick="manualTestF()">手动测试F键</button>
+                    <button class="btn btn-success" onclick="testHintsCreate()">测试Hints.create</button>
+                    <button class="btn btn-warning" onclick="testLinkDetection()">测试链接检测</button>
+                    <button class="btn btn-danger" onclick="clearHints()">清除提示</button>
+                </div>
+                
+                <div class="hint-container" id="hint-test-area">
+                    按F键或点击上方按钮测试链接提示功能
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('console-log')">
+                📝 控制台日志
+            </div>
+            <div class="section-content" id="console-log">
+                <div class="control-buttons">
+                    <button class="btn btn-primary" onclick="clearConsole()">清空日志</button>
+                    <button class="btn btn-success" onclick="exportLog()">导出日志</button>
+                </div>
+                <div class="console-output" id="console-output">
+扩展诊断工具已启动...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let consoleOutput = document.getElementById('console-output');
+        let diagnosticResults = {};
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            consoleOutput.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        function clearConsole() {
+            consoleOutput.textContent = '控制台已清空\n';
+        }
+        
+        function exportLog() {
+            const logContent = consoleOutput.textContent;
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cvim-diagnosis-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.log`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function updateStatus(containerId, items) {
+            const container = document.getElementById(containerId + '-content');
+            container.innerHTML = '';
+            
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'status-item';
+                div.innerHTML = `
+                    <span class="status-label">${item.label}</span>
+                    <span class="status-value status-${item.status}">${item.value}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function checkExtensionStatus() {
+            log('开始检查扩展状态...');
+            
+            const checks = [];
+            
+            // 检查全局对象
+            const globalObjects = ['Hints', 'Command', 'DOM', 'mapDOM', 'settings', 'Mappings'];
+            globalObjects.forEach(name => {
+                const exists = typeof window[name] !== 'undefined';
+                checks.push({
+                    label: `全局对象 ${name}`,
+                    status: exists ? 'success' : 'error',
+                    value: exists ? '已定义' : '未定义'
+                });
+                log(`${name}: ${exists ? '已定义' : '未定义'}`, exists ? 'success' : 'error');
+            });
+            
+            // 检查Hints对象的方法
+            if (typeof window.Hints !== 'undefined') {
+                const hintsMethods = ['create', 'getLinks', 'getLinkInfo', 'getLinkType', 'isVisible', 'hideHints'];
+                hintsMethods.forEach(method => {
+                    const exists = typeof window.Hints[method] === 'function';
+                    checks.push({
+                        label: `Hints.${method}`,
+                        status: exists ? 'success' : 'error',
+                        value: exists ? '存在' : '缺失'
+                    });
+                    log(`Hints.${method}: ${exists ? '存在' : '缺失'}`, exists ? 'success' : 'error');
+                });
+            }
+            
+            // 检查DOM对象的方法
+            if (typeof window.DOM !== 'undefined') {
+                const domMethods = ['isVisible', 'getVisibleBoundingRect', 'mouseEvent'];
+                domMethods.forEach(method => {
+                    const exists = typeof window.DOM[method] === 'function';
+                    checks.push({
+                        label: `DOM.${method}`,
+                        status: exists ? 'success' : 'error',
+                        value: exists ? '存在' : '缺失'
+                    });
+                    log(`DOM.${method}: ${exists ? '存在' : '缺失'}`, exists ? 'success' : 'error');
+                });
+            }
+            
+            updateStatus('extension-status', checks);
+            diagnosticResults.extensionStatus = checks;
+        }
+        
+        function checkScriptInjection() {
+            log('开始检查脚本注入...');
+            
+            const checks = [];
+            
+            // 检查content scripts
+            const scripts = document.querySelectorAll('script');
+            let cvimScripts = 0;
+            scripts.forEach(script => {
+                if (script.src && (script.src.includes('content_scripts') || script.src.includes('cvim'))) {
+                    cvimScripts++;
+                }
+            });
+            
+            checks.push({
+                label: 'Content Scripts数量',
+                status: cvimScripts > 0 ? 'success' : 'warning',
+                value: cvimScripts.toString()
+            });
+            
+            // 检查CSS注入
+            const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
+            let cvimStyles = 0;
+            styles.forEach(style => {
+                const content = style.textContent || style.href || '';
+                if (content.includes('rVim') || content.includes('cvim')) {
+                    cvimStyles++;
+                }
+            });
+            
+            checks.push({
+                label: 'CSS样式注入',
+                status: cvimStyles > 0 ? 'success' : 'warning',
+                value: cvimStyles > 0 ? '已注入' : '未检测到'
+            });
+            
+            // 检查DOM元素
+            const rVimElements = document.querySelectorAll('[class*="rVim"], [id*="rVim"], [class*="cvim"], [id*="cvim"]');
+            checks.push({
+                label: 'rVim DOM元素',
+                status: rVimElements.length > 0 ? 'success' : 'info',
+                value: rVimElements.length.toString()
+            });
+            
+            updateStatus('script-injection', checks);
+            diagnosticResults.scriptInjection = checks;
+            
+            log(`检测到 ${cvimScripts} 个相关脚本, ${cvimStyles} 个样式, ${rVimElements.length} 个DOM元素`);
+        }
+        
+        function checkEventListeners() {
+            log('开始检查事件监听...');
+            
+            const checks = [];
+            
+            // 检查键盘事件监听
+            let hasKeydownListener = false;
+            try {
+                // 尝试触发一个测试事件
+                const testEvent = new KeyboardEvent('keydown', { key: 'f' });
+                document.dispatchEvent(testEvent);
+                hasKeydownListener = true;
+            } catch (e) {
+                log(`事件测试失败: ${e.message}`, 'error');
+            }
+            
+            checks.push({
+                label: '键盘事件监听',
+                status: hasKeydownListener ? 'success' : 'warning',
+                value: hasKeydownListener ? '正常' : '未知'
+            });
+            
+            // 检查Command对象的状态
+            if (typeof window.Command !== 'undefined') {
+                checks.push({
+                    label: 'Command对象状态',
+                    status: 'success',
+                    value: '已初始化'
+                });
+                
+                if (window.Command.mode) {
+                    checks.push({
+                        label: '当前模式',
+                        status: 'info',
+                        value: window.Command.mode
+                    });
+                }
+            }
+            
+            updateStatus('event-listeners', checks);
+            diagnosticResults.eventListeners = checks;
+        }
+        
+        function manualTestF() {
+            log('手动测试F键功能...');
+            
+            if (typeof window.Hints === 'undefined') {
+                log('Hints对象未定义，无法测试', 'error');
+                return;
+            }
+            
+            try {
+                log('调用Hints.create()...');
+                window.Hints.create();
+                
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        log('✅ 成功创建链接提示容器', 'success');
+                        const hints = container.querySelectorAll('.rVim-link-hint');
+                        log(`创建了 ${hints.length} 个链接提示`, hints.length > 0 ? 'success' : 'warning');
+                    } else {
+                        log('❌ 未找到链接提示容器', 'error');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                log(`F键测试失败: ${error.message}`, 'error');
+                log(`错误堆栈: ${error.stack}`, 'error');
+            }
+        }
+        
+        function testHintsCreate() {
+            log('测试Hints.create函数...');
+            manualTestF();
+        }
+        
+        function testLinkDetection() {
+            log('测试链接检测功能...');
+            
+            if (typeof window.mapDOM === 'undefined' || typeof window.Hints === 'undefined') {
+                log('缺少必要的函数，无法测试链接检测', 'error');
+                return;
+            }
+            
+            try {
+                const links = window.mapDOM(document.body, window.Hints.getLinkInfo);
+                log(`检测到 ${links.length} 个链接`, links.length > 0 ? 'success' : 'warning');
+                
+                links.slice(0, 5).forEach((link, index) => {
+                    if (link && link.node) {
+                        const tagName = link.node.tagName.toLowerCase();
+                        const text = link.node.textContent.trim().substring(0, 30);
+                        log(`  链接 ${index + 1}: <${tagName}> "${text}"`);
+                    }
+                });
+                
+            } catch (error) {
+                log(`链接检测失败: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearHints() {
+            log('清除所有链接提示...');
+            
+            const containers = document.querySelectorAll('#rVim-link-container, .rVim-link-hint');
+            containers.forEach(container => container.remove());
+            
+            if (typeof window.Hints !== 'undefined' && window.Hints.hideHints) {
+                try {
+                    window.Hints.hideHints();
+                    log('调用Hints.hideHints()成功', 'success');
+                } catch (error) {
+                    log(`调用Hints.hideHints()失败: ${error.message}`, 'error');
+                }
+            }
+            
+            log('链接提示已清除', 'success');
+        }
+        
+        // 监听F键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                log(`检测到F键按下 (key: ${e.key}, code: ${e.code})`);
+                
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        log('F键触发后发现了链接提示容器', 'success');
+                    } else {
+                        log('F键触发后未发现链接提示容器', 'warning');
+                    }
+                }, 100);
+            }
+        });
+        
+        // 页面加载完成后自动运行诊断
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('页面加载完成，开始自动诊断...');
+                checkExtensionStatus();
+                checkScriptInjection();
+                checkEventListeners();
+                log('自动诊断完成');
+            }, 1000);
+        });
+        
+        // 定期检查扩展状态
+        setInterval(() => {
+            const container = document.getElementById('rVim-link-container');
+            if (container && !container.dataset.logged) {
+                log('发现新的链接提示容器', 'success');
+                container.dataset.logged = 'true';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

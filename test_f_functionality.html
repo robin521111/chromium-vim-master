@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F功能测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .test-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .test-links a {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .test-links a:hover {
+            background-color: #0056b3;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .debug-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>rVim扩展F功能测试页面</h1>
+    
+    <div class="test-section">
+        <h2>扩展状态检查</h2>
+        <div id="extension-status"></div>
+        <button onclick="checkExtensionStatus()">重新检查扩展状态</button>
+    </div>
+
+    <div class="test-section">
+        <h2>F功能测试说明</h2>
+        <div class="info status">
+            <strong>测试步骤：</strong><br>
+            1. 确保rVim扩展已安装并启用<br>
+            2. 按下键盘上的 <strong>f</strong> 键<br>
+            3. 应该看到页面上的链接出现字母/数字提示标签<br>
+            4. 按下对应的字母/数字来点击链接
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试链接</h2>
+        <p>按下 <strong>f</strong> 键后，下面的链接应该显示提示标签：</p>
+        <div class="test-links">
+            <a href="#test1">测试链接1</a>
+            <a href="#test2">测试链接2</a>
+            <a href="#test3">测试链接3</a>
+            <a href="#test4">测试链接4</a>
+            <a href="#test5">测试链接5</a>
+            <a href="https://www.google.com" target="_blank" rel="noopener">Google</a>
+            <a href="https://www.github.com" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://www.stackoverflow.com" target="_blank" rel="noopener">Stack Overflow</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>手动触发F功能</h2>
+        <p>如果按f键无效，可以尝试手动触发：</p>
+        <button onclick="manualTriggerF()">手动触发F功能</button>
+        <button onclick="manualTriggerHints()">直接调用Hints.create()</button>
+        <div id="manual-trigger-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>调试信息</h2>
+        <div id="debug-info" class="debug-info"></div>
+        <button onclick="updateDebugInfo()">更新调试信息</button>
+    </div>
+
+    <script>
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('extension-status');
+            let status = '';
+            let hasErrors = false;
+
+            // 检查全局对象
+            const globalObjects = ['Command', 'Hints', 'Mappings', 'settings'];
+            globalObjects.forEach(obj => {
+                if (typeof window[obj] !== 'undefined') {
+                    status += `✅ ${obj} 对象存在\n`;
+                } else {
+                    status += `❌ ${obj} 对象不存在\n`;
+                    hasErrors = true;
+                }
+            });
+
+            // 检查CSS样式
+            const linkHintStyles = document.querySelectorAll('style');
+            let hasRvimStyles = false;
+            linkHintStyles.forEach(style => {
+                if (style.textContent.includes('rVim-link-hint')) {
+                    hasRvimStyles = true;
+                }
+            });
+
+            if (hasRvimStyles) {
+                status += '✅ rVim样式已加载\n';
+            } else {
+                status += '❌ rVim样式未加载\n';
+                hasErrors = true;
+            }
+
+            // 检查事件监听器
+            if (typeof window.KeyHandler !== 'undefined') {
+                status += '✅ KeyHandler 存在\n';
+            } else {
+                status += '❌ KeyHandler 不存在\n';
+                hasErrors = true;
+            }
+
+            statusDiv.innerHTML = `<div class="${hasErrors ? 'error' : 'success'} status">${status}</div>`;
+        }
+
+        function manualTriggerF() {
+            const resultDiv = document.getElementById('manual-trigger-result');
+            try {
+                if (typeof window.Mappings !== 'undefined' && 
+                    typeof window.Mappings.actions !== 'undefined' &&
+                    typeof window.Mappings.actions.createHint === 'function') {
+                    window.Mappings.actions.createHint();
+                    resultDiv.innerHTML = '<div class="success status">✅ 成功调用 Mappings.actions.createHint()</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error status">❌ Mappings.actions.createHint 函数不存在</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error status">❌ 调用失败: ${error.message}</div>`;
+            }
+        }
+
+        function manualTriggerHints() {
+            const resultDiv = document.getElementById('manual-trigger-result');
+            try {
+                if (typeof window.Hints !== 'undefined' && 
+                    typeof window.Hints.create === 'function') {
+                    window.Hints.create();
+                    resultDiv.innerHTML = '<div class="success status">✅ 成功调用 Hints.create()</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error status">❌ Hints.create 函数不存在</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error status">❌ 调用失败: ${error.message}</div>`;
+            }
+        }
+
+        function updateDebugInfo() {
+            const debugDiv = document.getElementById('debug-info');
+            let info = '';
+
+            // 扩展对象详情
+            info += '=== 扩展对象详情 ===\n';
+            if (typeof window.Command !== 'undefined') {
+                info += `Command.loaded: ${window.Command.loaded}\n`;
+                info += `Command.domElementsLoaded: ${window.Command.domElementsLoaded}\n`;
+            }
+
+            if (typeof window.Hints !== 'undefined') {
+                info += `Hints.active: ${window.Hints.active}\n`;
+                info += `Hints.linkArr.length: ${window.Hints.linkArr ? window.Hints.linkArr.length : 'undefined'}\n`;
+            }
+
+            if (typeof window.settings !== 'undefined') {
+                info += `settings.hintcharacters: ${window.settings.hintcharacters}\n`;
+                info += `settings.numerichints: ${window.settings.numerichints}\n`;
+            }
+
+            // 页面链接数量
+            const links = document.querySelectorAll('a');
+            info += `\n=== 页面信息 ===\n`;
+            info += `页面链接数量: ${links.length}\n`;
+
+            // 控制台错误
+            info += '\n=== 控制台信息 ===\n';
+            info += '请检查浏览器开发者工具的控制台是否有错误信息\n';
+
+            debugDiv.textContent = info;
+        }
+
+        // 页面加载时自动检查
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                checkExtensionStatus();
+                updateDebugInfo();
+            }, 1000);
+        });
+
+        // 监听键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                console.log('检测到f键按下');
+                const debugDiv = document.getElementById('debug-info');
+                debugDiv.textContent += '\n检测到f键按下事件\n';
+            }
+        });
+    </script>
+</body>
+</html>

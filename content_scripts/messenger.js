@@ -88,6 +88,12 @@ function handlePortMessage(response) {
     PORT('sendLastSearch');
     PORT('getTopSites');
     PORT('getLastCommand');
+    // 确保扩展正确初始化
+    RUNTIME('getActiveState', {}, function(isActive) {
+      if (typeof Command !== 'undefined' && typeof Command.init === 'function') {
+        Command.init(isActive !== false);
+      }
+    });
     break;
   case 'addFrame':
     if (innerWidth > 5 && innerHeight > 5)
@@ -185,7 +191,9 @@ function handlePortMessage(response) {
     }
     break;
   case 'httpRequest':
-    httpCallback(response.id, response.text);
+    if (typeof window.httpCallback === 'function') {
+      window.httpCallback(response.id, response.text);
+    }
     break;
   case 'parseRC':
     if (response.config.MAPPINGS) {
@@ -202,6 +210,12 @@ function handlePortMessage(response) {
     } else {
       settings = response.settings;
       Mappings.parseCustom(settings.MAPPINGS, true);
+      // 确保扩展在设置更新后仍然正常工作
+      if (typeof Command !== 'undefined' && !Command.loaded) {
+        RUNTIME('getActiveState', {}, function(isActive) {
+          Command.init(isActive !== false);
+        });
+      }
     }
     break;
   case 'updateLastCommand':

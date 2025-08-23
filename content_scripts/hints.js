@@ -718,9 +718,6 @@ Hints.create = function(type, multi) {
     }
 
     main = document.createElement('div');
-    if (settings && settings.linkanimations) {
-      main.style.opacity = '0';
-    }
     main.rVim = true;
     frag = document.createDocumentFragment();
 
@@ -735,7 +732,8 @@ Hints.create = function(type, multi) {
       document.body.appendChild(main);
     }
 
-    if (!multi && settings && settings.hud) {
+    // 只在多链接且非特定操作类型时显示HUD
+    if (!multi && settings && settings.hud && self.linkArr.length > 1 && (!type || type === 'tabbed' || type === 'window')) {
       HUD.display('Follow link ' + (function() {
         return ({
           yank:          '(yank)',

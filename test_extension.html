@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Extension F Key Functionality</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .link {
+            display: block;
+            margin: 10px 0;
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        .instructions {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h2>Extension Test Instructions</h2>
+        <p><strong>1.</strong> Load this extension in Chrome (chrome://extensions/)</p>
+        <p><strong>2.</strong> Enable "Developer mode"</p>
+        <p><strong>3.</strong> Click "Load unpacked" and select the chromium-vim-master folder</p>
+        <p><strong>4.</strong> Refresh this page</p>
+        <p><strong>5.</strong> Press the <strong>F</strong> key to test hint creation</p>
+        <p><strong>Expected:</strong> You should see hint labels appear over clickable elements</p>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Links</h3>
+        <a href="https://www.google.com" class="link">Google</a>
+        <a href="https://www.github.com" class="link">GitHub</a>
+        <a href="https://www.stackoverflow.com" class="link">Stack Overflow</a>
+        <a href="https://www.mozilla.org" class="link">Mozilla</a>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Buttons</h3>
+        <button onclick="alert('Button 1 clicked!')">Test Button 1</button>
+        <button onclick="alert('Button 2 clicked!')">Test Button 2</button>
+        <button onclick="alert('Button 3 clicked!')">Test Button 3</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Form Elements</h3>
+        <input type="text" placeholder="Test input field">
+        <select title="Test select dropdown">
+            <option>Option 1</option>
+            <option>Option 2</option>
+            <option>Option 3</option>
+        </select>
+        <textarea placeholder="Test textarea"></textarea>
+    </div>
+
+    <div class="test-section">
+        <h3>Debug Information</h3>
+        <div id="debug-info">
+            <p>Extension Status: <span id="extension-status">Checking...</span></p>
+            <p>F Key Handler: <span id="f-key-status">Checking...</span></p>
+            <p>Hints Object: <span id="hints-status">Checking...</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Debug script to check extension status
+        setTimeout(function() {
+            // Check if extension objects are available
+            const extensionStatus = document.getElementById('extension-status');
+            const fKeyStatus = document.getElementById('f-key-status');
+            const hintsStatus = document.getElementById('hints-status');
+
+            // Check for global objects that should be injected by the extension
+            if (typeof Command !== 'undefined') {
+                extensionStatus.textContent = 'Loaded ✓';
+                extensionStatus.style.color = 'green';
+            } else {
+                extensionStatus.textContent = 'Not Loaded ✗';
+                extensionStatus.style.color = 'red';
+            }
+
+            if (typeof KeyHandler !== 'undefined') {
+                fKeyStatus.textContent = 'Available ✓';
+                fKeyStatus.style.color = 'green';
+            } else {
+                fKeyStatus.textContent = 'Not Available ✗';
+                fKeyStatus.style.color = 'red';
+            }
+
+            if (typeof Hints !== 'undefined') {
+                hintsStatus.textContent = 'Available ✓';
+                hintsStatus.style.color = 'green';
+            } else {
+                hintsStatus.textContent = 'Not Available ✗';
+                hintsStatus.style.color = 'red';
+            }
+        }, 1000);
+
+        // Add a manual test button for F key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                console.log('F key pressed - checking if hints appear');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1246,8 +1246,8 @@ Command.onDOMLoadAll = function() {
   httpRequest({
     url: chrome.runtime.getURL('content_scripts/main.css')
   }, function(data) {
-    this.mainCSS = data;
-  }.bind(this));
+    Command.mainCSS = data;
+  });
   this.setup();
   this.domElementsLoaded = true;
   this.callOnRvimLoad();
@@ -1430,8 +1430,8 @@ Command.configureSettings = function(_settings) {
   removeListeners();
   settings.searchlimit = +settings.searchlimit;
   if (!checkBlacklist()) {
-    RUNTIME('getActiveState', null, function(isActive) {
-      Command.init(isActive);
+    RUNTIME('getActiveState', {}, function(isActive) {
+      Command.init(isActive !== false);
     });
   } else {
     this.init(false);

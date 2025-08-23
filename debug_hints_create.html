@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hints.create 函数调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007cba;
+            padding-bottom: 5px;
+        }
+        .status {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        .btn {
+            background-color: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background-color: #005a87;
+        }
+        .btn.danger {
+            background-color: #dc3545;
+        }
+        .btn.danger:hover {
+            background-color: #c82333;
+        }
+        
+        .log-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+        .log-entry.error { background-color: #f8d7da; }
+        .log-entry.success { background-color: #d4edda; }
+        .log-entry.warning { background-color: #fff3cd; }
+        .log-entry.info { background-color: #d1ecf1; }
+        
+        .test-links {
+            margin: 20px 0;
+        }
+        .test-links a {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 8px 15px;
+            background-color: #e9ecef;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+        .test-links a:hover {
+            background-color: #dee2e6;
+        }
+        
+        .debug-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Hints.create 函数调试工具</h1>
+        
+        <div class="section">
+            <h3>📋 调试控制</h3>
+            <div class="controls">
+                <button class="btn" onclick="debugHintsCreate()">🚀 调试 Hints.create</button>
+                <button class="btn" onclick="testBasicFunctionality()">🔧 测试基础功能</button>
+                <button class="btn" onclick="checkDependencies()">📦 检查依赖</button>
+                <button class="btn" onclick="simulateFKey()">⌨️ 模拟F键</button>
+                <button class="btn danger" onclick="clearLogs()">🗑️ 清除日志</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>🔗 测试链接</h3>
+            <div class="test-links">
+                <a href="#test1">测试链接 1</a>
+                <a href="#test2">测试链接 2</a>
+                <a href="#test3">测试链接 3</a>
+                <a href="https://www.google.com">Google</a>
+                <a href="https://www.github.com">GitHub</a>
+                <button onclick="alert('按钮点击')">测试按钮</button>
+                <input type="text" placeholder="测试输入框">
+                <select><option>测试选择框</option></select>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>📊 执行状态</h3>
+            <div id="execution-status"></div>
+        </div>
+        
+        <div class="section">
+            <h3>📝 详细日志</h3>
+            <div id="debug-log" class="log-container"></div>
+        </div>
+        
+        <div class="section">
+            <h3>🔍 调试信息</h3>
+            <div id="debug-info" class="debug-info"></div>
+        </div>
+    </div>
+
+    <script>
+        let logContainer = document.getElementById('debug-log');
+        let statusContainer = document.getElementById('execution-status');
+        let debugInfoContainer = document.getElementById('debug-info');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function updateStatus(message, type = 'info') {
+            statusContainer.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function updateDebugInfo() {
+            let info = '';
+            
+            // 检查关键对象
+            info += '=== 关键对象状态 ===\n';
+            info += `window.Hints: ${typeof window.Hints}\n`;
+            if (typeof window.Hints !== 'undefined') {
+                info += `  Hints.active: ${window.Hints.active}\n`;
+                info += `  Hints.create: ${typeof window.Hints.create}\n`;
+                info += `  Hints.linkArr: ${window.Hints.linkArr ? window.Hints.linkArr.length : 'undefined'}\n`;
+                info += `  Hints.linkHints: ${window.Hints.linkHints ? window.Hints.linkHints.length : 'undefined'}\n`;
+            }
+            
+            info += `\nwindow.Command: ${typeof window.Command}\n`;
+            if (typeof window.Command !== 'undefined') {
+                info += `  Command.loaded: ${window.Command.loaded}\n`;
+                info += `  Command.domElementsLoaded: ${window.Command.domElementsLoaded}\n`;
+                info += `  Command.css: ${window.Command.css ? 'exists' : 'null'}\n`;
+                info += `  Command.mainCSS: ${window.Command.mainCSS ? 'exists' : 'undefined'}\n`;
+            }
+            
+            info += `\nwindow.settings: ${typeof window.settings}\n`;
+            if (typeof window.settings !== 'undefined') {
+                info += `  settings.hintcharacters: ${window.settings.hintcharacters}\n`;
+                info += `  settings.numerichints: ${window.settings.numerichints}\n`;
+                info += `  settings.typelinkhints: ${window.settings.typelinkhints}\n`;
+                info += `  settings.linkanimations: ${window.settings.linkanimations}\n`;
+            }
+            
+            // 检查DOM元素
+            info += '\n=== DOM 状态 ===\n';
+            const container = document.getElementById('rVim-link-container');
+            info += `rVim-link-container: ${container ? 'exists' : 'not found'}\n`;
+            if (container) {
+                info += `  children: ${container.children.length}\n`;
+                info += `  style.opacity: ${container.style.opacity}\n`;
+                info += `  style.display: ${container.style.display}\n`;
+            }
+            
+            // 检查页面链接
+            const links = document.querySelectorAll('a, button, input, select, [onclick]');
+            info += `\n页面可点击元素数量: ${links.length}\n`;
+            
+            debugInfoContainer.textContent = info;
+        }
+        
+        function clearLogs() {
+            logContainer.innerHTML = '';
+            statusContainer.innerHTML = '';
+            log('日志已清除');
+        }
+        
+        function checkDependencies() {
+            log('=== 检查依赖 ===');
+            updateStatus('检查依赖中...', 'info');
+            
+            const dependencies = [
+                'window.Hints',
+                'window.Hints.create',
+                'window.Command',
+                'window.settings',
+                'window.DOM',
+                'window.HUD'
+            ];
+            
+            let allGood = true;
+            dependencies.forEach(dep => {
+                const parts = dep.split('.');
+                let obj = window;
+                let exists = true;
+                
+                for (let part of parts.slice(1)) {
+                    if (obj && typeof obj[part] !== 'undefined') {
+                        obj = obj[part];
+                    } else {
+                        exists = false;
+                        break;
+                    }
+                }
+                
+                if (exists) {
+                    log(`✅ ${dep}: 存在 (${typeof obj})`, 'success');
+                } else {
+                    log(`❌ ${dep}: 不存在`, 'error');
+                    allGood = false;
+                }
+            });
+            
+            if (allGood) {
+                updateStatus('✅ 所有依赖检查通过', 'success');
+            } else {
+                updateStatus('❌ 部分依赖缺失', 'error');
+            }
+            
+            updateDebugInfo();
+        }
+        
+        function testBasicFunctionality() {
+            log('=== 测试基础功能 ===');
+            updateStatus('测试基础功能中...', 'info');
+            
+            try {
+                // 测试Hints对象
+                if (typeof window.Hints === 'undefined') {
+                    throw new Error('Hints对象未定义');
+                }
+                log('✅ Hints对象存在', 'success');
+                
+                // 测试create方法
+                if (typeof window.Hints.create !== 'function') {
+                    throw new Error('Hints.create方法不存在');
+                }
+                log('✅ Hints.create方法存在', 'success');
+                
+                // 测试其他关键方法
+                const methods = ['hideHints', 'getLinks', 'evaluateLink'];
+                methods.forEach(method => {
+                    if (typeof window.Hints[method] === 'function') {
+                        log(`✅ Hints.${method}方法存在`, 'success');
+                    } else {
+                        log(`⚠️ Hints.${method}方法不存在`, 'warning');
+                    }
+                });
+                
+                updateStatus('✅ 基础功能测试完成', 'success');
+                
+            } catch (error) {
+                log(`❌ 基础功能测试失败: ${error.message}`, 'error');
+                updateStatus('❌ 基础功能测试失败', 'error');
+            }
+            
+            updateDebugInfo();
+        }
+        
+        function debugHintsCreate() {
+            log('=== 开始调试 Hints.create ===');
+            updateStatus('调试 Hints.create 中...', 'info');
+            
+            try {
+                // 检查前置条件
+                if (typeof window.Hints === 'undefined') {
+                    throw new Error('Hints对象未定义');
+                }
+                
+                if (typeof window.Hints.create !== 'function') {
+                    throw new Error('Hints.create不是函数');
+                }
+                
+                log('📋 前置条件检查通过', 'success');
+                
+                // 记录调用前状态
+                log(`调用前状态: Hints.active = ${window.Hints.active}`);
+                
+                // 清理之前的提示
+                const existingContainer = document.getElementById('rVim-link-container');
+                if (existingContainer) {
+                    log('🧹 清理现有容器');
+                    existingContainer.remove();
+                }
+                
+                // 调用Hints.create
+                log('🚀 调用 Hints.create()');
+                window.Hints.create();
+                
+                // 等待一段时间后检查结果
+                setTimeout(() => {
+                    checkHintsResult();
+                }, 500);
+                
+            } catch (error) {
+                log(`❌ 调试过程中出错: ${error.message}`, 'error');
+                log(`错误堆栈: ${error.stack}`, 'error');
+                updateStatus('❌ 调试失败', 'error');
+            }
+            
+            updateDebugInfo();
+        }
+        
+        function checkHintsResult() {
+            log('=== 检查 Hints.create 执行结果 ===');
+            
+            try {
+                // 检查容器是否创建
+                const container = document.getElementById('rVim-link-container');
+                if (container) {
+                    log('✅ rVim-link-container 容器已创建', 'success');
+                    log(`容器子元素数量: ${container.children.length}`);
+                    log(`容器透明度: ${container.style.opacity}`);
+                    
+                    // 检查提示元素
+                    const hints = container.querySelectorAll('.rVim-link-hint');
+                    if (hints.length > 0) {
+                        log(`✅ 创建了 ${hints.length} 个链接提示`, 'success');
+                        updateStatus(`✅ 成功创建 ${hints.length} 个链接提示`, 'success');
+                        
+                        // 显示前几个提示的信息
+                        for (let i = 0; i < Math.min(3, hints.length); i++) {
+                            const hint = hints[i];
+                            log(`  提示 ${i+1}: 文本="${hint.textContent}" 位置=(${hint.style.left}, ${hint.style.top})`);
+                        }
+                    } else {
+                        log('⚠️ 容器存在但没有提示元素', 'warning');
+                        updateStatus('⚠️ 容器创建但无提示元素', 'warning');
+                    }
+                } else {
+                    log('❌ rVim-link-container 容器未创建', 'error');
+                    updateStatus('❌ 容器未创建', 'error');
+                }
+                
+                // 检查Hints状态
+                if (typeof window.Hints !== 'undefined') {
+                    log(`Hints.active: ${window.Hints.active}`);
+                    log(`Hints.linkArr长度: ${window.Hints.linkArr ? window.Hints.linkArr.length : 'undefined'}`);
+                    log(`Hints.linkHints长度: ${window.Hints.linkHints ? window.Hints.linkHints.length : 'undefined'}`);
+                }
+                
+            } catch (error) {
+                log(`❌ 检查结果时出错: ${error.message}`, 'error');
+                updateStatus('❌ 检查结果失败', 'error');
+            }
+            
+            updateDebugInfo();
+        }
+        
+        function simulateFKey() {
+            log('=== 模拟F键按下 ===');
+            updateStatus('模拟F键中...', 'info');
+            
+            try {
+                // 创建键盘事件
+                const event = new KeyboardEvent('keydown', {
+                    key: 'f',
+                    code: 'KeyF',
+                    keyCode: 70,
+                    which: 70,
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                log('📤 发送F键事件');
+                document.dispatchEvent(event);
+                
+                // 等待处理
+                setTimeout(() => {
+                    log('⏱️ F键事件处理完成');
+                    checkHintsResult();
+                }, 300);
+                
+            } catch (error) {
+                log(`❌ 模拟F键失败: ${error.message}`, 'error');
+                updateStatus('❌ 模拟F键失败', 'error');
+            }
+        }
+        
+        // 页面加载完成后自动检查
+        window.addEventListener('load', function() {
+            log('🚀 页面加载完成，开始初始检查');
+            setTimeout(() => {
+                checkDependencies();
+                updateDebugInfo();
+            }, 1000);
+        });
+        
+        // 定期更新调试信息
+        setInterval(updateDebugInfo, 2000);
+    </script>
+</body>
+</html>

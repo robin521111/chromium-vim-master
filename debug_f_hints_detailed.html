@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F功能详细调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        .test-links {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .test-links a {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        #hint-details {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>F功能详细调试页面</h1>
+    
+    <div class="debug-panel">
+        <h2>扩展状态检查</h2>
+        <div id="extension-status"></div>
+        <button onclick="checkExtensionStatus()">检查扩展状态</button>
+    </div>
+
+    <div class="debug-panel">
+        <h2>F功能测试</h2>
+        <div class="test-links">
+            <a href="#test1">测试链接1</a>
+            <a href="#test2">测试链接2</a>
+            <a href="#test3">测试链接3</a>
+            <a href="#test4">测试链接4</a>
+            <a href="#test5">测试链接5</a>
+        </div>
+        <button onclick="triggerFHints()">手动触发F功能</button>
+        <button onclick="checkHintElements()">检查提示元素</button>
+        <div id="f-function-status"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>提示元素详情</h2>
+        <div id="hint-details"></div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>设置信息</h2>
+        <div id="settings-info"></div>
+        <button onclick="checkSettings()">检查设置</button>
+    </div>
+
+    <script>
+        function createStatus(message, type = 'info') {
+            return `<div class="status ${type}">${message}</div>`;
+        }
+
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('extension-status');
+            let html = '';
+            
+            // 检查全局对象
+            html += createStatus(`Command对象: ${typeof Command !== 'undefined' ? '✓ 存在' : '✗ 不存在'}`, 
+                typeof Command !== 'undefined' ? 'success' : 'error');
+            html += createStatus(`Hints对象: ${typeof Hints !== 'undefined' ? '✓ 存在' : '✗ 不存在'}`, 
+                typeof Hints !== 'undefined' ? 'success' : 'error');
+            
+            if (typeof Command !== 'undefined') {
+                html += createStatus(`Command.loaded: ${Command.loaded}`, 'info');
+                html += createStatus(`Command.domElementsLoaded: ${Command.domElementsLoaded}`, 'info');
+                html += createStatus(`Command.mainCSS存在: ${Command.mainCSS ? '是' : '否'}`, 
+                    Command.mainCSS ? 'success' : 'warning');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function checkSettings() {
+            const settingsDiv = document.getElementById('settings-info');
+            let html = '';
+            
+            if (typeof settings !== 'undefined') {
+                html += createStatus('Settings对象存在', 'success');
+                html += createStatus(`numerichints: ${settings.numerichints}`, 'info');
+                html += createStatus(`hintcharacters: "${settings.hintcharacters}"`, 'info');
+                html += createStatus(`typelinkhints: ${settings.typelinkhints}`, 'info');
+                html += createStatus(`scalehints: ${settings.scalehints}`, 'info');
+            } else {
+                html += createStatus('Settings对象不存在', 'error');
+            }
+            
+            settingsDiv.innerHTML = html;
+        }
+
+        function triggerFHints() {
+            const statusDiv = document.getElementById('f-function-status');
+            let html = '';
+            
+            try {
+                if (typeof Hints !== 'undefined' && typeof Hints.create === 'function') {
+                    html += createStatus('正在触发F功能...', 'info');
+                    Hints.create();
+                    
+                    setTimeout(() => {
+                        checkHintElements();
+                    }, 200);
+                } else {
+                    html += createStatus('Hints.create函数不可用', 'error');
+                }
+            } catch (error) {
+                html += createStatus(`触发F功能时出错: ${error.message}`, 'error');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function checkHintElements() {
+            const detailsDiv = document.getElementById('hint-details');
+            const statusDiv = document.getElementById('f-function-status');
+            let html = '';
+            let statusHtml = '';
+            
+            // 检查提示容器
+            const container = document.getElementById('rVim-link-container');
+            if (container) {
+                statusHtml += createStatus('✓ 找到提示容器', 'success');
+                html += `<h3>提示容器信息:</h3>`;
+                html += `<p>ID: ${container.id}</p>`;
+                html += `<p>样式 opacity: ${container.style.opacity}</p>`;
+                html += `<p>样式 display: ${container.style.display}</p>`;
+                html += `<p>子元素数量: ${container.children.length}</p>`;
+                
+                // 检查Shadow DOM
+                if (container.shadowRoot) {
+                    html += `<p>Shadow DOM: 存在</p>`;
+                    html += `<p>Shadow DOM子元素数量: ${container.shadowRoot.children.length}</p>`;
+                    
+                    // 检查提示元素
+                    const hints = container.shadowRoot.querySelectorAll('.rVim-link-hint');
+                    if (hints.length > 0) {
+                        statusHtml += createStatus(`✓ 找到 ${hints.length} 个提示元素`, 'success');
+                        html += `<h3>提示元素详情:</h3>`;
+                        
+                        hints.forEach((hint, index) => {
+                            html += `<div style="border: 1px solid #ccc; margin: 5px; padding: 5px;">`;
+                            html += `<strong>提示 ${index + 1}:</strong><br>`;
+                            html += `文本内容: "${hint.textContent}"<br>`;
+                            html += `类名: ${hint.className}<br>`;
+                            html += `位置: top=${hint.style.top}, left=${hint.style.left}<br>`;
+                            html += `z-index: ${hint.style.zIndex}<br>`;
+                            html += `可见性: ${hint.style.display !== 'none' ? '可见' : '隐藏'}<br>`;
+                            html += `</div>`;
+                        });
+                    } else {
+                        statusHtml += createStatus('✗ 未找到提示元素', 'error');
+                        html += `<p>Shadow DOM中没有找到 .rVim-link-hint 元素</p>`;
+                    }
+                } else {
+                    html += `<p>Shadow DOM: 不存在</p>`;
+                    statusHtml += createStatus('✗ 提示容器没有Shadow DOM', 'error');
+                }
+            } else {
+                statusHtml += createStatus('✗ 未找到提示容器', 'error');
+                html += `<p>页面中没有找到 #rVim-link-container 元素</p>`;
+            }
+            
+            // 检查页面中的所有链接
+            const links = document.querySelectorAll('a');
+            html += `<h3>页面链接信息:</h3>`;
+            html += `<p>总链接数: ${links.length}</p>`;
+            
+            detailsDiv.innerHTML = html;
+            statusDiv.innerHTML = statusHtml;
+        }
+
+        // 键盘事件监听
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                setTimeout(() => {
+                    checkHintElements();
+                }, 100);
+            }
+        });
+
+        // 页面加载完成后自动检查
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                checkExtensionStatus();
+                checkSettings();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

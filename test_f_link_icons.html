@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F功能链接图标测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .link-container {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+            margin: 5px;
+            display: inline-block;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .button-link {
+            background: #007cba;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .image-link img {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+        }
+        input[type="submit"], input[type="button"] {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .debug-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>F功能链接图标测试页面</h1>
+    
+    <div class="debug-info">
+        <strong>测试说明：</strong><br>
+        1. 按下 F 键应该显示所有可点击元素的提示图标<br>
+        2. 每个图标应该显示字母或数字标识<br>
+        3. 图标应该清晰可见，有足够的对比度<br>
+        4. 检查不同类型链接的图标显示情况
+    </div>
+
+    <div class="test-section">
+        <h2>普通文本链接</h2>
+        <div class="link-container">
+            <a href="#test1">普通链接1</a>
+            <a href="#test2">普通链接2</a>
+            <a href="#test3">普通链接3</a>
+            <a href="https://www.google.com" target="_blank" rel="noopener">外部链接</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>按钮样式链接</h2>
+        <div class="link-container">
+            <a href="#button1" class="button-link">按钮链接1</a>
+            <a href="#button2" class="button-link">按钮链接2</a>
+            <a href="#button3" class="button-link">按钮链接3</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>图片链接</h2>
+        <div class="link-container">
+            <a href="#image1" class="image-link">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjNDI4NWY0Ii8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SW1nPC90ZXh0Pgo8L3N2Zz4K" alt="测试图片1">
+            </a>
+            <a href="#image2" class="image-link">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMzRhODUzIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SW1nPC90ZXh0Pgo8L3N2Zz4K" alt="测试图片2">
+            </a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>表单元素</h2>
+        <div class="link-container">
+            <form>
+                <input type="submit" value="提交按钮">
+                <input type="button" value="普通按钮" onclick="alert('按钮被点击')">
+                <button type="button">HTML按钮</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>列表链接</h2>
+        <div class="link-container">
+            <ul>
+                <li><a href="#list1">列表项链接1</a></li>
+                <li><a href="#list2">列表项链接2</a></li>
+                <li><a href="#list3">列表项链接3</a></li>
+                <li><a href="#list4">列表项链接4</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>内联链接</h2>
+        <div class="link-container">
+            <p>这是一段包含<a href="#inline1">内联链接1</a>的文本，还有<a href="#inline2">内联链接2</a>和<a href="#inline3">内联链接3</a>。</p>
+        </div>
+    </div>
+
+    <div class="debug-info">
+        <strong>调试信息：</strong><br>
+        <span id="debug-output">等待F键测试...</span>
+    </div>
+
+    <script>
+        // 调试脚本
+        document.addEventListener('keydown', function(e) {
+            const debugOutput = document.getElementById('debug-output');
+            if (e.key === 'f' || e.key === 'F') {
+                debugOutput.innerHTML = 'F键被按下，检查链接提示是否显示...';
+                
+                // 延迟检查提示元素
+                setTimeout(function() {
+                    const hintContainer = document.getElementById('rVim-link-container');
+                    const hints = document.querySelectorAll('.rVim-link-hint');
+                    
+                    let status = '';
+                    if (hintContainer) {
+                        status += `找到提示容器: ${hintContainer.id}<br>`;
+                        status += `容器样式: opacity=${hintContainer.style.opacity}<br>`;
+                    } else {
+                        status += '未找到提示容器<br>';
+                    }
+                    
+                    if (hints.length > 0) {
+                        status += `找到 ${hints.length} 个提示元素<br>`;
+                        hints.forEach((hint, index) => {
+                            status += `提示${index + 1}: 文本="${hint.textContent}", 可见=${hint.style.display !== 'none'}<br>`;
+                        });
+                    } else {
+                        status += '未找到任何提示元素<br>';
+                    }
+                    
+                    debugOutput.innerHTML = status;
+                }, 100);
+            }
+        });
+        
+        // 页面加载完成后的状态检查
+        window.addEventListener('load', function() {
+            const debugOutput = document.getElementById('debug-output');
+            debugOutput.innerHTML = '页面已加载，按F键测试链接提示功能';
+        });
+    </script>
+</body>
+</html>

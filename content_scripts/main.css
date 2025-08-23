@@ -42,7 +42,7 @@
 
 #rVim-link-container {
   transition: opacity 0.1s ease;
-  opacity: 0;
+  opacity: 1;
 }
 
 .rVim-hint-scale {

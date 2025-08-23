@@ -78,9 +78,6 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "connection_error_fix.js",
-        "visibility_state_optimizer.js",
-        "system_health_checker.js",
         "content_scripts/security_utils.js",
         "content_scripts/cvimrc_parser.js",
         "content_scripts/session.js",

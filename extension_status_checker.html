@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim扩展状态检查器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ddd;
+        }
+        .status-success {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        .instruction {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 rVim扩展状态检查器</h1>
+        <p>此页面帮助诊断rVim扩展的安装和运行状态</p>
+        
+        <button onclick="checkExtensionStatus()">🔄 检查扩展状态</button>
+        <button onclick="testFFunction()">🔗 测试F功能</button>
+        <button onclick="checkConsoleErrors()">⚠️ 检查控制台错误</button>
+    </div>
+
+    <div class="container">
+        <h2>📋 检查结果</h2>
+        <div id="results"></div>
+    </div>
+
+    <div class="container">
+        <h2>🛠️ 安装指南</h2>
+        <div class="instruction">
+            <h3>如果扩展未正确安装，请按以下步骤操作：</h3>
+            <ol>
+                <li><strong>打开Chrome扩展管理页面：</strong>
+                    <div class="code-block">chrome://extensions/</div>
+                </li>
+                <li><strong>启用开发者模式：</strong>点击右上角的"开发者模式"开关</li>
+                <li><strong>加载未打包的扩展：</strong>点击"加载已解压的扩展程序"</li>
+                <li><strong>选择扩展目录：</strong>选择chromium-vim-master文件夹</li>
+                <li><strong>确认扩展已启用：</strong>确保扩展卡片上的开关是打开状态</li>
+            </ol>
+        </div>
+        
+        <div class="instruction">
+            <h3>常见问题解决方案：</h3>
+            <ul>
+                <li><strong>扩展图标显示为灰色：</strong>扩展可能被禁用，点击图标或在扩展管理页面启用</li>
+                <li><strong>F键无响应：</strong>确保当前页面不在扩展黑名单中</li>
+                <li><strong>控制台有错误：</strong>可能是manifest版本或权限问题，需要更新配置</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🧪 测试链接</h2>
+        <p>使用以下链接测试F功能：</p>
+        <a href="https://www.google.com" target="_blank" rel="noopener">Google</a> |
+        <a href="https://www.github.com" target="_blank" rel="noopener">GitHub</a> |
+        <a href="#test1">内部链接1</a> |
+        <a href="#test2">内部链接2</a>
+        <br><br>
+        <button onclick="window.open('https://www.example.com')">按钮链接</button>
+    </div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `status-item status-${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function checkExtensionStatus() {
+            clearResults();
+            addResult('🔍 开始检查扩展状态...', 'warning');
+            
+            // 检查全局对象
+            const checks = [
+                { name: 'Command对象', obj: 'Command', desc: 'rVim命令处理器' },
+                { name: 'Hints对象', obj: 'Hints', desc: '链接提示功能' },
+                { name: 'Mappings对象', obj: 'Mappings', desc: '键盘映射' },
+                { name: 'settings对象', obj: 'settings', desc: '扩展设置' },
+                { name: 'DOM对象', obj: 'DOM', desc: 'DOM操作工具' },
+                { name: 'Utils对象', obj: 'Utils', desc: '工具函数' }
+            ];
+
+            let successCount = 0;
+            checks.forEach(check => {
+                try {
+                    if (typeof window[check.obj] !== 'undefined') {
+                        addResult(`✅ ${check.name}: 已加载 (${check.desc})`, 'success');
+                        successCount++;
+                    } else {
+                        addResult(`❌ ${check.name}: 未找到 (${check.desc})`, 'error');
+                    }
+                } catch (e) {
+                    addResult(`❌ ${check.name}: 检查失败 - ${e.message}`, 'error');
+                }
+            });
+
+            // 检查CSS
+            const linkHintStyle = document.querySelector('style[data-rvim], link[href*="main.css"]');
+            if (linkHintStyle) {
+                addResult('✅ rVim样式: 已加载', 'success');
+                successCount++;
+            } else {
+                addResult('❌ rVim样式: 未找到', 'error');
+            }
+
+            // 总结
+            if (successCount >= 4) {
+                addResult(`🎉 扩展状态良好 (${successCount}/${checks.length + 1} 项通过)`, 'success');
+            } else if (successCount >= 2) {
+                addResult(`⚠️ 扩展部分加载 (${successCount}/${checks.length + 1} 项通过)`, 'warning');
+            } else {
+                addResult(`🚨 扩展未正确加载 (${successCount}/${checks.length + 1} 项通过)`, 'error');
+                addResult('💡 建议：检查扩展是否已安装并启用', 'warning');
+            }
+        }
+
+        function testFFunction() {
+            addResult('🔗 测试F功能...', 'warning');
+            
+            if (typeof Hints === 'undefined') {
+                addResult('❌ F功能测试失败: Hints对象不存在', 'error');
+                return;
+            }
+
+            try {
+                // 模拟F键按下
+                if (typeof Hints.create === 'function') {
+                    addResult('✅ Hints.create函数存在', 'success');
+                    
+                    // 检查链接数量
+                    const links = document.querySelectorAll('a, button, [onclick], [role="button"]');
+                    addResult(`🔗 页面链接数量: ${links.length}`, 'info');
+                    
+                    if (links.length > 0) {
+                        addResult('💡 请手动按F键测试链接提示功能', 'warning');
+                    } else {
+                        addResult('⚠️ 页面没有可点击的链接元素', 'warning');
+                    }
+                } else {
+                    addResult('❌ Hints.create函数不存在', 'error');
+                }
+            } catch (e) {
+                addResult(`❌ F功能测试出错: ${e.message}`, 'error');
+            }
+        }
+
+        function checkConsoleErrors() {
+            addResult('⚠️ 检查控制台错误...', 'warning');
+            addResult('💡 请打开浏览器开发者工具 (F12) 查看Console标签页', 'info');
+            addResult('🔍 查找以下类型的错误:', 'info');
+            addResult('• 脚本加载失败 (Failed to load script)', 'info');
+            addResult('• 权限错误 (Permission denied)', 'info');
+            addResult('• 未定义的变量 (ReferenceError)', 'info');
+            addResult('• 网络错误 (Network error)', 'info');
+            
+            // 尝试捕获一些常见错误
+            const commonErrors = [];
+            
+            // 检查是否有脚本加载失败
+            const scripts = document.querySelectorAll('script[src]');
+            scripts.forEach(script => {
+                if (script.src.includes('content_scripts') && !script.complete) {
+                    commonErrors.push(`脚本可能未加载: ${script.src}`);
+                }
+            });
+            
+            if (commonErrors.length > 0) {
+                commonErrors.forEach(error => addResult(`⚠️ ${error}`, 'warning'));
+            } else {
+                addResult('✅ 未发现明显的脚本加载问题', 'success');
+            }
+        }
+
+        // 页面加载完成后自动检查
+        window.addEventListener('load', function() {
+            setTimeout(checkExtensionStatus, 1000);
+        });
+
+        // 监听键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                setTimeout(() => {
+                    const hintContainer = document.querySelector('#Vim-link-container, .rVim-link-hint');
+                    if (hintContainer) {
+                        addResult('✅ F键响应: 检测到链接提示容器', 'success');
+                    } else {
+                        addResult('❌ F键无响应: 未检测到链接提示', 'error');
+                    }
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

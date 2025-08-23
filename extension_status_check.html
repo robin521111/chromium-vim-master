@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Status Check</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status-item { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .status-ok { background: #d4edda; color: #155724; }
+        .status-error { background: #f8d7da; color: #721c24; }
+        .status-warning { background: #fff3cd; color: #856404; }
+        .instructions { background: #e2e3e5; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .code { background: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>rVim Extension Status Check</h1>
+    
+    <div id="status-container"></div>
+    
+    <div class="instructions">
+        <h3>如果扩展未加载，请按以下步骤操作：</h3>
+        <ol>
+            <li>打开 Chrome 浏览器</li>
+            <li>访问 <code>chrome://extensions/</code></li>
+            <li>开启右上角的「开发者模式」</li>
+            <li>点击「加载已解压的扩展程序」</li>
+            <li>选择项目根目录: <div class="code">/Users/robin/Documents/codeforfun/chromium-vim-master</div></li>
+            <li>确认加载后刷新此页面</li>
+        </ol>
+    </div>
+    
+    <button onclick="recheckStatus()">重新检查状态</button>
+    
+    <script>
+        function createStatusItem(name, status, message) {
+            const div = document.createElement('div');
+            div.className = `status-item status-${status}`;
+            const icon = status === 'ok' ? '✅' : status === 'error' ? '❌' : '⚠️';
+            div.innerHTML = `${icon} <strong>${name}:</strong> ${message}`;
+            return div;
+        }
+        
+        function checkExtensionStatus() {
+            const container = document.getElementById('status-container');
+            container.innerHTML = '';
+            
+            const checks = [
+                {
+                    name: 'Hints Object',
+                    check: () => typeof window.Hints !== 'undefined',
+                    okMessage: 'Hints对象已加载',
+                    errorMessage: 'Hints对象未找到 - 扩展未正确加载'
+                },
+                {
+                    name: 'HUD Object',
+                    check: () => typeof window.HUD !== 'undefined',
+                    okMessage: 'HUD对象已加载',
+                    errorMessage: 'HUD对象未找到'
+                },
+                {
+                    name: 'Settings Object',
+                    check: () => typeof window.settings !== 'undefined',
+                    okMessage: `Settings对象已加载 (hud: ${window.settings?.hud})`,
+                    errorMessage: 'Settings对象未找到'
+                },
+                {
+                    name: 'Command Object',
+                    check: () => typeof window.Command !== 'undefined',
+                    okMessage: 'Command对象已加载',
+                    errorMessage: 'Command对象未找到'
+                },
+                {
+                    name: 'Mappings Object',
+                    check: () => typeof window.Mappings !== 'undefined',
+                    okMessage: 'Mappings对象已加载',
+                    errorMessage: 'Mappings对象未找到'
+                },
+                {
+                    name: 'CSS Injection',
+                    check: () => {
+                        const styles = document.querySelectorAll('style[id*="rVim"], link[href*="main.css"]');
+                        return styles.length > 0;
+                    },
+                    okMessage: 'CSS样式已注入',
+                    errorMessage: 'CSS样式未注入'
+                },
+                {
+                    name: 'Extension Context',
+                    check: () => typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id,
+                    okMessage: `扩展上下文可用 (ID: ${chrome?.runtime?.id})`,
+                    errorMessage: '扩展上下文不可用'
+                }
+            ];
+            
+            let loadedCount = 0;
+            
+            checks.forEach(checkItem => {
+                try {
+                    const result = checkItem.check();
+                    if (result) {
+                        container.appendChild(createStatusItem(
+                            checkItem.name, 
+                            'ok', 
+                            checkItem.okMessage
+                        ));
+                        loadedCount++;
+                    } else {
+                        container.appendChild(createStatusItem(
+                            checkItem.name, 
+                            'error', 
+                            checkItem.errorMessage
+                        ));
+                    }
+                } catch (error) {
+                    container.appendChild(createStatusItem(
+                        checkItem.name, 
+                        'error', 
+                        `检查失败: ${error.message}`
+                    ));
+                }
+            });
+            
+            // 总结
+            const summary = document.createElement('div');
+            summary.className = `status-item status-${loadedCount === checks.length ? 'ok' : loadedCount > 0 ? 'warning' : 'error'}`;
+            summary.innerHTML = `<strong>总结:</strong> ${loadedCount}/${checks.length} 组件已加载`;
+            container.appendChild(summary);
+            
+            // 如果扩展已加载，测试F键功能
+            if (loadedCount > 3 && typeof window.Hints !== 'undefined') {
+                setTimeout(() => {
+                    testFKeyFunction();
+                }, 1000);
+            }
+        }
+        
+        function testFKeyFunction() {
+            const container = document.getElementById('status-container');
+            const testDiv = document.createElement('div');
+            testDiv.innerHTML = '<h3>F键功能测试</h3>';
+            container.appendChild(testDiv);
+            
+            try {
+                console.log('Testing Hints.create()...');
+                window.Hints.create();
+                
+                setTimeout(() => {
+                    const hintsContainer = document.getElementById('rVim-link-container');
+                    if (hintsContainer) {
+                        container.appendChild(createStatusItem(
+                            'F Key Function', 
+                            'ok', 
+                            'F键功能正常 - 链接提示容器已创建'
+                        ));
+                    } else {
+                        container.appendChild(createStatusItem(
+                            'F Key Function', 
+                            'error', 
+                            'F键功能异常 - 链接提示容器未创建'
+                        ));
+                    }
+                }, 500);
+                
+            } catch (error) {
+                container.appendChild(createStatusItem(
+                    'F Key Function', 
+                    'error', 
+                    `F键功能测试失败: ${error.message}`
+                ));
+            }
+        }
+        
+        function recheckStatus() {
+            checkExtensionStatus();
+        }
+        
+        // 页面加载时自动检查
+        window.addEventListener('load', () => {
+            setTimeout(checkExtensionStatus, 1000);
+        });
+    </script>
+</body>
+</html>

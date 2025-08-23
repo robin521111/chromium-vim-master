@@ -124,19 +124,11 @@ Find.getCurrentMatch = function() {
 };
 
 Find.search = function(mode, repeats, ignoreFocus) {
-  // 性能优化：提前返回无匹配情况
   if (this.matches.length === 0) {
-    // 使用错误处理器显示导航错误
-    if (typeof ErrorHandler !== 'undefined') {
-      ErrorHandler.handleNavigationError(mode === '/' ? 'next' : 'prev');
-    } else {
-      HUD.display('无法导航：没有匹配结果', 2, 'warning');
-    }
+    HUD.display('No matches', 2);
     return;
   }
-  
   mode = mode || '/';
-  var startTime = performance.now();
 
   var reverse = repeats < 0;
   if (reverse)
@@ -144,15 +136,12 @@ Find.search = function(mode, repeats, ignoreFocus) {
   if (mode === '?')
     reverse = !reverse;
 
-  // 边界检查优化
   if (this.index >= this.matches.length || this.index < 0)
     this.index = 0;
     
-  // 移除当前活动标记
   if (this.index >= 0 && this.matches[this.index])
     this.matches[this.index].removeAttribute('active');
 
-  // 优化的导航逻辑
   var newIndex = this.index;
   if (reverse && repeats === 1 && this.index === 0) {
     newIndex = this.matches.length - 1;
@@ -163,12 +152,7 @@ Find.search = function(mode, repeats, ignoreFocus) {
     newIndex = Utils.trueModulo(newIndex, this.matches.length);
   }
   
-  // 智能可见性检查和清理
-  var maxTries = Math.min(this.matches.length, 10); // 限制尝试次数
-  var originalLength = this.matches.length;
-  
-  while (!DOM.isVisible(this.matches[newIndex]) && this.tries < maxTries) {
-    // 移除不可见的匹配项
+  while (!DOM.isVisible(this.matches[newIndex]) && this.tries < this.matches.length) {
     this.matches.splice(newIndex, 1);
     this.tries++;
     
@@ -177,7 +161,6 @@ Find.search = function(mode, repeats, ignoreFocus) {
       return;
     }
     
-    // 调整索引
     if (newIndex >= this.matches.length) {
       newIndex = 0;
     }
@@ -186,14 +169,12 @@ Find.search = function(mode, repeats, ignoreFocus) {
   this.index = newIndex;
   this.tries = 0;
   
-  // 性能优化：批量DOM操作
   var currentMatch = this.matches[this.index];
   if (!currentMatch) return;
   
   var br = currentMatch.getBoundingClientRect();
   var origTop = document.scrollingElement.scrollTop;
   
-  // 焦点管理优化
   if (!ignoreFocus) {
     if (document.activeElement && document.activeElement !== document.body) {
       document.activeElement.blur();
@@ -260,54 +241,16 @@ Find.highlight = function(params) {
   //   executesearch  -> run Find.search after highlighting
   //   saveSearch     -> add search to search history
   
-  var self = this;
-  
-  // 使用安全执行包装整个搜索过程
-  if (typeof ErrorHandler !== 'undefined' && ErrorHandler.safeExecute) {
-    return ErrorHandler.safeExecute(function() {
-      return self._performHighlight(params);
-    }, '搜索高亮', function() {
-      // 降级：基础搜索功能
-      HUD.display('搜索功能降级运行', 2);
-      return self._basicHighlight(params);
-    });
-  } else {
-    return self._performHighlight(params);
-  }
+  return this._performHighlight(params)
 };
 
 Find._performHighlight = function(params) {
-  // 性能监控开始
-  params._startTime = performance.now();
-  
   params.base = params.base || document.body;
-  var self = this;
   
-  // 边界条件检查
   if (!params || !params.search) {
-    if (typeof ErrorHandler !== 'undefined') {
-      ErrorHandler.showError('invalid_search', '搜索参数无效', 2);
-    } else {
-      HUD.display('搜索参数无效', 2);
-    }
     return;
   }
   
-  if (params.search.trim() === '') {
-    if (typeof ErrorHandler !== 'undefined') {
-      ErrorHandler.showError('empty_search', '搜索词为空', 2);
-    } else {
-      HUD.display('搜索词为空', 2);
-    }
-    return;
-  }
-  
-  // 显示搜索开始进度
-  if (typeof HUD !== 'undefined' && HUD.showProgress) {
-    HUD.showProgress(0, '搜索中', 2);
-  }
-  
-  // 保存最后搜索词，用于错误处理
   if (params.saveSearch)
     this.lastSearch = params.search;
     

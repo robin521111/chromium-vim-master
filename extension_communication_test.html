@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim扩展通信测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .debug-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .test-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .test-links a {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>rVim扩展通信诊断</h1>
+    
+    <div class="test-section">
+        <h2>扩展通信状态</h2>
+        <div id="communication-status"></div>
+        <button onclick="testCommunication()">测试扩展通信</button>
+    </div>
+
+    <div class="test-section">
+        <h2>扩展初始化状态</h2>
+        <div id="initialization-status"></div>
+        <button onclick="checkInitialization()">检查初始化状态</button>
+    </div>
+
+    <div class="test-section">
+        <h2>强制初始化扩展</h2>
+        <div id="force-init-result"></div>
+        <button onclick="forceInitialization()">强制初始化</button>
+        <button onclick="manualSetupExtension()">使用修复脚本</button>
+        <button onclick="window.runExtensionFix && window.runExtensionFix()">运行完整修复</button>
+    </div>
+
+    <div class="test-section">
+        <h2>F功能测试</h2>
+        <div class="test-links">
+            <a href="#test1">测试链接1</a>
+            <a href="#test2">测试链接2</a>
+            <a href="#test3">测试链接3</a>
+            <a href="https://www.google.com" target="_blank" rel="noopener">Google</a>
+        </div>
+        <button onclick="testFFunction()">测试F功能</button>
+        <div id="f-function-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>详细诊断信息</h2>
+        <div id="detailed-diagnostics" class="debug-info"></div>
+        <button onclick="runFullDiagnostics()">运行完整诊断</button>
+    </div>
+
+    <script src="extension_initialization_fix.js"></script>
+    <script>
+        let diagnosticLog = [];
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            diagnosticLog.push(`[${timestamp}] ${message}`);
+            console.log(`rVim诊断: ${message}`);
+        }
+
+        function updateDiagnosticDisplay() {
+            document.getElementById('detailed-diagnostics').textContent = diagnosticLog.join('\n');
+        }
+
+        function testCommunication() {
+            const statusDiv = document.getElementById('communication-status');
+            log('开始测试扩展通信...');
+            
+            let status = '';
+            let hasErrors = false;
+
+            // 检查Chrome扩展API
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                status += '✅ Chrome扩展API可用\n';
+                log('Chrome扩展API可用');
+                
+                // 检查端口连接
+                if (typeof window.port !== 'undefined') {
+                    status += '✅ 扩展端口存在\n';
+                    log('扩展端口存在');
+                } else {
+                    status += '❌ 扩展端口不存在\n';
+                    hasErrors = true;
+                    log('扩展端口不存在');
+                }
+
+                // 检查RUNTIME函数
+                if (typeof window.RUNTIME === 'function') {
+                    status += '✅ RUNTIME函数可用\n';
+                    log('RUNTIME函数可用');
+                } else {
+                    status += '❌ RUNTIME函数不可用\n';
+                    hasErrors = true;
+                    log('RUNTIME函数不可用');
+                }
+            } else {
+                status += '❌ Chrome扩展API不可用\n';
+                hasErrors = true;
+                log('Chrome扩展API不可用');
+            }
+
+            statusDiv.innerHTML = `<div class="${hasErrors ? 'error' : 'success'} status">${status}</div>`;
+            updateDiagnosticDisplay();
+        }
+
+        function checkInitialization() {
+            const statusDiv = document.getElementById('initialization-status');
+            log('检查扩展初始化状态...');
+            
+            let status = '';
+            let hasErrors = false;
+
+            // 检查Command对象
+            if (typeof window.Command !== 'undefined') {
+                status += '✅ Command对象存在\n';
+                status += `   - loaded: ${window.Command.loaded}\n`;
+                status += `   - initialLoadStarted: ${window.Command.initialLoadStarted}\n`;
+                status += `   - domElementsLoaded: ${window.Command.domElementsLoaded}\n`;
+                log(`Command对象状态: loaded=${window.Command.loaded}, initialLoadStarted=${window.Command.initialLoadStarted}`);
+            } else {
+                status += '❌ Command对象不存在\n';
+                hasErrors = true;
+                log('Command对象不存在');
+            }
+
+            // 检查Hints对象
+            if (typeof window.Hints !== 'undefined') {
+                status += '✅ Hints对象存在\n';
+                status += `   - active: ${window.Hints.active}\n`;
+                log(`Hints对象存在，active=${window.Hints.active}`);
+            } else {
+                status += '❌ Hints对象不存在\n';
+                hasErrors = true;
+                log('Hints对象不存在');
+            }
+
+            // 检查settings
+            if (typeof window.settings !== 'undefined') {
+                status += '✅ settings对象存在\n';
+                log('settings对象存在');
+            } else {
+                status += '❌ settings对象不存在\n';
+                hasErrors = true;
+                log('settings对象不存在');
+            }
+
+            statusDiv.innerHTML = `<div class="${hasErrors ? 'error' : 'success'} status">${status}</div>`;
+            updateDiagnosticDisplay();
+        }
+
+        function forceInitialization() {
+            const resultDiv = document.getElementById('force-init-result');
+            log('尝试强制初始化扩展...');
+            
+            try {
+                // 尝试手动触发初始化流程
+                if (typeof window.RUNTIME === 'function') {
+                    log('调用RUNTIME获取设置...');
+                    window.RUNTIME('getSettings', null, function(settings) {
+                        if (settings) {
+                            log('成功获取设置，调用configureSettings...');
+                            if (typeof window.Command !== 'undefined' && 
+                                typeof window.Command.configureSettings === 'function') {
+                                window.Command.configureSettings(settings);
+                                resultDiv.innerHTML = '<div class="success status">✅ 强制初始化成功</div>';
+                                log('强制初始化成功');
+                            } else {
+                                resultDiv.innerHTML = '<div class="error status">❌ Command.configureSettings不存在</div>';
+                                log('Command.configureSettings不存在');
+                            }
+                        } else {
+                            resultDiv.innerHTML = '<div class="error status">❌ 无法获取设置</div>';
+                            log('无法获取设置');
+                        }
+                    });
+                } else {
+                    resultDiv.innerHTML = '<div class="error status">❌ RUNTIME函数不可用</div>';
+                    log('RUNTIME函数不可用');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error status">❌ 初始化失败: ${error.message}</div>`;
+                log(`初始化失败: ${error.message}`);
+            }
+            updateDiagnosticDisplay();
+        }
+
+        function manualSetupExtension() {
+            const resultDiv = document.getElementById('force-init-result');
+            log('使用修复脚本设置扩展...');
+            
+            try {
+                // 使用修复脚本
+                if (typeof window.runExtensionFix === 'function') {
+                    window.runExtensionFix();
+                    resultDiv.innerHTML = '<div class="success status">✅ 修复脚本已运行</div>';
+                    log('修复脚本已运行');
+                } else if (typeof window.forceExtensionInitialization === 'function') {
+                    window.forceExtensionInitialization();
+                    resultDiv.innerHTML = '<div class="success status">✅ 强制初始化已运行</div>';
+                    log('强制初始化已运行');
+                } else {
+                    // 回退到原来的手动设置
+                    if (typeof window.settings === 'undefined') {
+                        window.settings = {
+                            hintcharacters: 'asdfghjklqwertyuiopzxcvbnm',
+                            numerichints: false,
+                            linkanimations: true,
+                            scalehints: true,
+                            hud: true
+                        };
+                        log('手动创建settings对象');
+                    }
+
+                    if (typeof window.Command !== 'undefined' && 
+                        typeof window.Command.init === 'function') {
+                        window.Command.init(true);
+                        log('手动调用Command.init(true)');
+                    }
+
+                    if (typeof window.addListeners === 'function') {
+                        window.addListeners();
+                        log('手动添加键盘监听器');
+                    }
+
+                    resultDiv.innerHTML = '<div class="success status">✅ 手动设置完成</div>';
+                    log('手动设置完成');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error status">❌ 设置失败: ${error.message}</div>`;
+                log(`设置失败: ${error.message}`);
+            }
+            updateDiagnosticDisplay();
+        }
+
+        function testFFunction() {
+            const resultDiv = document.getElementById('f-function-result');
+            log('测试F功能...');
+            
+            try {
+                if (typeof window.Hints !== 'undefined' && 
+                    typeof window.Hints.create === 'function') {
+                    window.Hints.create();
+                    resultDiv.innerHTML = '<div class="success status">✅ F功能调用成功，检查页面是否显示提示标签</div>';
+                    log('F功能调用成功');
+                } else {
+                    resultDiv.innerHTML = '<div class="error status">❌ Hints.create函数不存在</div>';
+                    log('Hints.create函数不存在');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error status">❌ F功能调用失败: ${error.message}</div>`;
+                log(`F功能调用失败: ${error.message}`);
+            }
+            updateDiagnosticDisplay();
+        }
+
+        function runFullDiagnostics() {
+            log('=== 开始完整诊断 ===');
+            diagnosticLog = [];
+            
+            // 清空之前的结果
+            document.getElementById('communication-status').innerHTML = '';
+            document.getElementById('initialization-status').innerHTML = '';
+            document.getElementById('force-init-result').innerHTML = '';
+            document.getElementById('f-function-result').innerHTML = '';
+            
+            // 运行所有测试
+            setTimeout(() => testCommunication(), 100);
+            setTimeout(() => checkInitialization(), 200);
+            setTimeout(() => {
+                log('=== 诊断完成 ===');
+                updateDiagnosticDisplay();
+            }, 300);
+        }
+
+        // 页面加载时自动运行诊断
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(runFullDiagnostics, 1000);
+        });
+
+        // 监听键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                log('检测到f键按下');
+                updateDiagnosticDisplay();
+            }
+        });
+    </script>
+</body>
+</html>

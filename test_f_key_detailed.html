@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>F键功能详细调试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .test-links {
+            background-color: #f0f0f0;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .test-links a {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .debug-log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.warning { background-color: #fff3cd; color: #856404; }
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button:hover { background-color: #0056b3; }
+        .step-info {
+            background-color: #e7f3ff;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>F键功能详细调试页面</h1>
+    
+    <div class="debug-section">
+        <h2>调试控制</h2>
+        <button class="button" onclick="testFullFlow()">完整流程测试</button>
+        <button class="button" onclick="testGetLinks()">测试getLinks函数</button>
+        <button class="button" onclick="testHintsCreate()">测试Hints.create</button>
+        <button class="button" onclick="simulateFKey()">模拟F键按下</button>
+        <button class="button" onclick="checkDependencies()">检查依赖</button>
+        <button class="button" onclick="clearLog()">清除日志</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>测试链接</h2>
+        <div class="test-links">
+            <a href="https://www.google.com">Google</a>
+            <a href="https://www.github.com">GitHub</a>
+            <a href="https://www.stackoverflow.com">Stack Overflow</a>
+            <a href="javascript:void(0)" onclick="alert('JavaScript链接')">JavaScript链接</a>
+            <button onclick="alert('按钮点击')">测试按钮</button>
+            <input type="text" placeholder="输入框" />
+            <textarea placeholder="文本区域"></textarea>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>执行状态</h2>
+        <div id="status" class="status">等待测试...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2>详细日志</h2>
+        <div id="debugLog" class="debug-log">日志将在这里显示...
+</div>
+    </div>
+
+    <div class="debug-section">
+        <h2>步骤说明</h2>
+        <div class="step-info">
+            <strong>测试步骤：</strong><br>
+            1. 点击"检查依赖"确保所有必要组件已加载<br>
+            2. 点击"测试getLinks函数"检查链接检测<br>
+            3. 点击"测试Hints.create"检查提示创建<br>
+            4. 点击"模拟F键按下"测试完整按键流程<br>
+            5. 观察页面是否出现链接提示
+        </div>
+    </div>
+
+    <script>
+        let debugLog = document.getElementById('debugLog');
+        let statusDiv = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            debugLog.textContent += logEntry + '\n';
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(logEntry);
+        }
+
+        function setStatus(message, type = 'info') {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            log(message, type);
+        }
+
+        function clearLog() {
+            debugLog.textContent = '';
+            setStatus('日志已清除', 'info');
+        }
+
+        function checkDependencies() {
+            log('开始检查依赖...');
+            
+            const checks = [
+                { name: 'Hints对象', check: () => typeof Hints !== 'undefined' },
+                { name: 'Hints.create函数', check: () => typeof Hints?.create === 'function' },
+                { name: 'Hints.getLinks函数', check: () => typeof Hints?.getLinks === 'function' },
+                { name: 'Mappings对象', check: () => typeof Mappings !== 'undefined' },
+                { name: 'KeyHandler对象', check: () => typeof KeyHandler !== 'undefined' },
+                { name: 'settings对象', check: () => typeof settings !== 'undefined' },
+                { name: 'Command对象', check: () => typeof Command !== 'undefined' },
+                { name: 'DOM对象', check: () => typeof DOM !== 'undefined' }
+            ];
+
+            let allPassed = true;
+            checks.forEach(check => {
+                try {
+                    if (check.check()) {
+                        log(`✓ ${check.name} - 可用`, 'success');
+                    } else {
+                        log(`✗ ${check.name} - 不可用`, 'error');
+                        allPassed = false;
+                    }
+                } catch (e) {
+                    log(`✗ ${check.name} - 错误: ${e.message}`, 'error');
+                    allPassed = false;
+                }
+            });
+
+            if (allPassed) {
+                setStatus('所有依赖检查通过', 'success');
+            } else {
+                setStatus('部分依赖检查失败', 'error');
+            }
+        }
+
+        function testGetLinks() {
+            log('开始测试getLinks函数...');
+            
+            try {
+                if (typeof Hints === 'undefined' || typeof Hints.getLinks !== 'function') {
+                    throw new Error('Hints.getLinks函数不可用');
+                }
+
+                // 设置必要的过滤器
+                if (typeof Hints.createHintFilter === 'function') {
+                    Hints.hintFilter = Hints.createHintFilter(document.URL);
+                    log('提示过滤器已创建');
+                }
+
+                const links = Hints.getLinks();
+                log(`找到 ${links.length} 个链接`);
+                
+                links.forEach((link, index) => {
+                    const node = link.node;
+                    const rect = link.rect;
+                    log(`链接 ${index + 1}: ${node.tagName} - ${node.textContent || node.value || node.alt || '无文本'} (${rect.left},${rect.top})`);
+                });
+
+                if (links.length > 0) {
+                    setStatus(`成功找到 ${links.length} 个链接`, 'success');
+                } else {
+                    setStatus('未找到任何链接', 'warning');
+                }
+                
+                return links;
+            } catch (e) {
+                log(`getLinks测试失败: ${e.message}`, 'error');
+                setStatus('getLinks测试失败', 'error');
+                return [];
+            }
+        }
+
+        function testHintsCreate() {
+            log('开始测试Hints.create函数...');
+            
+            try {
+                if (typeof Hints === 'undefined' || typeof Hints.create !== 'function') {
+                    throw new Error('Hints.create函数不可用');
+                }
+
+                // 清除现有的提示容器
+                const existingContainer = document.getElementById('rVim-link-container');
+                if (existingContainer) {
+                    existingContainer.remove();
+                    log('清除了现有的提示容器');
+                }
+
+                // 初始化必要的属性
+                Hints.linkArr = [];
+                Hints.active = false;
+                
+                log('调用Hints.create()...');
+                Hints.create();
+                
+                // 等待一段时间后检查结果
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        log('✓ 提示容器已创建');
+                        log(`容器ID: ${container.id}`);
+                        log(`容器子元素数量: ${container.children.length}`);
+                        
+                        if (Hints.shadowDOM) {
+                            log(`Shadow DOM子元素数量: ${Hints.shadowDOM.children.length}`);
+                        }
+                        
+                        setStatus('Hints.create测试成功', 'success');
+                    } else {
+                        log('✗ 提示容器未创建');
+                        setStatus('Hints.create测试失败 - 容器未创建', 'error');
+                    }
+                }, 100);
+                
+            } catch (e) {
+                log(`Hints.create测试失败: ${e.message}`, 'error');
+                log(`错误堆栈: ${e.stack}`, 'error');
+                setStatus('Hints.create测试失败', 'error');
+            }
+        }
+
+        function simulateFKey() {
+            log('开始模拟F键按下...');
+            
+            try {
+                // 创建键盘事件
+                const event = new KeyboardEvent('keydown', {
+                    key: 'f',
+                    code: 'KeyF',
+                    keyCode: 70,
+                    which: 70,
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                log('创建F键事件');
+                log(`事件详情: key=${event.key}, code=${event.code}, keyCode=${event.keyCode}`);
+                
+                // 分发事件
+                document.dispatchEvent(event);
+                log('F键事件已分发');
+                
+                // 检查是否有提示显示
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        setStatus('F键模拟成功 - 提示已显示', 'success');
+                    } else {
+                        setStatus('F键模拟完成 - 但未显示提示', 'warning');
+                    }
+                }, 200);
+                
+            } catch (e) {
+                log(`F键模拟失败: ${e.message}`, 'error');
+                setStatus('F键模拟失败', 'error');
+            }
+        }
+
+        function testFullFlow() {
+            log('开始完整流程测试...');
+            setStatus('执行完整流程测试...', 'info');
+            
+            // 按顺序执行所有测试
+            checkDependencies();
+            
+            setTimeout(() => {
+                testGetLinks();
+            }, 500);
+            
+            setTimeout(() => {
+                testHintsCreate();
+            }, 1000);
+            
+            setTimeout(() => {
+                simulateFKey();
+            }, 1500);
+        }
+
+        // 页面加载完成后自动检查依赖
+        window.addEventListener('load', () => {
+            log('页面加载完成');
+            setTimeout(checkDependencies, 1000);
+        });
+
+        // 监听键盘事件
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'f' || e.key === 'F') {
+                log(`检测到${e.key}键按下 (keyCode: ${e.keyCode})`);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试F功能链接检测</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9f9f9;
+        }
+        .link-test {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .debug-output {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .error { color: #f00; }
+        .success { color: #0a0; }
+        .warning { color: #fa0; }
+    </style>
+</head>
+<body>
+    <h1>调试F功能链接检测</h1>
+    
+    <div class="debug-section">
+        <h2>测试链接</h2>
+        <div class="link-test">
+            <a href="https://www.google.com">Google链接</a>
+        </div>
+        <div class="link-test">
+            <button onclick="alert('按钮点击')">测试按钮</button>
+        </div>
+        <div class="link-test">
+            <input type="button" value="输入按钮" onclick="alert('输入按钮点击')">
+        </div>
+        <div class="link-test">
+            <div onclick="alert('可点击div')" style="cursor: pointer; color: blue; text-decoration: underline;">可点击的DIV</div>
+        </div>
+        <div class="link-test">
+            <span role="button" onclick="alert('角色按钮')">角色按钮</span>
+        </div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>调试控制</h2>
+        <button onclick="debugLinkDetection()">检测链接</button>
+        <button onclick="testHintsCreate()">测试Hints.create</button>
+        <button onclick="checkExtensionStatus()">检查扩展状态</button>
+        <button onclick="clearDebugOutput()">清空输出</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>调试输出</h2>
+        <div id="debug-output" class="debug-output">等待调试信息...
+</div>
+    </div>
+
+    <script>
+        let debugOutput = document.getElementById('debug-output');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            debugOutput.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        function clearDebugOutput() {
+            debugOutput.innerHTML = '调试输出已清空\n';
+        }
+        
+        function checkExtensionStatus() {
+            log('=== 检查扩展状态 ===');
+            
+            // 检查全局对象
+            const globals = ['Hints', 'Command', 'DOM', 'mapDOM', 'settings'];
+            globals.forEach(name => {
+                if (typeof window[name] !== 'undefined') {
+                    log(`✅ ${name} 已定义`, 'success');
+                } else {
+                    log(`❌ ${name} 未定义`, 'error');
+                }
+            });
+            
+            // 检查Hints对象的方法
+            if (typeof window.Hints !== 'undefined') {
+                const hintsMethods = ['create', 'getLinks', 'getLinkInfo', 'getLinkType', 'isVisible'];
+                hintsMethods.forEach(method => {
+                    if (typeof window.Hints[method] === 'function') {
+                        log(`✅ Hints.${method} 方法存在`, 'success');
+                    } else {
+                        log(`❌ Hints.${method} 方法不存在`, 'error');
+                    }
+                });
+            }
+            
+            // 检查DOM对象的方法
+            if (typeof window.DOM !== 'undefined') {
+                const domMethods = ['isVisible', 'getVisibleBoundingRect'];
+                domMethods.forEach(method => {
+                    if (typeof window.DOM[method] === 'function') {
+                        log(`✅ DOM.${method} 方法存在`, 'success');
+                    } else {
+                        log(`❌ DOM.${method} 方法不存在`, 'error');
+                    }
+                });
+            }
+        }
+        
+        function debugLinkDetection() {
+            log('=== 开始链接检测调试 ===');
+            
+            if (typeof window.mapDOM === 'undefined') {
+                log('❌ mapDOM函数未定义', 'error');
+                return;
+            }
+            
+            if (typeof window.Hints === 'undefined') {
+                log('❌ Hints对象未定义', 'error');
+                return;
+            }
+            
+            try {
+                // 手动创建hintFilter
+                if (typeof window.Hints.createHintFilter === 'function') {
+                    window.Hints.hintFilter = window.Hints.createHintFilter(document.URL);
+                    log('✅ 创建了hintFilter', 'success');
+                } else {
+                    log('❌ Hints.createHintFilter方法不存在', 'error');
+                    return;
+                }
+                
+                // 清除缓存
+                if (typeof window.Hints.getLinkInfo.clearCache === 'function') {
+                    window.Hints.getLinkInfo.clearCache();
+                    log('✅ 清除了getLinkInfo缓存', 'success');
+                }
+                
+                // 使用mapDOM检测链接
+                const links = window.mapDOM(document.body, window.Hints.getLinkInfo);
+                log(`🔍 检测到 ${links.length} 个链接`, links.length > 0 ? 'success' : 'warning');
+                
+                // 详细分析每个链接
+                links.forEach((link, index) => {
+                    if (link && link.node) {
+                        const tagName = link.node.tagName.toLowerCase();
+                        const text = link.node.textContent.trim().substring(0, 50);
+                        const rect = link.rect;
+                        log(`  链接 ${index + 1}: <${tagName}> "${text}" (${rect.width}x${rect.height})`);
+                    }
+                });
+                
+                // 手动检查页面中的所有链接元素
+                log('\n=== 手动检查页面元素 ===');
+                const allLinks = document.querySelectorAll('a, button, input[type="button"], [onclick], [role="button"]');
+                log(`📋 页面中共有 ${allLinks.length} 个潜在可点击元素`);
+                
+                Array.from(allLinks).forEach((element, index) => {
+                    const tagName = element.tagName.toLowerCase();
+                    const text = element.textContent.trim().substring(0, 30);
+                    const isVisible = window.DOM ? window.DOM.isVisible(element) : 'DOM未定义';
+                    const rect = element.getBoundingClientRect();
+                    const linkType = window.Hints.getLinkType ? window.Hints.getLinkType(element) : 'getLinkType未定义';
+                    
+                    log(`  元素 ${index + 1}: <${tagName}> "${text}" 可见:${isVisible} 类型:${linkType} 位置:(${rect.left},${rect.top}) 大小:${rect.width}x${rect.height}`);
+                });
+                
+            } catch (error) {
+                log(`❌ 链接检测过程中出错: ${error.message}`, 'error');
+                log(`错误堆栈: ${error.stack}`, 'error');
+            }
+        }
+        
+        function testHintsCreate() {
+            log('=== 测试Hints.create ===');
+            
+            if (typeof window.Hints === 'undefined') {
+                log('❌ Hints对象未定义', 'error');
+                return;
+            }
+            
+            if (typeof window.Hints.create !== 'function') {
+                log('❌ Hints.create方法不存在', 'error');
+                return;
+            }
+            
+            try {
+                log('🚀 调用Hints.create()...');
+                window.Hints.create();
+                
+                // 检查是否创建了提示容器
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        log('✅ 成功创建了rVim-link-container', 'success');
+                        const hints = container.querySelectorAll('.rVim-link-hint');
+                        log(`📍 创建了 ${hints.length} 个链接提示`, hints.length > 0 ? 'success' : 'warning');
+                        
+                        // 显示提示的详细信息
+                        hints.forEach((hint, index) => {
+                            const style = hint.style;
+                            log(`  提示 ${index + 1}: 位置(${style.left}, ${style.top}) 内容:"${hint.textContent}"`);
+                        });
+                    } else {
+                        log('❌ 未找到rVim-link-container', 'error');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                log(`❌ Hints.create调用失败: ${error.message}`, 'error');
+                log(`错误堆栈: ${error.stack}`, 'error');
+            }
+        }
+        
+        // 页面加载完成后自动检查扩展状态
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('页面加载完成，开始检查扩展状态...');
+                checkExtensionStatus();
+            }, 1000);
+        });
+        
+        // 监听F键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                log(`\n=== 检测到F键按下 ===`);
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        log('✅ F键触发后发现了rVim-link-container', 'success');
+                    } else {
+                        log('❌ F键触发后未发现rVim-link-container', 'error');
+                    }
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

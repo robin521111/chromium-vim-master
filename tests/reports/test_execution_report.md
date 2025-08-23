@@ -52,7 +52,7 @@ if (typeof chrome !== 'undefined' && chrome.storage) {
 - `content_scripts/keys.js` - 更新注释和错误信息
 - `content_scripts/utils.js` - 修复错误信息
 - `pages/options.js` - 更新错误信息
-- `test/unit/options.test.js` - 修复测试用例
+- `tests/unit/options.test.js` - 修复测试用例
 
 **状态**: ✅ 已修复
 

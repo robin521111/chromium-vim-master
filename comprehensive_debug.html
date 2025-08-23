@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive F Function Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        .test-links {
+            margin: 10px 0;
+        }
+        .test-links a {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+            text-decoration: none;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        .test-links a:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comprehensive F Function Debug Page</h1>
+    
+    <div class="debug-section">
+        <h2>1. Extension Loading Status</h2>
+        <div id="extension-status"></div>
+        <button onclick="checkExtensionStatus()">Refresh Extension Status</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>2. Command Object Status</h2>
+        <div id="command-status"></div>
+        <button onclick="checkCommandStatus()">Check Command Status</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>3. Settings Status</h2>
+        <div id="settings-status"></div>
+        <button onclick="checkSettingsStatus()">Check Settings</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>4. Hints Object Status</h2>
+        <div id="hints-status"></div>
+        <button onclick="checkHintsStatus()">Check Hints Status</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>5. Manual F Function Test</h2>
+        <div id="manual-test-status"></div>
+        <button onclick="manualTestF()">Manually Call Hints.create()</button>
+        <button onclick="manualTestFTabbed()">Manually Call Hints.create('tabbed')</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>6. DOM Elements Check</h2>
+        <div id="dom-status"></div>
+        <button onclick="checkDOMElements()">Check DOM Elements</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>7. Test Links for F Function</h2>
+        <div class="test-links">
+            <a href="#test1">Test Link 1</a>
+            <a href="#test2">Test Link 2</a>
+            <a href="#test3">Test Link 3</a>
+            <a href="https://www.google.com" rel="noopener">Google</a>
+            <a href="https://www.github.com" rel="noopener">GitHub</a>
+        </div>
+        <p>Press 'f' key to test hint functionality on these links.</p>
+    </div>
+
+    <div class="debug-section">
+        <h2>8. Keyboard Event Monitoring</h2>
+        <div id="keyboard-status"></div>
+        <button onclick="toggleKeyboardMonitoring()">Toggle Keyboard Monitoring</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>9. Console Logs</h2>
+        <div id="console-logs"></div>
+        <button onclick="clearLogs()">Clear Logs</button>
+    </div>
+
+    <script>
+        let keyboardMonitoring = false;
+        let logs = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push(`[${timestamp}] ${message}`);
+            updateConsoleLogs();
+            console.log(`[DEBUG] ${message}`);
+        }
+
+        function updateConsoleLogs() {
+            const logsDiv = document.getElementById('console-logs');
+            logsDiv.innerHTML = '<pre>' + logs.slice(-20).join('\n') + '</pre>';
+        }
+
+        function clearLogs() {
+            logs = [];
+            updateConsoleLogs();
+        }
+
+        function createStatusDiv(message, type) {
+            return `<div class="status ${type}">${message}</div>`;
+        }
+
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('extension-status');
+            let html = '';
+
+            // Check if rVim objects exist
+            if (typeof Command !== 'undefined') {
+                html += createStatusDiv('✓ Command object exists', 'success');
+            } else {
+                html += createStatusDiv('✗ Command object not found', 'error');
+            }
+
+            if (typeof Hints !== 'undefined') {
+                html += createStatusDiv('✓ Hints object exists', 'success');
+            } else {
+                html += createStatusDiv('✗ Hints object not found', 'error');
+            }
+
+            if (typeof Mappings !== 'undefined') {
+                html += createStatusDiv('✓ Mappings object exists', 'success');
+            } else {
+                html += createStatusDiv('✗ Mappings object not found', 'error');
+            }
+
+            if (typeof settings !== 'undefined') {
+                html += createStatusDiv('✓ Settings object exists', 'success');
+            } else {
+                html += createStatusDiv('✗ Settings object not found', 'error');
+            }
+
+            statusDiv.innerHTML = html;
+            log('Extension status checked');
+        }
+
+        function checkCommandStatus() {
+            const statusDiv = document.getElementById('command-status');
+            let html = '';
+
+            if (typeof Command !== 'undefined') {
+                html += createStatusDiv(`Command.loaded: ${Command.loaded}`, Command.loaded ? 'success' : 'error');
+                html += createStatusDiv(`Command.domElementsLoaded: ${Command.domElementsLoaded}`, Command.domElementsLoaded ? 'success' : 'error');
+                html += createStatusDiv(`Command.initialLoadStarted: ${Command.initialLoadStarted}`, Command.initialLoadStarted ? 'success' : 'warning');
+                html += createStatusDiv(`Command.blacklisted: ${Command.blacklisted}`, Command.blacklisted ? 'error' : 'success');
+            } else {
+                html += createStatusDiv('Command object not available', 'error');
+            }
+
+            statusDiv.innerHTML = html;
+            log('Command status checked');
+        }
+
+        function checkSettingsStatus() {
+            const statusDiv = document.getElementById('settings-status');
+            let html = '';
+
+            if (typeof settings !== 'undefined') {
+                html += createStatusDiv('✓ Settings loaded', 'success');
+                if (settings.linkanimations !== undefined) {
+                    html += createStatusDiv(`linkanimations: ${settings.linkanimations}`, 'info');
+                }
+                if (settings.hintcharacters !== undefined) {
+                    html += createStatusDiv(`hintcharacters: ${settings.hintcharacters}`, 'info');
+                }
+                if (settings.numerichints !== undefined) {
+                    html += createStatusDiv(`numerichints: ${settings.numerichints}`, 'info');
+                }
+            } else {
+                html += createStatusDiv('✗ Settings not loaded', 'error');
+            }
+
+            statusDiv.innerHTML = html;
+            log('Settings status checked');
+        }
+
+        function checkHintsStatus() {
+            const statusDiv = document.getElementById('hints-status');
+            let html = '';
+
+            if (typeof Hints !== 'undefined') {
+                html += createStatusDiv('✓ Hints object exists', 'success');
+                
+                if (typeof Hints.create === 'function') {
+                    html += createStatusDiv('✓ Hints.create function exists', 'success');
+                } else {
+                    html += createStatusDiv('✗ Hints.create function not found', 'error');
+                }
+
+                if (typeof Hints.getLinks === 'function') {
+                    html += createStatusDiv('✓ Hints.getLinks function exists', 'success');
+                } else {
+                    html += createStatusDiv('✗ Hints.getLinks function not found', 'error');
+                }
+
+                // Check if hints are currently active
+                if (Hints.active !== undefined) {
+                    html += createStatusDiv(`Hints.active: ${Hints.active}`, Hints.active ? 'warning' : 'info');
+                }
+            } else {
+                html += createStatusDiv('✗ Hints object not found', 'error');
+            }
+
+            statusDiv.innerHTML = html;
+            log('Hints status checked');
+        }
+
+        function manualTestF() {
+            const statusDiv = document.getElementById('manual-test-status');
+            
+            try {
+                if (typeof Hints !== 'undefined' && typeof Hints.create === 'function') {
+                    log('Attempting to call Hints.create()');
+                    Hints.create();
+                    statusDiv.innerHTML = createStatusDiv('✓ Hints.create() called successfully', 'success');
+                    log('Hints.create() executed successfully');
+                } else {
+                    statusDiv.innerHTML = createStatusDiv('✗ Hints.create() not available', 'error');
+                    log('Hints.create() not available');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = createStatusDiv(`✗ Error calling Hints.create(): ${error.message}`, 'error');
+                log(`Error calling Hints.create(): ${error.message}`);
+            }
+        }
+
+        function manualTestFTabbed() {
+            const statusDiv = document.getElementById('manual-test-status');
+            
+            try {
+                if (typeof Hints !== 'undefined' && typeof Hints.create === 'function') {
+                    log('Attempting to call Hints.create("tabbed")');
+                    Hints.create('tabbed');
+                    statusDiv.innerHTML = createStatusDiv('✓ Hints.create("tabbed") called successfully', 'success');
+                    log('Hints.create("tabbed") executed successfully');
+                } else {
+                    statusDiv.innerHTML = createStatusDiv('✗ Hints.create() not available', 'error');
+                    log('Hints.create() not available');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = createStatusDiv(`✗ Error calling Hints.create("tabbed"): ${error.message}`, 'error');
+                log(`Error calling Hints.create("tabbed"): ${error.message}`);
+            }
+        }
+
+        function checkDOMElements() {
+            const statusDiv = document.getElementById('dom-status');
+            let html = '';
+
+            // Check for rVim-related DOM elements
+            const linkContainer = document.getElementById('rVim-link-container');
+            if (linkContainer) {
+                html += createStatusDiv('✓ rVim-link-container found', 'success');
+                html += createStatusDiv(`Container display: ${getComputedStyle(linkContainer).display}`, 'info');
+                html += createStatusDiv(`Container opacity: ${getComputedStyle(linkContainer).opacity}`, 'info');
+            } else {
+                html += createStatusDiv('✗ rVim-link-container not found', 'warning');
+            }
+
+            // Check for shadow DOM elements
+            const shadowHosts = document.querySelectorAll('[id*="rVim"]');
+            if (shadowHosts.length > 0) {
+                html += createStatusDiv(`✓ Found ${shadowHosts.length} rVim DOM elements`, 'success');
+                shadowHosts.forEach((host, index) => {
+                    html += createStatusDiv(`Element ${index + 1}: ${host.id || host.tagName}`, 'info');
+                });
+            } else {
+                html += createStatusDiv('✗ No rVim DOM elements found', 'warning');
+            }
+
+            statusDiv.innerHTML = html;
+            log('DOM elements checked');
+        }
+
+        function toggleKeyboardMonitoring() {
+            keyboardMonitoring = !keyboardMonitoring;
+            const statusDiv = document.getElementById('keyboard-status');
+            
+            if (keyboardMonitoring) {
+                statusDiv.innerHTML = createStatusDiv('✓ Keyboard monitoring active - Press any key', 'success');
+                log('Keyboard monitoring started');
+            } else {
+                statusDiv.innerHTML = createStatusDiv('✗ Keyboard monitoring stopped', 'warning');
+                log('Keyboard monitoring stopped');
+            }
+        }
+
+        // Keyboard event listeners
+        document.addEventListener('keydown', function(event) {
+            if (keyboardMonitoring) {
+                log(`Key pressed: ${event.key} (code: ${event.code})`);
+            }
+            
+            // Special handling for 'f' key
+            if (event.key === 'f' || event.key === 'F') {
+                log(`F key detected: ${event.key}`);
+                
+                // Check if rVim should handle this
+                if (typeof Mappings !== 'undefined' && Mappings.actions) {
+                    if (event.key === 'f' && Mappings.actions.f) {
+                        log('F key mapping found in Mappings.actions.f');
+                    }
+                    if (event.key === 'F' && Mappings.actions.F) {
+                        log('Shift+F key mapping found in Mappings.actions.F');
+                    }
+                }
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            log('Page loaded, initializing debug checks');
+            
+            // Wait a bit for extension to load
+            setTimeout(() => {
+                checkExtensionStatus();
+                checkCommandStatus();
+                checkSettingsStatus();
+                checkHintsStatus();
+                checkDOMElements();
+            }, 1000);
+        });
+
+        // Check periodically for changes
+        setInterval(() => {
+            if (typeof Command !== 'undefined' && Command.domElementsLoaded) {
+                // Extension is loaded, we can stop checking
+                return;
+            }
+            log('Periodic check: Extension still loading...');
+        }, 5000);
+    </script>
+</body>
+</html>

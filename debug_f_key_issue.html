@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug F Key Issue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .status {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 3px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        .test-links {
+            margin: 20px 0;
+        }
+        .test-links a {
+            display: block;
+            margin: 10px 0;
+            color: #007bff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>F键功能调试工具</h1>
+    
+    <div class="debug-section">
+        <h2>扩展状态检查</h2>
+        <div id="extension-status"></div>
+        <button onclick="checkExtensionStatus()">检查扩展状态</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>DOM加载状态</h2>
+        <div id="dom-status"></div>
+        <button onclick="checkDOMStatus()">检查DOM状态</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>F键测试</h2>
+        <div id="f-key-status"></div>
+        <button onclick="testFKey()">模拟F键按下</button>
+        <button onclick="manualHintsCreate()">手动调用Hints.create()</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>CSS和样式检查</h2>
+        <div id="css-status"></div>
+        <button onclick="checkCSS()">检查CSS状态</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>测试链接</h2>
+        <div class="test-links">
+            <a href="https://www.google.com">Google</a>
+            <a href="https://www.github.com">GitHub</a>
+            <a href="https://www.stackoverflow.com">Stack Overflow</a>
+            <button onclick="alert('Button clicked!')">Test Button</button>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>详细日志</h2>
+        <div id="debug-log"></div>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+
+    <script>
+        let logContainer = document.getElementById('debug-log');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `status ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '';
+        }
+
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('extension-status');
+            let html = '';
+            
+            // 检查关键对象
+            const checks = [
+                { name: 'Command', obj: 'Command' },
+                { name: 'Hints', obj: 'Hints' },
+                { name: 'settings', obj: 'settings' },
+                { name: 'Mappings', obj: 'Mappings' },
+                { name: 'KeyHandler', obj: 'KeyHandler' }
+            ];
+            
+            checks.forEach(check => {
+                if (typeof window[check.obj] !== 'undefined') {
+                    html += `<div class="status success">✓ ${check.name} 对象存在</div>`;
+                    log(`${check.name} 对象存在`, 'success');
+                } else {
+                    html += `<div class="status error">✗ ${check.name} 对象不存在</div>`;
+                    log(`${check.name} 对象不存在`, 'error');
+                }
+            });
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function checkDOMStatus() {
+            const statusDiv = document.getElementById('dom-status');
+            let html = '';
+            
+            if (typeof Command !== 'undefined') {
+                html += `<div class="status ${Command.domElementsLoaded ? 'success' : 'error'}">Command.domElementsLoaded: ${Command.domElementsLoaded}</div>`;
+                html += `<div class="status ${Command.loaded ? 'success' : 'error'}">Command.loaded: ${Command.loaded}</div>`;
+                
+                if (Command.mainCSS) {
+                    html += `<div class="status success">Command.mainCSS: 已加载 (${Command.mainCSS.length} 字符)</div>`;
+                } else {
+                    html += `<div class="status error">Command.mainCSS: 未加载</div>`;
+                }
+                
+                if (Command.css) {
+                    html += `<div class="status success">Command.css: 存在</div>`;
+                } else {
+                    html += `<div class="status error">Command.css: 不存在</div>`;
+                }
+                
+                log(`DOM状态检查: domElementsLoaded=${Command.domElementsLoaded}, loaded=${Command.loaded}`);
+            } else {
+                html += `<div class="status error">Command 对象不存在</div>`;
+                log('Command 对象不存在', 'error');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function testFKey() {
+            const statusDiv = document.getElementById('f-key-status');
+            log('开始测试F键功能');
+            
+            try {
+                // 模拟F键按下事件
+                const event = new KeyboardEvent('keydown', {
+                    key: 'f',
+                    code: 'KeyF',
+                    keyCode: 70,
+                    which: 70,
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                document.dispatchEvent(event);
+                log('F键事件已触发');
+                
+                // 等待一段时间后检查结果
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        statusDiv.innerHTML = `<div class="status success">✓ F键功能正常，提示容器已创建</div>`;
+                        log('F键功能正常，提示容器已创建', 'success');
+                    } else {
+                        statusDiv.innerHTML = `<div class="status error">✗ F键功能异常，未创建提示容器</div>`;
+                        log('F键功能异常，未创建提示容器', 'error');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">✗ F键测试失败: ${error.message}</div>`;
+                log(`F键测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function manualHintsCreate() {
+            const statusDiv = document.getElementById('f-key-status');
+            log('手动调用Hints.create()');
+            
+            try {
+                if (typeof Hints !== 'undefined' && typeof Hints.create === 'function') {
+                    // 清除现有容器
+                    const existing = document.getElementById('rVim-link-container');
+                    if (existing) {
+                        existing.remove();
+                        log('清除了现有的提示容器');
+                    }
+                    
+                    // 调用Hints.create
+                    Hints.create();
+                    log('Hints.create() 已调用');
+                    
+                    // 检查结果
+                    setTimeout(() => {
+                        const container = document.getElementById('rVim-link-container');
+                        if (container) {
+                            statusDiv.innerHTML = `<div class="status success">✓ Hints.create() 成功，容器已创建</div>`;
+                            log('Hints.create() 成功，容器已创建', 'success');
+                            
+                            // 检查容器内容
+                            if (container.children.length > 0) {
+                                log(`容器包含 ${container.children.length} 个子元素`);
+                            } else {
+                                log('容器为空', 'warning');
+                            }
+                        } else {
+                            statusDiv.innerHTML = `<div class="status error">✗ Hints.create() 失败，未创建容器</div>`;
+                            log('Hints.create() 失败，未创建容器', 'error');
+                        }
+                    }, 1000);
+                    
+                } else {
+                    statusDiv.innerHTML = `<div class="status error">✗ Hints.create 函数不可用</div>`;
+                    log('Hints.create 函数不可用', 'error');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">✗ 手动调用失败: ${error.message}</div>`;
+                log(`手动调用失败: ${error.message}`, 'error');
+            }
+        }
+
+        function checkCSS() {
+            const statusDiv = document.getElementById('css-status');
+            let html = '';
+            
+            // 检查rVim相关的CSS
+            const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
+            let rvimStyles = 0;
+            
+            styles.forEach(style => {
+                if (style.textContent && style.textContent.includes('rVim')) {
+                    rvimStyles++;
+                } else if (style.href && style.href.includes('main.css')) {
+                    rvimStyles++;
+                }
+            });
+            
+            if (rvimStyles > 0) {
+                html += `<div class="status success">✓ 找到 ${rvimStyles} 个rVim样式</div>`;
+                log(`找到 ${rvimStyles} 个rVim样式`, 'success');
+            } else {
+                html += `<div class="status error">✗ 未找到rVim样式</div>`;
+                log('未找到rVim样式', 'error');
+            }
+            
+            // 检查Shadow DOM
+            const container = document.getElementById('rVim-link-container');
+            if (container && container.shadowRoot) {
+                html += `<div class="status success">✓ Shadow DOM 存在</div>`;
+                log('Shadow DOM 存在', 'success');
+            } else {
+                html += `<div class="status warning">⚠ Shadow DOM 不存在或容器未创建</div>`;
+                log('Shadow DOM 不存在或容器未创建', 'warning');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // 页面加载完成后自动检查
+        window.addEventListener('load', function() {
+            log('页面加载完成，开始自动检查');
+            setTimeout(() => {
+                checkExtensionStatus();
+                checkDOMStatus();
+                checkCSS();
+            }, 1000);
+        });
+
+        // 监听F键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                log(`检测到 ${e.key} 键按下`);
+            }
+        });
+    </script>
+</body>
+</html>

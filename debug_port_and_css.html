@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>端口和CSS调试工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .status {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 3px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .test-links {
+            margin: 20px 0;
+        }
+        .test-links a {
+            display: block;
+            margin: 10px 0;
+            color: #007bff;
+            text-decoration: underline;
+        }
+        .log-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>端口连接和CSS加载调试</h1>
+    
+    <div class="debug-section">
+        <h2>端口连接状态</h2>
+        <div id="port-status"></div>
+        <button onclick="checkPortStatus()">检查端口状态</button>
+        <button onclick="testHttpRequest()">测试HTTP请求</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>CSS加载状态</h2>
+        <div id="css-status"></div>
+        <button onclick="checkCSSStatus()">检查CSS状态</button>
+        <button onclick="forceCSSLoad()">强制加载CSS</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>Command对象状态</h2>
+        <div id="command-status"></div>
+        <button onclick="checkCommandStatus()">检查Command状态</button>
+        <button onclick="forceCommandInit()">强制初始化Command</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>F键功能测试</h2>
+        <div id="f-key-test"></div>
+        <button onclick="testFKeyComplete()">完整F键测试</button>
+        <button onclick="debugHintsCreate()">调试Hints.create</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>测试链接</h2>
+        <div class="test-links">
+            <a href="https://www.google.com">Google</a>
+            <a href="https://www.github.com">GitHub</a>
+            <a href="https://www.stackoverflow.com">Stack Overflow</a>
+            <button onclick="alert('Button clicked!')">Test Button</button>
+            <input type="text" placeholder="Test input" />
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>调试日志</h2>
+        <div class="log-container" id="debug-log"></div>
+        <button onclick="clearLog()">清除日志</button>
+    </div>
+
+    <script>
+        let logContainer = document.getElementById('debug-log');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `status ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '';
+        }
+
+        function createStatus(message, type) {
+            return `<div class="status ${type}">${message}</div>`;
+        }
+
+        function checkPortStatus() {
+            const statusDiv = document.getElementById('port-status');
+            let html = '';
+            
+            try {
+                // 检查端口相关对象
+                if (typeof port !== 'undefined') {
+                    html += createStatus('✓ port 对象存在', 'success');
+                    log('port 对象存在', 'success');
+                } else {
+                    html += createStatus('✗ port 对象不存在', 'error');
+                    log('port 对象不存在', 'error');
+                }
+                
+                if (typeof PORT !== 'undefined') {
+                    html += createStatus('✓ PORT 函数存在', 'success');
+                    log('PORT 函数存在', 'success');
+                } else {
+                    html += createStatus('✗ PORT 函数不存在', 'error');
+                    log('PORT 函数不存在', 'error');
+                }
+                
+                if (typeof httpRequest !== 'undefined') {
+                    html += createStatus('✓ httpRequest 函数存在', 'success');
+                    log('httpRequest 函数存在', 'success');
+                } else {
+                    html += createStatus('✗ httpRequest 函数不存在', 'error');
+                    log('httpRequest 函数不存在', 'error');
+                }
+                
+                // 检查端口连接状态
+                if (typeof window.portDestroyed !== 'undefined') {
+                    html += createStatus(`端口销毁状态: ${window.portDestroyed}`, 
+                        window.portDestroyed ? 'error' : 'success');
+                    log(`端口销毁状态: ${window.portDestroyed}`);
+                }
+                
+            } catch (error) {
+                html += createStatus(`检查端口状态时出错: ${error.message}`, 'error');
+                log(`检查端口状态时出错: ${error.message}`, 'error');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function testHttpRequest() {
+            log('开始测试HTTP请求');
+            
+            if (typeof httpRequest === 'undefined') {
+                log('httpRequest 函数不存在', 'error');
+                return;
+            }
+            
+            try {
+                // 测试加载main.css
+                const cssUrl = chrome.runtime.getURL('content_scripts/main.css');
+                log(`尝试加载CSS: ${cssUrl}`);
+                
+                httpRequest({
+                    url: cssUrl
+                }, function(data) {
+                    if (data && data.length > 0) {
+                        log(`CSS加载成功，长度: ${data.length}`, 'success');
+                        // 将CSS赋值给Command.mainCSS
+                        if (typeof Command !== 'undefined') {
+                            Command.mainCSS = data;
+                            log('CSS已赋值给Command.mainCSS', 'success');
+                        }
+                    } else {
+                        log('CSS加载失败或为空', 'error');
+                    }
+                });
+                
+            } catch (error) {
+                log(`HTTP请求测试失败: ${error.message}`, 'error');
+            }
+        }
+
+        function checkCSSStatus() {
+            const statusDiv = document.getElementById('css-status');
+            let html = '';
+            
+            try {
+                // 检查Command.mainCSS
+                if (typeof Command !== 'undefined') {
+                    if (Command.mainCSS) {
+                        html += createStatus(`✓ Command.mainCSS 已加载 (${Command.mainCSS.length} 字符)`, 'success');
+                        log(`Command.mainCSS 已加载，长度: ${Command.mainCSS.length}`, 'success');
+                    } else {
+                        html += createStatus('✗ Command.mainCSS 未加载', 'error');
+                        log('Command.mainCSS 未加载', 'error');
+                    }
+                    
+                    if (Command.css) {
+                        html += createStatus('✓ Command.css 元素存在', 'success');
+                        if (Command.css.parentNode) {
+                            html += createStatus('✓ Command.css 已添加到DOM', 'success');
+                        } else {
+                            html += createStatus('⚠ Command.css 未添加到DOM', 'warning');
+                        }
+                    } else {
+                        html += createStatus('✗ Command.css 元素不存在', 'error');
+                    }
+                } else {
+                    html += createStatus('✗ Command 对象不存在', 'error');
+                }
+                
+                // 检查页面中的rVim样式
+                const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
+                let rvimStyles = 0;
+                styles.forEach(style => {
+                    const content = style.textContent || style.href || '';
+                    if (content.includes('rVim') || content.includes('cvim')) {
+                        rvimStyles++;
+                    }
+                });
+                
+                html += createStatus(`页面中rVim样式数量: ${rvimStyles}`, 
+                    rvimStyles > 0 ? 'success' : 'warning');
+                log(`页面中rVim样式数量: ${rvimStyles}`);
+                
+            } catch (error) {
+                html += createStatus(`检查CSS状态时出错: ${error.message}`, 'error');
+                log(`检查CSS状态时出错: ${error.message}`, 'error');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function forceCSSLoad() {
+            log('强制加载CSS');
+            
+            try {
+                if (typeof chrome !== 'undefined' && chrome.runtime) {
+                    const cssUrl = chrome.runtime.getURL('content_scripts/main.css');
+                    
+                    // 使用fetch直接加载
+                    fetch(cssUrl)
+                        .then(response => response.text())
+                        .then(data => {
+                            log(`直接fetch加载CSS成功，长度: ${data.length}`, 'success');
+                            
+                            if (typeof Command !== 'undefined') {
+                                Command.mainCSS = data;
+                                log('CSS已赋值给Command.mainCSS', 'success');
+                            }
+                            
+                            // 创建style元素并添加到页面
+                            const style = document.createElement('style');
+                            style.textContent = data;
+                            style.id = 'rvim-force-loaded-css';
+                            document.head.appendChild(style);
+                            log('CSS已添加到页面head', 'success');
+                            
+                            checkCSSStatus();
+                        })
+                        .catch(error => {
+                            log(`直接fetch加载CSS失败: ${error.message}`, 'error');
+                        });
+                } else {
+                    log('chrome.runtime 不可用', 'error');
+                }
+            } catch (error) {
+                log(`强制加载CSS时出错: ${error.message}`, 'error');
+            }
+        }
+
+        function checkCommandStatus() {
+            const statusDiv = document.getElementById('command-status');
+            let html = '';
+            
+            try {
+                if (typeof Command !== 'undefined') {
+                    html += createStatus('✓ Command 对象存在', 'success');
+                    html += createStatus(`Command.loaded: ${Command.loaded}`, 
+                        Command.loaded ? 'success' : 'warning');
+                    html += createStatus(`Command.domElementsLoaded: ${Command.domElementsLoaded}`, 
+                        Command.domElementsLoaded ? 'success' : 'warning');
+                    
+                    if (typeof Command.init === 'function') {
+                        html += createStatus('✓ Command.init 函数存在', 'success');
+                    } else {
+                        html += createStatus('✗ Command.init 函数不存在', 'error');
+                    }
+                } else {
+                    html += createStatus('✗ Command 对象不存在', 'error');
+                }
+                
+                log('Command状态检查完成');
+            } catch (error) {
+                html += createStatus(`检查Command状态时出错: ${error.message}`, 'error');
+                log(`检查Command状态时出错: ${error.message}`, 'error');
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function forceCommandInit() {
+            log('强制初始化Command');
+            
+            try {
+                if (typeof Command !== 'undefined' && typeof Command.init === 'function') {
+                    Command.init(true);
+                    log('Command.init(true) 已调用', 'success');
+                    
+                    setTimeout(() => {
+                        checkCommandStatus();
+                        checkCSSStatus();
+                    }, 1000);
+                } else {
+                    log('Command.init 函数不可用', 'error');
+                }
+            } catch (error) {
+                log(`强制初始化Command时出错: ${error.message}`, 'error');
+            }
+        }
+
+        function testFKeyComplete() {
+            const statusDiv = document.getElementById('f-key-test');
+            log('开始完整F键测试');
+            
+            let html = '';
+            
+            try {
+                // 1. 检查所有必要对象
+                const checks = [
+                    { name: 'Command', obj: Command },
+                    { name: 'Hints', obj: typeof Hints !== 'undefined' ? Hints : undefined },
+                    { name: 'KeyHandler', obj: typeof KeyHandler !== 'undefined' ? KeyHandler : undefined },
+                    { name: 'Mappings', obj: typeof Mappings !== 'undefined' ? Mappings : undefined }
+                ];
+                
+                let allObjectsExist = true;
+                checks.forEach(check => {
+                    if (check.obj) {
+                        html += createStatus(`✓ ${check.name} 存在`, 'success');
+                    } else {
+                        html += createStatus(`✗ ${check.name} 不存在`, 'error');
+                        allObjectsExist = false;
+                    }
+                });
+                
+                if (!allObjectsExist) {
+                    html += createStatus('缺少必要对象，无法进行F键测试', 'error');
+                    statusDiv.innerHTML = html;
+                    return;
+                }
+                
+                // 2. 检查DOM和CSS状态
+                if (!Command.domElementsLoaded) {
+                    html += createStatus('⚠ DOM元素未加载完成', 'warning');
+                }
+                
+                if (!Command.mainCSS) {
+                    html += createStatus('⚠ CSS未加载', 'warning');
+                }
+                
+                // 3. 模拟F键按下
+                html += createStatus('正在模拟F键按下...', 'info');
+                statusDiv.innerHTML = html;
+                
+                const event = new KeyboardEvent('keydown', {
+                    key: 'f',
+                    code: 'KeyF',
+                    keyCode: 70,
+                    which: 70,
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                document.dispatchEvent(event);
+                log('F键事件已触发');
+                
+                // 4. 等待并检查结果
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        html += createStatus('✓ F键功能正常，提示容器已创建', 'success');
+                        log('F键功能正常，提示容器已创建', 'success');
+                        
+                        if (container.shadowRoot) {
+                            html += createStatus('✓ Shadow DOM 已创建', 'success');
+                            const shadowChildren = container.shadowRoot.children.length;
+                            html += createStatus(`Shadow DOM 包含 ${shadowChildren} 个子元素`, 'info');
+                        } else {
+                            html += createStatus('⚠ Shadow DOM 未创建', 'warning');
+                        }
+                    } else {
+                        html += createStatus('✗ F键功能异常，未创建提示容器', 'error');
+                        log('F键功能异常，未创建提示容器', 'error');
+                    }
+                    
+                    statusDiv.innerHTML = html;
+                }, 1500);
+                
+            } catch (error) {
+                html += createStatus(`F键测试失败: ${error.message}`, 'error');
+                log(`F键测试失败: ${error.message}`, 'error');
+                statusDiv.innerHTML = html;
+            }
+        }
+
+        function debugHintsCreate() {
+            log('开始调试Hints.create');
+            
+            try {
+                if (typeof Hints === 'undefined' || typeof Hints.create !== 'function') {
+                    log('Hints.create 函数不可用', 'error');
+                    return;
+                }
+                
+                // 清除现有容器
+                const existing = document.getElementById('rVim-link-container');
+                if (existing) {
+                    existing.remove();
+                    log('清除了现有的提示容器');
+                }
+                
+                // 确保DOM和CSS已加载
+                if (!Command.domElementsLoaded) {
+                    log('DOM元素未加载，强制设置为true', 'warning');
+                    Command.domElementsLoaded = true;
+                }
+                
+                if (!Command.mainCSS) {
+                    log('CSS未加载，尝试强制加载', 'warning');
+                    forceCSSLoad();
+                    
+                    setTimeout(() => {
+                        Hints.create();
+                        log('延迟调用Hints.create()');
+                    }, 1000);
+                } else {
+                    Hints.create();
+                    log('直接调用Hints.create()');
+                }
+                
+                // 检查结果
+                setTimeout(() => {
+                    const container = document.getElementById('rVim-link-container');
+                    if (container) {
+                        log('Hints.create() 成功创建容器', 'success');
+                        
+                        if (container.shadowRoot) {
+                            const shadowChildren = container.shadowRoot.children.length;
+                            log(`Shadow DOM 包含 ${shadowChildren} 个子元素`);
+                            
+                            if (shadowChildren === 0) {
+                                log('Shadow DOM 为空，可能是链接检测问题', 'warning');
+                            }
+                        } else {
+                            log('Shadow DOM 未创建', 'warning');
+                        }
+                    } else {
+                        log('Hints.create() 未创建容器', 'error');
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                log(`调试Hints.create时出错: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后自动检查
+        window.addEventListener('load', function() {
+            log('页面加载完成，开始自动检查');
+            setTimeout(() => {
+                checkPortStatus();
+                checkCommandStatus();
+                checkCSSStatus();
+            }, 1000);
+        });
+
+        // 监听键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' || e.key === 'F') {
+                log(`检测到 ${e.key} 键按下`);
+            }
+        });
+    </script>
+</body>
+</html>

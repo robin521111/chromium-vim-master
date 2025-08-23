@@ -751,7 +751,7 @@ Actions = (function() {
   };
 
   _.httpRequest = function(o) {
-    httpRequest(o.request.request).then(function(res) {
+    self.httpRequest(o.request.request).then(function(res) {
       o.callback({type: 'httpRequest', id: o.request.id, text: res});
     });
   };

@@ -8,10 +8,12 @@
   },
   "private": true,
   "scripts": {
-    "test": "mocha test/unit/**/*.test.js",
-    "test:integration": "mocha test/integration/**/*.test.js",
-    "test:all": "mocha test/**/*.test.js",
-    "test:watch": "mocha test/**/*.test.js --watch"
+    "test": "mocha tests/unit/**/*.test.js",
+    "test:integration": "mocha tests/integration/**/*.test.js",
+    "test:all": "mocha tests/**/*.test.js",
+    "test:watch": "mocha tests/**/*.test.js --watch",
+    "test:html": "echo 'Open http://localhost:8080/tests/html/test_pages_index.html in browser'",
+    "test:scripts": "node tests/scripts/run_comprehensive_tests.js"
   },
   "devDependencies": {
     "chai": "^5.2.1",

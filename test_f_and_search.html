@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F功能和搜索功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .links a {
+            padding: 8px 12px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .links a:hover {
+            background: #0056b3;
+        }
+        .search-text {
+            background: #fff3cd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .instructions {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background: #333;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>rVim F功能和搜索功能测试页面</h1>
+        
+        <div class="instructions">
+            <h3>📋 测试说明</h3>
+            <p><strong>F功能测试：</strong></p>
+            <ul>
+                <li>按 <kbd>f</kbd> 键 - 应该显示链接提示（当前标签页打开）</li>
+                <li>按 <kbd>F</kbd> 键 - 应该显示链接提示（新标签页打开）</li>
+                <li>输入提示字符 - 应该跳转到对应链接</li>
+                <li>按 <kbd>Esc</kbd> - 应该取消链接提示</li>
+            </ul>
+            <p><strong>搜索功能测试：</strong></p>
+            <ul>
+                <li>按 <kbd>/</kbd> 键 - 应该显示搜索框</li>
+                <li>输入搜索词 - 应该高亮匹配结果</li>
+                <li>按 <kbd>n</kbd> - 跳转到下一个匹配</li>
+                <li>按 <kbd>N</kbd> - 跳转到上一个匹配</li>
+                <li>按 <kbd>?</kbd> - 反向搜索</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔗 链接测试区域</h3>
+            <p>以下链接用于测试F功能的链接提示：</p>
+            <div class="links">
+                <a href="#section1">测试链接 1</a>
+                <a href="#section2">测试链接 2</a>
+                <a href="#section3">测试链接 3</a>
+                <a href="https://www.google.com" target="_blank" rel="noopener">Google</a>
+                <a href="https://www.github.com" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://www.stackoverflow.com" target="_blank" rel="noopener">Stack Overflow</a>
+                <a href="mailto:test@example.com">邮件链接</a>
+                <a href="tel:+1234567890">电话链接</a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 搜索测试区域</h3>
+            <p>以下文本用于测试搜索功能：</p>
+            <div class="search-text">
+                <p>这是一段包含 <strong>测试</strong> 关键词的文本。</p>
+                <p>JavaScript 是一种编程语言，广泛用于 web 开发。</p>
+                <p>rVim 扩展为 Chrome 浏览器添加了 Vim 风格的键盘快捷键。</p>
+                <p>搜索功能应该能够找到并高亮显示匹配的文本内容。</p>
+                <p>测试 test 테스트 тест テスト - 多语言测试词汇。</p>
+            </div>
+        </div>
+
+        <div class="test-section" id="section1">
+            <h3>📝 更多测试内容</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+
+        <div class="test-section" id="section2">
+            <h3>🎯 特殊字符测试</h3>
+            <p>特殊字符：!@#$%^&*()_+-=[]{}|;':",./<>?</p>
+            <p>数字：1234567890</p>
+            <p>中文：你好世界，这是中文测试内容。</p>
+            <p>英文：Hello World, this is English test content.</p>
+            <p>混合：Hello 世界 123 !@# test 测试</p>
+        </div>
+
+        <div class="test-section" id="section3">
+            <h3>📊 表格测试</h3>
+            <table border="1" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th>功能</th>
+                    <th>快捷键</th>
+                    <th>描述</th>
+                </tr>
+                <tr>
+                    <td>链接提示</td>
+                    <td>f / F</td>
+                    <td>显示页面中所有可点击链接的提示</td>
+                </tr>
+                <tr>
+                    <td>搜索</td>
+                    <td>/ / ?</td>
+                    <td>在页面中搜索文本内容</td>
+                </tr>
+                <tr>
+                    <td>导航</td>
+                    <td>n / N</td>
+                    <td>在搜索结果中前进/后退</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="test-section">
+            <h3>🔄 重复测试内容</h3>
+            <p>这里有一些重复的关键词用于测试搜索导航：</p>
+            <p>测试 - 第一个测试</p>
+            <p>测试 - 第二个测试</p>
+            <p>测试 - 第三个测试</p>
+            <p>test - first test</p>
+            <p>test - second test</p>
+            <p>test - third test</p>
+        </div>
+    </div>
+
+    <div class="status" id="status">
+        状态：等待测试
+    </div>
+
+    <script>
+        // 监听键盘事件来显示状态
+        document.addEventListener('keydown', function(e) {
+            const status = document.getElementById('status');
+            if (e.key === 'f') {
+                status.textContent = '状态：按下了 f 键 - 应显示链接提示';
+            } else if (e.key === 'F') {
+                status.textContent = '状态：按下了 F 键 - 应显示链接提示（新标签页）';
+            } else if (e.key === '/') {
+                status.textContent = '状态：按下了 / 键 - 应显示搜索框';
+            } else if (e.key === '?') {
+                status.textContent = '状态：按下了 ? 键 - 应显示反向搜索框';
+            } else if (e.key === 'n') {
+                status.textContent = '状态：按下了 n 键 - 应跳转到下一个搜索结果';
+            } else if (e.key === 'N') {
+                status.textContent = '状态：按下了 N 键 - 应跳转到上一个搜索结果';
+            } else if (e.key === 'Escape') {
+                status.textContent = '状态：按下了 Esc 键 - 应取消当前操作';
+            }
+        });
+
+        // 监听链接点击
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                const status = document.getElementById('status');
+                status.textContent = '状态：点击了链接 - ' + e.target.textContent;
+            }
+        });
+    </script>
+</body>
+</html>
