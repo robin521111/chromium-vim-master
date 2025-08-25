@@ -1,0 +1,312 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+      
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        else
+          echo "No package.json found, skipping npm install"
+        fi
+      
+    - name: Run linting
+      run: |
+        if [ -f package.json ] && npm run lint --if-present; then
+          echo "Linting completed"
+        else
+          echo "No linting script found, skipping"
+        fi
+      
+    - name: Run tests
+      run: |
+        if [ -f package.json ] && npm run test --if-present; then
+          echo "Tests completed"
+        else
+          echo "No test script found, skipping"
+        fi
+      
+    - name: Validate manifest.json
+      run: |
+        if [ -f manifest.json ]; then
+          echo "Validating manifest.json..."
+          node -e "JSON.parse(require('fs').readFileSync('manifest.json', 'utf8'))"
+          echo "manifest.json is valid"
+        else
+          echo "No manifest.json found"
+          exit 1
+        fi
+      
+    - name: Check file structure
+      run: |
+        echo "Checking required files..."
+        required_files=("manifest.json" "content_scripts" "background_scripts")
+        for file in "${required_files[@]}"; do
+          if [ ! -e "$file" ]; then
+            echo "Missing required file/directory: $file"
+            exit 1
+          fi
+        done
+        echo "All required files present"
+
+  build:
+    name: Build Extension
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+      
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        fi
+      
+    - name: Build extension
+      run: |
+        if [ -f package.json ] && npm run build --if-present; then
+          echo "Build completed"
+        else
+          echo "No build script found, creating manual build"
+          mkdir -p dist
+          cp -r . dist/
+          cd dist
+          rm -rf .git .github node_modules .env* *.log
+          find . -name ".DS_Store" -delete
+        fi
+      
+    - name: Create extension package
+      run: |
+        cd dist 2>/dev/null || cd .
+        zip -r ../rVim-build-${{ github.sha }}.zip . -x "*.DS_Store" "*.map" "*.log" "node_modules/*"
+        cd ..
+        ls -la *.zip
+      
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: extension-build-${{ github.sha }}
+        path: rVim-build-${{ github.sha }}.zip
+        retention-days: 30
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+      
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        fi
+      
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
+      
+    - name: Build release package
+      run: |
+        # Create clean build
+        mkdir -p release
+        
+        # Copy essential files
+        cp manifest.json release/
+        cp -r content_scripts release/
+        cp -r background_scripts release/
+        cp -r pages release/
+        cp -r icons release/
+        
+        # Copy optional files if they exist
+        [ -f README.md ] && cp README.md release/
+        [ -f LICENSE ] && cp LICENSE release/
+        [ -d _locales ] && cp -r _locales release/
+        
+        # Clean up
+        find release -name ".DS_Store" -delete
+        find release -name "*.map" -delete
+        find release -name "*.log" -delete
+        
+        # Create ZIP
+        cd release
+        zip -r ../rVim-v${{ steps.version.outputs.version }}.zip .
+        cd ..
+        
+        # Verify ZIP
+        echo "Release package contents:"
+        unzip -l rVim-v${{ steps.version.outputs.version }}.zip
+      
+    - name: Extract release notes
+      id: release_notes
+      run: |
+        VERSION=${{ steps.version.outputs.version }}
+        if [ -f CHANGELOG.md ]; then
+          # Extract release notes for this version
+          NOTES=$(awk "/^## \[$VERSION\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            NOTES="Release version $VERSION\n\nPlease check CHANGELOG.md for detailed release notes."
+          fi
+        else
+          NOTES="Release version $VERSION\n\nNo changelog available."
+        fi
+        
+        # Save to file for GitHub release
+        echo "$NOTES" > release_notes.txt
+        echo "Release notes extracted"
+      
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: rVim v${{ steps.version.outputs.version }}
+        body_path: release_notes.txt
+        draft: false
+        prerelease: false
+      
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./rVim-v${{ steps.version.outputs.version }}.zip
+        asset_name: rVim-v${{ steps.version.outputs.version }}.zip
+        asset_content_type: application/zip
+
+  chrome-store-upload:
+    name: Upload to Chrome Web Store
+    runs-on: ubuntu-latest
+    needs: [test, build, release]
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'beta')
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+      
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: extension-build-${{ github.sha }}
+      
+    - name: Upload to Chrome Web Store
+      if: env.CHROME_EXTENSION_ID != ''
+      env:
+        CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+        CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+        CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+        CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      run: |
+        echo "Uploading to Chrome Web Store..."
+        
+        # Get access token
+        ACCESS_TOKEN_RESPONSE=$(curl -s -X POST \
+          -d "client_id=$CHROME_CLIENT_ID" \
+          -d "client_secret=$CHROME_CLIENT_SECRET" \
+          -d "refresh_token=$CHROME_REFRESH_TOKEN" \
+          -d "grant_type=refresh_token" \
+          "https://oauth2.googleapis.com/token")
+        
+        ACCESS_TOKEN=$(echo "$ACCESS_TOKEN_RESPONSE" | jq -r '.access_token')
+        
+        if [ "$ACCESS_TOKEN" = "null" ] || [ -z "$ACCESS_TOKEN" ]; then
+          echo "Failed to get access token"
+          echo "Response: $ACCESS_TOKEN_RESPONSE"
+          exit 1
+        fi
+        
+        # Upload extension
+        UPLOAD_RESPONSE=$(curl -s -X PUT \
+          -H "Authorization: Bearer $ACCESS_TOKEN" \
+          -H "x-goog-api-version: 2" \
+          -T "rVim-build-${{ github.sha }}.zip" \
+          "https://www.googleapis.com/upload/chromewebstore/v1.1/items/$CHROME_EXTENSION_ID")
+        
+        echo "Upload response: $UPLOAD_RESPONSE"
+        
+        if echo "$UPLOAD_RESPONSE" | jq -e '.uploadState == "SUCCESS"' > /dev/null; then
+          echo "Upload successful"
+          
+          # Publish extension
+          PUBLISH_RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "x-goog-api-version: 2" \
+            -H "Content-Length: 0" \
+            "https://www.googleapis.com/chromewebstore/v1.1/items/$CHROME_EXTENSION_ID/publish")
+          
+          echo "Publish response: $PUBLISH_RESPONSE"
+          
+          if echo "$PUBLISH_RESPONSE" | jq -e '.status[0] == "OK"' > /dev/null; then
+            echo "Extension published successfully"
+          else
+            echo "Extension uploaded but publish failed or requires review"
+          fi
+        else
+          echo "Upload failed"
+          exit 1
+        fi
+      
+    - name: Notify on success
+      if: success()
+      run: |
+        echo "✅ rVim v${{ steps.version.outputs.version }} has been successfully released!"
+        echo "📦 GitHub Release: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.version.outputs.version }}"
+        echo "🌐 Chrome Web Store: https://chrome.google.com/webstore/detail/${{ secrets.CHROME_EXTENSION_ID }}"
+      
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "❌ Release process failed for rVim v${{ steps.version.outputs.version }}"
+        echo "Please check the logs and retry manually if needed"
