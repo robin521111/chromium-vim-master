@@ -1348,10 +1348,15 @@ Command.init = function(enabled) {
     addListeners();
     if (typeof settings.AUTOFUNCTIONS === 'object') {
       Object.getOwnPropertyNames(settings.AUTOFUNCTIONS).forEach(function(name) {
-        SecurityUtils.safeExecuteCode(
-          '(function(){' + settings.AUTOFUNCTIONS[name] + '})()',
-          { settings: settings }
-        );
+        if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeExecuteCode) {
+          SecurityUtils.safeExecuteCode(
+            '(function(){' + settings.AUTOFUNCTIONS[name] + '})()',
+            { settings: settings }
+          );
+        } else {
+          // Fallback: skip auto function execution if SecurityUtils unavailable
+          console.warn('SecurityUtils not available, skipping auto function:', name);
+        }
       });
     }
   } else {

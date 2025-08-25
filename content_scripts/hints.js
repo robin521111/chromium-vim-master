@@ -176,10 +176,14 @@ Hints.dispatchAction = function(link, shift) {
     });
     break;
   case 'script':
-    SecurityUtils.safeExecuteFunction(
-      settings.FUNCTIONS[this.scriptFunction],
-      link
-    );
+    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeExecuteFunction) {
+      SecurityUtils.safeExecuteFunction(
+        settings.FUNCTIONS[this.scriptFunction],
+        link
+      );
+    } else {
+      console.warn('SecurityUtils not available, skipping script function execution');
+    }
     break;
   default:
     if (node === 'textarea' || (node === 'input' &&

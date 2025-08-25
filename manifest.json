@@ -99,6 +99,7 @@
         "content_scripts/error_handler.js",
         "content_scripts/help_system.js",
         "content_scripts/search.js",
+        "content_scripts/style_optimizer.js",
         "content_scripts/frames.js",
         "content_scripts/messenger.js"
       ],
@@ -113,7 +114,10 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["cmdline_frame.html"],
+      "resources": [
+        "cmdline_frame.html",
+        "content_scripts/main_optimized.css"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

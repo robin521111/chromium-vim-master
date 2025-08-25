@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 扩展功能测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .test-section h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        ul {
+            margin: 10px 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .highlight {
+            background-color: yellow;
+            padding: 2px 4px;
+        }
+        .link-test {
+            margin: 10px 0;
+        }
+        .link-test a {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 8px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .link-test a:hover {
+            background: #0056b3;
+        }
+        .status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="status">rVim 测试页面</div>
+    
+    <div class="container">
+        <h1>rVim 扩展功能测试页面</h1>
+        
+        <div class="instructions">
+            <h3>🔧 测试说明</h3>
+            <p>此页面用于测试修复后的 rVim 扩展功能。请按照以下步骤进行测试：</p>
+            <ol>
+                <li>确保 rVim 扩展已在浏览器中启用</li>
+                <li>刷新此页面以加载最新的扩展代码</li>
+                <li>按 <strong>F</strong> 键激活链接提示功能</li>
+                <li>观察是否出现链接提示标签</li>
+                <li>测试其他 Vim 快捷键功能</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔗 链接测试区域</h2>
+            <p>按 <strong>F</strong> 键应该会在以下链接上显示提示标签：</p>
+            <div class="link-test">
+                <a href="#test1">测试链接 1</a>
+                <a href="#test2">测试链接 2</a>
+                <a href="#test3">测试链接 3</a>
+                <a href="#test4">测试链接 4</a>
+                <a href="#test5">测试链接 5</a>
+            </div>
+            <p>更多链接：</p>
+            <ul>
+                <li><a href="https://www.google.com" target="_blank" rel="noopener">Google 搜索</a></li>
+                <li><a href="https://www.github.com" target="_blank" rel="noopener">GitHub</a></li>
+                <li><a href="https://www.stackoverflow.com" target="_blank" rel="noopener">Stack Overflow</a></li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 文本搜索测试</h2>
+            <p>按 <strong>/</strong> 键开始搜索，然后输入关键词测试搜索功能：</p>
+            <p>这里有一些 <span class="highlight">可搜索的文本</span> 内容。</p>
+            <p>搜索关键词：测试、功能、rVim、扩展、修复</p>
+        </div>
+        
+        <div class="test-section">
+            <h2>⌨️ 快捷键测试</h2>
+            <p>测试以下快捷键是否正常工作：</p>
+            <ul>
+                <li><strong>j/k</strong> - 上下滚动</li>
+                <li><strong>h/l</strong> - 左右滚动</li>
+                <li><strong>gg</strong> - 跳转到页面顶部</li>
+                <li><strong>G</strong> - 跳转到页面底部</li>
+                <li><strong>f</strong> - 链接提示</li>
+                <li><strong>/</strong> - 搜索</li>
+                <li><strong>n/N</strong> - 下一个/上一个搜索结果</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h2>✅ 预期结果</h2>
+            <p>如果修复成功，应该观察到：</p>
+            <ul>
+                <li>按 F 键时不再出现控制台错误</li>
+                <li>链接提示正常显示</li>
+                <li>所有 Vim 快捷键功能正常工作</li>
+                <li>扩展性能稳定，无内存泄漏</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h2>🐛 故障排除</h2>
+            <p>如果功能仍然异常，请检查：</p>
+            <ul>
+                <li>浏览器开发者工具中的控制台错误</li>
+                <li>扩展是否正确重新加载</li>
+                <li>页面是否完全刷新</li>
+                <li>扩展权限是否正确设置</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // 简单的测试脚本
+        console.log('rVim 测试页面已加载');
+        
+        // 监听键盘事件以验证扩展是否工作
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'f' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                console.log('检测到 F 键按下，rVim 应该激活链接提示');
+            }
+        });
+        
+        // 页面加载完成后的提示
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                console.log('✅ 测试页面准备就绪，可以开始测试 rVim 功能');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

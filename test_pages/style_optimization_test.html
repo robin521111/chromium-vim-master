@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 样式优化测试页面</title>
+    <style>
+        /* 模拟可能导致冲突的网页样式 */
+        
+        /* 全局样式重置 - 可能影响插件 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        /* 高z-index元素 - 可能覆盖插件 */
+        .high-z-index {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 0, 0, 0.8);
+            z-index: 999999;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* 全局字体覆盖 */
+        body, div, span, p {
+            font-family: 'Comic Sans MS', cursive !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+        }
+        
+        /* 全局transform - 可能影响定位 */
+        .transform-container {
+            transform: scale(0.9) rotate(1deg);
+            transform-origin: center;
+        }
+        
+        /* 全局定位上下文 */
+        .positioning-context {
+            position: relative;
+            z-index: 1000;
+        }
+        
+        /* 模拟框架样式 - 可能与插件冲突 */
+        [class*="hint"], [id*="command"], [class*="modal"] {
+            background: pink !important;
+            color: purple !important;
+            font-size: 20px !important;
+            border: 3px solid orange !important;
+        }
+        
+        /* 页面内容样式 */
+        .content {
+            max-width: 800px;
+            margin: 80px auto 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .test-links a {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .test-links a:hover {
+            background: #0056b3;
+        }
+        
+        .conflict-demo {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .status-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .content {
+                margin: 60px 10px 10px;
+                padding: 15px;
+            }
+            
+            .test-links {
+                flex-direction: column;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* 模拟第三方库样式冲突 */
+        .bootstrap-like {
+            position: relative !important;
+            z-index: 1050 !important;
+        }
+        
+        .material-like {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08) !important;
+            border-radius: 4px !important;
+        }
+        
+        /* 覆盖所有可能的插件样式 */
+        [id^="rVim"], [class^="rVim"] {
+            background: red !important;
+            color: yellow !important;
+            font-size: 24px !important;
+            border: 5px solid blue !important;
+            z-index: 1 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 高z-index覆盖层 -->
+    <div class="high-z-index">
+        高z-index覆盖层 (z-index: 999999) - 测试插件是否能正确显示在上方
+    </div>
+    
+    <div class="transform-container">
+        <div class="positioning-context">
+            <div class="content">
+                <h1>rVim 样式优化测试页面</h1>
+                <p>此页面用于测试rVim插件的样式优化功能，包含多种可能导致样式冲突的元素。</p>
+                
+                <div class="section">
+                    <h2>🔗 链接提示测试</h2>
+                    <p>按 <kbd>f</kbd> 键激活链接提示功能，测试链接提示是否能正确显示：</p>
+                    <div class="test-links">
+                        <a href="#test1">测试链接 1</a>
+                        <a href="#test2">测试链接 2</a>
+                        <a href="#test3">测试链接 3</a>
+                        <a href="#test4">测试链接 4</a>
+                        <a href="#test5">测试链接 5</a>
+                        <a href="https://www.google.com" target="_blank" rel="noopener">Google</a>
+                        <a href="https://www.github.com" target="_blank" rel="noopener">GitHub</a>
+                        <a href="https://www.stackoverflow.com" target="_blank" rel="noopener">Stack Overflow</a>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🔍 搜索功能测试</h2>
+                    <p>按 <kbd>/</kbd> 键激活搜索功能，测试搜索高亮是否正确显示：</p>
+                    <div class="status-info">
+                        <p>搜索测试文本：JavaScript, HTML, CSS, rVim, 优化, 样式, 冲突, 测试</p>
+                        <p>这里有一些重复的词汇：JavaScript JavaScript HTML CSS rVim rVim</p>
+                        <p>特殊字符测试：@#$%^&*()_+-=[]{}|;':",./<>?</p>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>⌨️ 命令栏测试</h2>
+                    <p>按 <kbd>:</kbd> 键激活命令栏，测试命令栏是否能正确显示：</p>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="testCommand(':help')">测试 :help</button>
+                        <button class="btn btn-secondary" onclick="testCommand(':set')">测试 :set</button>
+                        <button class="btn btn-success" onclick="testCommand(':tabnew')">测试 :tabnew</button>
+                        <button class="btn btn-warning" onclick="testCommand(':quit')">测试 :quit</button>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>📊 样式冲突演示区域</h2>
+                    <div class="conflict-demo pulse">
+                        这个区域包含复杂的样式，用于测试插件元素的显示效果
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🛠️ 样式优化器控制</h2>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="getOptimizerStatus()">获取优化状态</button>
+                        <button class="btn btn-secondary" onclick="toggleOptimizer()">切换优化器</button>
+                        <button class="btn btn-success" onclick="forceDetection()">强制检测冲突</button>
+                        <button class="btn btn-warning" onclick="resetStyles()">重置样式</button>
+                    </div>
+                    <div id="optimizer-status" class="status-info">
+                        点击上方按钮查看样式优化器状态...
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>📝 测试说明</h2>
+                    <ul>
+                        <li><strong>链接提示测试：</strong>按 <kbd>f</kbd> 键，检查链接提示是否清晰可见，不被页面样式影响</li>
+                        <li><strong>搜索功能测试：</strong>按 <kbd>/</kbd> 键搜索文本，检查高亮效果是否正常</li>
+                        <li><strong>命令栏测试：</strong>按 <kbd>:</kbd> 键，检查命令栏是否在底部正确显示</li>
+                        <li><strong>HUD测试：</strong>执行各种操作，检查右上角的HUD提示是否正常</li>
+                        <li><strong>z-index测试：</strong>所有插件元素应该显示在红色覆盖层之上</li>
+                        <li><strong>字体测试：</strong>插件元素应该使用等宽字体，不受页面字体影响</li>
+                    </ul>
+                </div>
+                
+                <div class="section bootstrap-like material-like">
+                    <h2>🎨 第三方样式模拟</h2>
+                    <p>这个区域模拟了Bootstrap和Material Design的样式，用于测试插件与第三方框架的兼容性。</p>
+                    <div class="test-links">
+                        <a href="#bootstrap">Bootstrap样式链接</a>
+                        <a href="#material">Material样式链接</a>
+                        <a href="#custom">自定义样式链接</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 测试脚本
+        function testCommand(command) {
+            alert(`模拟执行命令: ${command}\n请手动按 : 键测试实际命令栏功能`);
+        }
+        
+        function getOptimizerStatus() {
+            const statusDiv = document.getElementById('optimizer-status');
+            
+            if (window.rVimStyleOptimizer) {
+                const status = window.rVimStyleOptimizer.getStatusReport();
+                statusDiv.innerHTML = `
+                    <h4>样式优化器状态报告</h4>
+                    <p><strong>优化状态:</strong> ${status.isOptimized ? '已启用' : '未启用'}</p>
+                    <p><strong>检测到的冲突:</strong> ${status.conflictsDetected} 个</p>
+                    <p><strong>检测时间:</strong> ${status.timestamp}</p>
+                    <p><strong>配置:</strong></p>
+                    <pre>${JSON.stringify(status.config, null, 2)}</pre>
+                    ${status.conflicts.length > 0 ? `
+                    <p><strong>冲突详情:</strong></p>
+                    <pre>${JSON.stringify(status.conflicts, null, 2)}</pre>
+                    ` : ''}
+                `;
+            } else {
+                statusDiv.innerHTML = '<p style="color: red;">样式优化器未找到或未初始化</p>';
+            }
+        }
+        
+        function toggleOptimizer() {
+            const statusDiv = document.getElementById('optimizer-status');
+            
+            if (window.rVimStyleOptimizer) {
+                if (window.rVimStyleOptimizer.isOptimized) {
+                    window.rVimStyleOptimizer.stop();
+                    statusDiv.innerHTML = '<p style="color: orange;">样式优化器已停止</p>';
+                } else {
+                    window.rVimStyleOptimizer.start();
+                    statusDiv.innerHTML = '<p style="color: green;">样式优化器已启动</p>';
+                }
+            } else {
+                statusDiv.innerHTML = '<p style="color: red;">样式优化器未找到</p>';
+            }
+        }
+        
+        function forceDetection() {
+            const statusDiv = document.getElementById('optimizer-status');
+            
+            if (window.rVimStyleOptimizer) {
+                window.rVimStyleOptimizer.detectAndFixConflicts();
+                statusDiv.innerHTML = '<p style="color: blue;">已强制执行冲突检测和修复</p>';
+                
+                // 1秒后显示状态
+                setTimeout(getOptimizerStatus, 1000);
+            } else {
+                statusDiv.innerHTML = '<p style="color: red;">样式优化器未找到</p>';
+            }
+        }
+        
+        function resetStyles() {
+            const statusDiv = document.getElementById('optimizer-status');
+            
+            if (window.rVimStyleOptimizer) {
+                window.rVimStyleOptimizer.restoreOriginalStyles();
+                statusDiv.innerHTML = '<p style="color: purple;">已重置为原始样式</p>';
+            } else {
+                statusDiv.innerHTML = '<p style="color: red;">样式优化器未找到</p>';
+            }
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('样式优化测试页面已加载');
+            
+            // 检查样式优化器是否可用
+            setTimeout(() => {
+                const statusDiv = document.getElementById('optimizer-status');
+                if (window.rVimStyleOptimizer) {
+                    statusDiv.innerHTML = '<p style="color: green;">✅ 样式优化器已检测到并可用</p>';
+                } else {
+                    statusDiv.innerHTML = '<p style="color: red;">❌ 样式优化器未检测到</p>';
+                }
+            }, 2000);
+        });
+        
+        // 添加一些动态内容来测试DOM变化监听
+        setInterval(() => {
+            const demo = document.querySelector('.conflict-demo');
+            if (demo) {
+                const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+                const randomColor1 = colors[Math.floor(Math.random() * colors.length)];
+                const randomColor2 = colors[Math.floor(Math.random() * colors.length)];
+                demo.style.background = `linear-gradient(45deg, ${randomColor1}, ${randomColor2})`;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

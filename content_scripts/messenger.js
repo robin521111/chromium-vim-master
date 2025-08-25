@@ -67,12 +67,52 @@ setupPortListeners();
     };
   };
   RUNTIME = $(chrome.runtime.sendMessage, chrome.runtime);
-  PORT = $(port.postMessage, port);
+  PORT = function(action, args, callback) {
+    if (typeof args === 'function') {
+      callback = args;
+      args = {};
+    }
+    (args = args || {}).action = action;
+    
+    // 检查端口状态
+    if (window.portDestroyed || !port) {
+      console.warn('rVim: 端口已断开，无法发送消息:', action);
+      if (typeof callback === 'function') {
+        callback({error: 'Port disconnected'});
+      }
+      return;
+    }
+    
+    try {
+      port.postMessage(args, typeof callback === 'function' ? callback : void 0);
+    } catch (error) {
+      console.error('rVim: 发送消息失败:', error);
+      if (typeof callback === 'function') {
+        callback({error: error.message});
+      }
+    }
+  };
   ECHO = function(action, args, callback) {
     args.action = 'echoRequest';
     args.call = action;
-    port.postMessage(args, typeof calback === 'function' ?
-        callback : void 0);
+    
+    // 检查端口状态
+    if (window.portDestroyed || !port) {
+      console.warn('rVim: 端口已断开，无法发送ECHO消息:', action);
+      if (typeof callback === 'function') {
+        callback({error: 'Port disconnected'});
+      }
+      return;
+    }
+    
+    try {
+      port.postMessage(args, typeof callback === 'function' ? callback : void 0);
+    } catch (error) {
+      console.error('rVim: 发送ECHO消息失败:', error);
+      if (typeof callback === 'function') {
+        callback({error: error.message});
+      }
+    }
   };
 })();
 
@@ -183,7 +223,11 @@ function handlePortMessage(response) {
       if (lastInputElement.value !== void 0) {
         lastInputElement.value = text;
       } else {
-        SecurityUtils.safeSetContent(lastInputElement, text);
+        if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeSetContent) {
+          SecurityUtils.safeSetContent(lastInputElement, text);
+        } else {
+          lastInputElement.textContent = text;
+        }
       }
       if (!DOM.isSubmittable(lastInputElement)) {
         lastInputElement.blur();
@@ -354,10 +398,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
         Mappings.actions[request.name](1);
         break;
       case 'eval':
-        SecurityUtils.safeExecuteCode(
-          settings.FUNCTIONS[request.name] + request.args,
-          { settings: settings, request: request }
-        );
+        if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeExecuteCode) {
+          SecurityUtils.safeExecuteCode(
+            settings.FUNCTIONS[request.name] + request.args,
+            { settings: settings, request: request }
+          );
+        } else {
+          console.warn('SecurityUtils not available, skipping eval function execution');
+        }
         break;
       }
     }
