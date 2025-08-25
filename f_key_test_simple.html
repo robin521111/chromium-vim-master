@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F键功能测试 - rVim</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .link-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .test-link {
+            display: block;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .test-link:hover {
+            background: #0056b3;
+            color: white;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+        .code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            border: 1px solid #dee2e6;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 F键功能测试页面</h1>
+    
+    <div class="instructions">
+        <h3>📋 测试说明</h3>
+        <ol>
+            <li><strong>按 F 键</strong> - 应该显示链接提示（字母标签）</li>
+            <li><strong>按 Shift+F 键</strong> - 应该在新标签页打开链接</li>
+            <li>如果没有反应，说明扩展未正确加载</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 扩展状态检查</h2>
+        <button onclick="checkExtensionStatus()">检查扩展状态</button>
+        <div id="extensionStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 测试链接区域</h2>
+        <p>在下面的链接区域按 <code>F</code> 键测试功能：</p>
+        
+        <div class="link-container">
+            <a href="https://www.google.com" class="test-link">Google 搜索</a>
+            <a href="https://www.github.com" class="test-link">GitHub</a>
+            <a href="https://www.stackoverflow.com" class="test-link">Stack Overflow</a>
+            <a href="https://www.mozilla.org" class="test-link">Mozilla</a>
+            <a href="https://www.w3.org" class="test-link">W3C</a>
+            <a href="https://developer.mozilla.org" class="test-link">MDN Web Docs</a>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>⌨️ 键盘事件测试</h2>
+        <button onclick="testKeyboardEvents()">测试键盘监听</button>
+        <div id="keyboardTest"></div>
+        <div class="code" id="keyLog" style="display: none; margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🛠️ 手动F键测试</h2>
+        <button onclick="manualFKeyTest()">手动调用 Hints.create()</button>
+        <div id="manualTestResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 诊断信息</h2>
+        <button onclick="showDiagnostics()">显示详细诊断</button>
+        <div id="diagnostics"></div>
+    </div>
+
+    <script>
+        let keyLogger = [];
+        let isLogging = false;
+
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('extensionStatus');
+            let html = '';
+            
+            // 检查主要对象
+            const objects = [
+                { name: 'Hints', obj: window.Hints },
+                { name: 'HUD', obj: window.HUD },
+                { name: 'Mappings', obj: window.Mappings },
+                { name: 'Command', obj: window.Command }
+            ];
+            
+            let allLoaded = true;
+            objects.forEach(obj => {
+                const loaded = typeof obj.obj !== 'undefined';
+                if (!loaded) allLoaded = false;
+                
+                html += `<div class="status ${loaded ? 'success' : 'error'}">`;
+                html += `${obj.name}: ${loaded ? '✅ 已加载' : '❌ 未加载'}`;
+                html += '</div>';
+            });
+            
+            if (allLoaded) {
+                html += '<div class="status success">🎉 所有核心对象已加载，F键应该可以工作！</div>';
+            } else {
+                html += '<div class="status error">⚠️ 扩展未完全加载，请检查扩展安装</div>';
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+
+        function testKeyboardEvents() {
+            const testDiv = document.getElementById('keyboardTest');
+            const logDiv = document.getElementById('keyLog');
+            
+            if (!isLogging) {
+                isLogging = true;
+                keyLogger = [];
+                testDiv.innerHTML = '<div class="status warning">🎯 键盘监听已启动，请按 F 键...</div>';
+                logDiv.style.display = 'block';
+                logDiv.innerHTML = '键盘事件日志：\n';
+                
+                document.addEventListener('keydown', logKeyEvent);
+                document.addEventListener('keyup', logKeyEvent);
+                
+                setTimeout(() => {
+                    document.removeEventListener('keydown', logKeyEvent);
+                    document.removeEventListener('keyup', logKeyEvent);
+                    isLogging = false;
+                    testDiv.innerHTML += '<div class="status success">✅ 键盘监听已停止</div>';
+                }, 10000);
+            }
+        }
+
+        function logKeyEvent(event) {
+            const logDiv = document.getElementById('keyLog');
+            const logEntry = `${event.type}: ${event.key} (code: ${event.code})\n`;
+            keyLogger.push(logEntry);
+            logDiv.textContent += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function manualFKeyTest() {
+            const resultDiv = document.getElementById('manualTestResult');
+            
+            if (typeof window.Hints !== 'undefined' && typeof window.Hints.create === 'function') {
+                try {
+                    window.Hints.create();
+                    resultDiv.innerHTML = '<div class="status success">✅ Hints.create() 调用成功！</div>';
+                } catch (error) {
+                    resultDiv.innerHTML = `<div class="status error">❌ Hints.create() 调用失败: ${error.message}</div>`;
+                }
+            } else {
+                resultDiv.innerHTML = '<div class="status error">❌ Hints.create 函数不可用</div>';
+            }
+        }
+
+        function showDiagnostics() {
+            const diagDiv = document.getElementById('diagnostics');
+            let html = '<h4>🔍 详细诊断信息</h4>';
+            
+            // 浏览器信息
+            html += `<div class="code">浏览器: ${navigator.userAgent}</div>`;
+            
+            // 页面信息
+            html += `<div class="code">页面URL: ${window.location.href}</div>`;
+            html += `<div class="code">协议: ${window.location.protocol}</div>`;
+            
+            // 扩展上下文
+            html += `<div class="code">Chrome扩展API: ${typeof chrome !== 'undefined' ? '可用' : '不可用'}</div>`;
+            
+            // Content Scripts检查
+            const scripts = ['Hints', 'HUD', 'Mappings', 'Command', 'Utils', 'DOM'];
+            html += '<div class="code">Content Scripts状态:\n';
+            scripts.forEach(script => {
+                html += `  ${script}: ${typeof window[script] !== 'undefined' ? '✅' : '❌'}\n`;
+            });
+            html += '</div>';
+            
+            // CSS检查
+            const hasCSS = document.querySelector('style[data-rvim]') || 
+                          document.querySelector('link[href*="main.css"]') ||
+                          document.querySelector('style').textContent.includes('rvim');
+            html += `<div class="code">CSS注入: ${hasCSS ? '✅ 检测到' : '❌ 未检测到'}</div>`;
+            
+            diagDiv.innerHTML = html;
+        }
+
+        // 页面加载完成后自动检查
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                checkExtensionStatus();
+            }, 1000);
+        });
+
+        // 监听F键
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'f' || event.key === 'F') {
+                console.log('F键被按下，检查是否触发Hints.create');
+            }
+        });
+    </script>
+</body>
+</html>

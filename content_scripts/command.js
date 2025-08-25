@@ -185,7 +185,11 @@ Command.updateCompletions = function(useStyles) {
     return;
   this.completionResults = [];
   this.dataElements = [];
-  SecurityUtils.safeClearContent(this.data);
+  if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeClearContent) {
+    SecurityUtils.safeClearContent(this.data);
+  } else {
+    this.data.textContent = '';
+  }
   var key, i;
   var completionKeys = Object.keys(this.completions).sort(function(a, b) {
     return this.completionOrder.getImportance(b) -
@@ -248,7 +252,11 @@ Command.hideData = function() {
   Search.lastActive = null;
   this.dataElements.length = 0;
   if (this.data) {
-    SecurityUtils.safeClearContent(this.data);
+    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeClearContent) {
+      SecurityUtils.safeClearContent(this.data);
+    } else {
+      this.data.textContent = '';
+    }
     Search.index = null;
   }
 };
@@ -1046,12 +1054,20 @@ Command.show = function(search, value, complete) {
   }
   if (search) {
     this.type = 'search';
-    SecurityUtils.safeSetContent(this.modeIdentifier, search);
+    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeSetContent) {
+      SecurityUtils.safeSetContent(this.modeIdentifier, search);
+    } else {
+      this.modeIdentifier.textContent = search;
+    }
     // Display search mode notification
     HUD.display('Search mode activated', 1000, 'normal');
   } else {
     this.type = 'action';
-    SecurityUtils.safeSetContent(this.modeIdentifier, ':');
+    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeSetContent) {
+      SecurityUtils.safeSetContent(this.modeIdentifier, ':');
+    } else {
+      this.modeIdentifier.textContent = ':';
+    }
     // Display command mode notification
     HUD.display('Command mode activated', 1000, 'warning');
   }

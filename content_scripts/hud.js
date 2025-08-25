@@ -121,7 +121,7 @@ HUD.setMessage = function(text, duration) {
     }, duration * 1000);
   }
   
-  this._recordPerformance(performance.now() - startTime);
+  HUD._recordPerformance(performance.now() - startTime);
 };
 
 HUD.display = function(text, duration, statusType) {
@@ -189,7 +189,12 @@ HUD.display = function(text, duration, statusType) {
   }
   
   this._animationFrame = requestAnimationFrame(() => {
-    SecurityUtils.safeClearContent(this.element);
+    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeClearContent) {
+      SecurityUtils.safeClearContent(this.element);
+    } else {
+      // Fallback to safe clearing
+      this.element.textContent = '';
+    }
     
     // 添加状态指示器
     var statusIndicator = document.createElement('span');
@@ -249,7 +254,7 @@ HUD.display = function(text, duration, statusType) {
     }, duration * 1000);
   }
   
-  this._recordPerformance(performance.now() - startTime);
+  HUD._recordPerformance(performance.now() - startTime);
 };
 
 HUD._pulseHUD = function() {

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rVim 扩展安装和诊断指南</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .step {
+            background: #ecf0f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            overflow-x: auto;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-ok { background-color: #27ae60; }
+        .status-error { background-color: #e74c3c; }
+        .status-warning { background-color: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 rVim 扩展安装和诊断指南</h1>
+        
+        <div class="warning">
+            <strong>⚠️ 重要提示：</strong> 如果F键功能不工作，很可能是扩展没有正确安装或加载。请按照以下步骤进行检查和修复。
+        </div>
+
+        <h2>📋 第一步：检查扩展状态</h2>
+        <button onclick="checkExtensionStatus()">🔍 检查扩展状态</button>
+        <div id="extensionStatus"></div>
+
+        <h2>🚀 第二步：安装 rVim 扩展</h2>
+        
+        <div class="step">
+            <strong>方法1：从源码安装（推荐）</strong>
+            <ol>
+                <li>打开 Chrome 浏览器</li>
+                <li>在地址栏输入：<code>chrome://extensions/</code></li>
+                <li>开启右上角的「开发者模式」</li>
+                <li>点击「加载已解压的扩展程序」</li>
+                <li>选择 rVim 项目文件夹：<code>/Users/robin/Documents/codeforfun/chromium-vim-master</code></li>
+                <li>确认扩展已加载并启用</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <strong>方法2：检查现有安装</strong>
+            <ol>
+                <li>访问 <code>chrome://extensions/</code></li>
+                <li>查找 "rVim" 扩展</li>
+                <li>确保扩展已启用（开关为蓝色）</li>
+                <li>检查扩展权限是否完整</li>
+            </ol>
+        </div>
+
+        <h2>🔧 第三步：验证扩展功能</h2>
+        <button onclick="testBasicFunctionality()">🧪 测试基本功能</button>
+        <button onclick="testFKeyFunction()">⌨️ 测试F键功能</button>
+        <button onclick="testContentScripts()">📜 测试Content Scripts</button>
+        
+        <div id="testResults"></div>
+
+        <h2>🛠️ 第四步：常见问题解决</h2>
+        
+        <div class="step">
+            <strong>问题1：扩展未显示在扩展列表中</strong>
+            <ul>
+                <li>确认已正确选择项目根目录</li>
+                <li>检查 manifest.json 文件是否存在且格式正确</li>
+                <li>重新加载扩展</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>问题2：扩展已安装但F键不工作</strong>
+            <ul>
+                <li>刷新当前页面（Ctrl+R 或 Cmd+R）</li>
+                <li>检查页面是否在扩展权限范围内</li>
+                <li>查看浏览器控制台是否有错误信息</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <strong>问题3：Content Scripts 未加载</strong>
+            <ul>
+                <li>检查扩展权限设置</li>
+                <li>确认 manifest.json 中的 content_scripts 配置</li>
+                <li>重启浏览器</li>
+            </ul>
+        </div>
+
+        <h2>📊 第五步：详细诊断</h2>
+        <button onclick="runComprehensiveDiagnosis()">🔬 运行完整诊断</button>
+        <div id="diagnosisResults"></div>
+
+        <div class="code" id="installationCommands" style="display: none;">
+            <h3>📋 安装命令（如需要）</h3>
+            <div>1. 打开终端</div>
+            <div>2. 进入项目目录：cd /Users/robin/Documents/codeforfun/chromium-vim-master</div>
+            <div>3. 检查文件完整性：ls -la manifest.json content_scripts/</div>
+            <div>4. 在Chrome中加载扩展</div>
+        </div>
+    </div>
+
+    <script>
+        function checkExtensionStatus() {
+            const statusDiv = document.getElementById('extensionStatus');
+            let html = '<h3>🔍 扩展状态检查结果</h3>';
+            
+            // 检查各种扩展对象
+            const checks = [
+                { name: 'Hints', obj: window.Hints },
+                { name: 'HUD', obj: window.HUD },
+                { name: 'Settings', obj: window.Settings },
+                { name: 'Command', obj: window.Command },
+                { name: 'Mappings', obj: window.Mappings },
+                { name: 'DOM', obj: window.DOM },
+                { name: 'Utils', obj: window.Utils }
+            ];
+            
+            checks.forEach(check => {
+                const status = check.obj ? 'ok' : 'error';
+                const statusText = check.obj ? '✅ 已加载' : '❌ 未加载';
+                html += `<div class="test-result ${status === 'ok' ? 'success' : 'error'}">`;
+                html += `<span class="status-indicator status-${status}"></span>`;
+                html += `${check.name}: ${statusText}`;
+                html += '</div>';
+            });
+            
+            // 检查CSS注入
+            const cssInjected = document.querySelector('style[data-rvim]') || 
+                               document.querySelector('link[href*="main.css"]');
+            const cssStatus = cssInjected ? 'ok' : 'warning';
+            const cssText = cssInjected ? '✅ CSS已注入' : '⚠️ CSS未检测到';
+            html += `<div class="test-result ${cssStatus === 'ok' ? 'success' : 'warning'}">`;
+            html += `<span class="status-indicator status-${cssStatus}"></span>`;
+            html += `CSS样式: ${cssText}`;
+            html += '</div>';
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        function testBasicFunctionality() {
+            const resultsDiv = document.getElementById('testResults');
+            let html = '<h3>🧪 基本功能测试结果</h3>';
+            
+            // 测试扩展上下文
+            try {
+                const hasExtensionContext = typeof chrome !== 'undefined' && chrome.runtime;
+                html += `<div class="test-result ${hasExtensionContext ? 'success' : 'error'}">`;
+                html += `扩展上下文: ${hasExtensionContext ? '✅ 可用' : '❌ 不可用'}`;
+                html += '</div>';
+            } catch (e) {
+                html += '<div class="test-result error">扩展上下文: ❌ 检测失败</div>';
+            }
+            
+            // 测试DOM操作
+            try {
+                const testDiv = document.createElement('div');
+                testDiv.style.display = 'none';
+                document.body.appendChild(testDiv);
+                document.body.removeChild(testDiv);
+                html += '<div class="test-result success">DOM操作: ✅ 正常</div>';
+            } catch (e) {
+                html += '<div class="test-result error">DOM操作: ❌ 失败</div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function testFKeyFunction() {
+            const resultsDiv = document.getElementById('testResults');
+            let html = resultsDiv.innerHTML + '<h3>⌨️ F键功能测试</h3>';
+            
+            if (typeof window.Hints !== 'undefined') {
+                html += '<div class="test-result success">Hints对象: ✅ 可用</div>';
+                
+                if (typeof window.Hints.create === 'function') {
+                    html += '<div class="test-result success">Hints.create函数: ✅ 可用</div>';
+                    
+                    // 尝试调用Hints.create
+                    try {
+                        // 创建测试链接
+                        const testLink = document.createElement('a');
+                        testLink.href = '#test';
+                        testLink.textContent = '测试链接';
+                        testLink.style.display = 'none';
+                        document.body.appendChild(testLink);
+                        
+                        // 调用Hints.create
+                        window.Hints.create();
+                        html += '<div class="test-result success">F键功能调用: ✅ 成功</div>';
+                        
+                        // 清理
+                        document.body.removeChild(testLink);
+                    } catch (e) {
+                        html += `<div class="test-result error">F键功能调用: ❌ 失败 - ${e.message}</div>`;
+                    }
+                } else {
+                    html += '<div class="test-result error">Hints.create函数: ❌ 不可用</div>';
+                }
+            } else {
+                html += '<div class="test-result error">Hints对象: ❌ 不可用</div>';
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function testContentScripts() {
+            const resultsDiv = document.getElementById('testResults');
+            let html = resultsDiv.innerHTML + '<h3>📜 Content Scripts测试</h3>';
+            
+            const scripts = [
+                'hints.js', 'mappings.js', 'command.js', 'hud.js', 
+                'utils.js', 'dom.js', 'keys.js'
+            ];
+            
+            scripts.forEach(script => {
+                const scriptName = script.replace('.js', '');
+                const globalName = scriptName.charAt(0).toUpperCase() + scriptName.slice(1);
+                const isLoaded = typeof window[globalName] !== 'undefined';
+                
+                html += `<div class="test-result ${isLoaded ? 'success' : 'error'}">`;
+                html += `${script}: ${isLoaded ? '✅ 已加载' : '❌ 未加载'}`;
+                html += '</div>';
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function runComprehensiveDiagnosis() {
+            const diagnosisDiv = document.getElementById('diagnosisResults');
+            let html = '<h3>🔬 完整诊断结果</h3>';
+            
+            // 检查浏览器信息
+            html += `<div class="test-result success">浏览器: ${navigator.userAgent.includes('Chrome') ? '✅ Chrome' : '⚠️ 其他浏览器'}</div>`;
+            
+            // 检查页面协议
+            const isHttps = location.protocol === 'https:' || location.protocol === 'http:';
+            html += `<div class="test-result ${isHttps ? 'success' : 'warning'}">页面协议: ${location.protocol} ${isHttps ? '✅ 支持' : '⚠️ 可能不支持'}</div>`;
+            
+            // 检查控制台错误
+            html += '<div class="test-result warning">💡 请检查浏览器控制台(F12)是否有错误信息</div>';
+            
+            // 显示安装命令
+            document.getElementById('installationCommands').style.display = 'block';
+            
+            diagnosisDiv.innerHTML = html;
+        }
+        
+        // 页面加载时自动检查
+        window.addEventListener('load', function() {
+            setTimeout(checkExtensionStatus, 1000);
+        });
+    </script>
+</body>
+</html>
