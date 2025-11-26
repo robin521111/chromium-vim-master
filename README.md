@@ -1,6 +1,22 @@
 ---
-I am appreciating the auther developed such a good extensions, but unlucky that for latest version of Chrome the `f` or `F` hint function is not works anymore, even some other functions, i try to solved couple of bugs with this folk since last version is not updates for a long time, people who loves this extension and would like to use it in the future please update by yourselfs and pack you personal extension in the chrome. 
+This repository is a refreshed and optimized fork of the original chromium-vim (cVim). It updates compatibility for modern Chrome (Manifest V3), fixes broken link hints, and refreshes several features while keeping the classic Vim-like experience.
 ---
+
+# rVim Modernization & Optimizations
+
+- Migrated to Manifest V3 with a Background Service Worker
+- Fixed and hardened Link Hints for latest Chrome releases
+- Performance improvements to content scripts; run at `document_start`
+- Options and settings stored in `chrome.storage` with optional sync
+- Support loading user settings from local file or GitHub Gist
+- Local external editor integration via `editWithVim` (localhost bridge)
+- Enhanced command/completion history persistence
+- Downloads shelf and downloads management via keyboard
+- Improved SPA compatibility using `webNavigation` events
+- Updated icons pipeline (SVG→PNG) for smaller assets
+- Updated privacy policy and permission explanations
+
+For a detailed list of features, see the sections below.
 
 
 # [Like rVim? Consider donating! https://www.paypal.me/1995eaton](https://www.paypal.me/1995eaton)
@@ -8,6 +24,8 @@ I am appreciating the auther developed such a good extensions, but unlucky that 
 # What is rVim?
 
 Vim for Google Chrome. I hate using the mouse, especially after learning Vim. With my desktop (Linux), I have a lot of key bindings that make doing things easier: I open Chrome with `Alt+w`, I close a window with `Alt+Shift+d`, I open a terminal with `Alt+t`. This is harder to do with Chrome because it has no section for customizing keyboard shortcuts, and it is still necessary to use the mouse to do things like click links. rVim aims to eliminate this problem as best as the Chrome extensions API will allow it to.
+
+Compared to the original project, this fork focuses on keeping rVim functional on modern Chrome, improving reliability and performance, and documenting permissions and privacy.
 
 # Where can I get rVim?
 
