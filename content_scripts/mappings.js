@@ -422,7 +422,7 @@ Mappings.actions = {
       [document.scrollingElement.scrollLeft, document.scrollingElement.scrollTop];
   },
   createHint: function() { Hints.create(); },
-  createTabbedHint: function() { Hints.create('tabbed'); },
+  createTabbedHint: function() { Hints.create('tabbedCaseAware'); },
   createActiveTabbedHint: function() { Hints.create('tabbedActive'); },
   createMultiHint: function() { Hints.create('multi'); },
   createHintWindow: function() { Hints.create('window'); },

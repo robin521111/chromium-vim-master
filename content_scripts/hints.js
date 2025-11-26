@@ -199,7 +199,9 @@ Hints.dispatchAction = function(link, shift) {
       window.setTimeout(function() { DOM.mouseEvent('click', link); }, 0);
       break;
     }
-    if ((/tabbed/.test(this.type) || this.type === 'multi') && link.href) {
+    var caseAware = this.type === 'tabbedCaseAware';
+    var openInTab = caseAware ? !!this.caseAwareUpperTyped : (/tabbed/.test(this.type) || this.type === 'multi');
+    if (openInTab && link.href) {
       RUNTIME('openLinkTab', {
         active: this.type === 'tabbedActive',
         url: link.href, noconvert: true
@@ -373,6 +375,11 @@ Hints.handleHint = function(key) {
       this.dispatchAction(this.numericMatch) : this.hideHints(false);
   }
   if (settings.numerichints || ~settings.hintcharacters.split('').indexOf(key.toLowerCase())) {
+    if (this.type === 'tabbedCaseAware') {
+      if (key.length === 1 && /[A-Z]/.test(key)) {
+        this.caseAwareUpperTyped = true;
+      }
+    }
     this.currentString += key.toLowerCase();
     this.handleHintFeedback(this.currentString);
   } else {
@@ -741,6 +748,7 @@ Hints.create = function(type, multi) {
           fullimage:     '(full image)',
           tabbed:        '(tabbed)',
           tabbedActive:  '(tabbed)',
+          tabbedCaseAware:'(tabbed/case-aware)',
           window:        '(window)',
           edit:          '(edit)',
           hover:         '(hover)',
