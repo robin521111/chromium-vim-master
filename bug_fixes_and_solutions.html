@@ -355,7 +355,7 @@
                         
                         <div class="code-block">
 // 示例：检查命令行模式实现
-if (window.cVim && window.cVim.commandMode) {
+if (window.rVim && window.rVim.commandMode) {
     console.log('命令行模式已实现');
 } else {
     console.warn('命令行模式未找到或未正确初始化');
@@ -363,7 +363,7 @@ if (window.cVim && window.cVim.commandMode) {
 
 // 测试命令执行
 try {
-    window.cVim.executeCommand(':help');
+    window.rVim.executeCommand(':help');
 } catch (error) {
     console.error('命令执行失败:', error);
 }
@@ -855,7 +855,7 @@ class SettingsManager {
                 console.log('🔍 运行系统诊断...');
                 
                 const diagnostics = {
-                    '扩展状态': window.cVim ? '✅ 正常' : '❌ 异常',
+                    '扩展状态': window.rVim ? '✅ 正常' : '❌ 异常',
                     '权限检查': chrome.bookmarks ? '✅ 正常' : '⚠️ 受限',
                     '存储功能': localStorage ? '✅ 正常' : '❌ 异常',
                     '事件监听': KeyboardEvent ? '✅ 正常' : '❌ 异常'

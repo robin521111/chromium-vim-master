@@ -112,6 +112,7 @@ log_info "复制扩展文件..."
 
 # 基本文件
 cp manifest.json "$BUILD_DIR/"
+cp service_worker.js "$BUILD_DIR/" 2>/dev/null || log_warning "未找到根级 service_worker.js，若 manifest 指向根路径需确保复制"
 cp -r content_scripts "$BUILD_DIR/"
 cp -r background_scripts "$BUILD_DIR/"
 cp -r pages "$BUILD_DIR/"

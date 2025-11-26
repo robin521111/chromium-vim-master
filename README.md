@@ -12,7 +12,7 @@ Vim for Google Chrome. I hate using the mouse, especially after learning Vim. Wi
 # Where can I get rVim?
 
  * There are two ways:
-  * You can install it through the [Chrome web store](https://chrome.google.com/webstore/detail/cvim/ihlenndgcmojhcghmfjfneahoeklbjjh)
+  * You can install it through the [Chrome web store](https://chrome.google.com/webstore/detail/rvim/ihlenndgcmojhcghmfjfneahoeklbjjh)
   * You can download the `.zip` file [here](https://github.com/1995eaton/chromium-vim/archive/master.zip) and enable rVim by going to the `chrome://extensions` URL and checking developer mode, then pointing Chrome to the unzipped folder via the `Load unpacked extensions...` button.
 
 # Why is this different than Vimium, ViChrome, or Vrome?
@@ -68,12 +68,12 @@ These extensions do a wonderful job of adding Vim-like keybindings to Google Chr
 | nativelinkorder                     | boolean                            | Open new tabs like Chrome does rather than next to the currently opened tab               | false                                                                       |
 | showtabindices                      | boolean                            | Display the tab index in the tab's title                                                  | false                                                                       |
 | sortlinkhints                       | boolean                            | Sort link hint lettering by the link's distance from the top-left corner of the page      | false                                                                       |
-| localconfig                         | boolean                            | Read the rVimrc config from `configpath` (when this is set, you connot save from rVim's options page | false                                                            |
+| localconfig                         | boolean                            | Read the rVimrc config from `configpath` (when this is set, you cannot save from rVim's options page | false                                                            |
 | completeonopen                      | boolean                            | Automatically show a list of command completions when the command bar is opened           | false                                                                       |
 | configpath                          | string                             | Read the rVimrc from this local file when configpath is set                               | ""                                                                          |
 | changelog                           | boolean                            | Auto open the changelog when rVim is updated                                              | true                                                                        |
 | completionengines                   | array of strings                   | use only the specified search engines                                                     | ["google", "duckduckgo", "wikipedia", "amazon"]                             |
-| blacklists                          | array of strings                   | disable cVim on the sites matching one of the patterns                                    | []                                                                          |
+| blacklists                          | array of strings                   | disable rVim on the sites matching one of the patterns                                    | []                                                                          |
 | mapleader                           | string                             | The default `<Leader>` key                                                                | \                                                                           |
 | defaultengine                       | string                             | set the default search engine                                                             | "google"                                                                    |
 | locale                              | string                             | set the locale of the site being completed/searched on (see example configuration below)  | ""                                                                          |
@@ -97,7 +97,7 @@ let searchlimit = 30
 let scrollstep = 70
 let barposition = "bottom"
 
-let locale = "uk" " Current choices are 'jp' and 'uk'. This allows cVim to use sites like google.co.uk
+let locale = "uk" " Current choices are 'jp' and 'uk'. This allows rVim to use sites like google.co.uk
                   " or google.co.jp to search rather than google.com. Support is currently limited.
                   " Let me know if you need a different locale for one of the completion/search engines
 let hintcharacters = "abc123"
@@ -187,10 +187,10 @@ echo(link) -> {{
 }}
 map <C-f> createScriptHint(echo)
 
-let configpath = '/path/to/your/.cvimrc'
+let configpath = '/path/to/your/.rvimrc'
 set localconfig " Update settings via a local file (and the `:source` command) rather
                 " than the default options page in chrome
-" As long as localconfig is set in the .cvimrc file. cVim will continue to read
+" As long as localconfig is set in the .rvimrc file. rVim will continue to read
 " settings from there
 ```
 
@@ -211,10 +211,10 @@ site '*://*.reddit.com/*' {
 ```
 
 ### Running commands when a page loads
- * In a similar fashion to the site-specific configuration described above, cVim can run commands when a page is loaded with the `call` keyword
+ * In a similar fashion to the site-specific configuration described above, rVim can run commands when a page is loaded with the `call` keyword
 ```vim
 " In this case, when pages with a file ending in '.js' are loaded,
-" cVim will pin the tab and then scroll down
+" rVim will pin the tab and then scroll down
 site '*://*/*.js' {
       call :pintab
       call scrollDown
@@ -273,7 +273,7 @@ site '*://*/*.js' {
 ```
 
 ### Code blocks
- * Code blocks allow you to interact with cVim's content scripts via the cVimrc.
+ * Code blocks allow you to interact with rVim's content scripts via the rVimrc.
  * Since code blocks use `eval(...)`, you should only use them if you know what you're doing.
 
 ```JavaScript
@@ -296,7 +296,7 @@ switchHintCharacters -> {{
   // rest of the session
   PORT('syncSettings', { settings: settings });
 
-  // Display cVim's status bar for 2 seconds.
+  // Display rVim's status bar for 2 seconds.
   Status.setMessage('Hint Set: ' + (true ? 'a' : 'b'), 2);
 }}
 
@@ -462,7 +462,7 @@ let completionengines = ['google', 'google-image', 'youtube'] " Show only these 
 | `<C-j>`                   | move cursor forward one line                                          | forwardLine                     |
 | `<C-k>`                   | move cursor back one line                                             | backwardLine                    |
 | unmapped                  | select input text (equivalent to `<C-a>`)                             | selectAll                       |
-| unmapped                  | edit with Vim in a terminal (need the [cvim_server.py](https://github.com/1995eaton/chromium-vim/blob/master/cvim_server.py) script running for this to work and the VIM_COMMAND set inside that script) | editWithVim     |
+| unmapped                  | edit with Vim in a terminal (need the [rvim_server.py](https://github.com/1995eaton/chromium-vim/blob/master/rvim_server.py) script running for this to work and the VIM_COMMAND set inside that script) | editWithVim     |
 
 # Command Mode
 
@@ -474,7 +474,7 @@ let completionengines = ['google', 'google-image', 'youtube'] " Show only these 
 | :history (autocomplete)                     | search through browser history                                                         |
 | :bookmarks (autocomplete)                   | search through bookmarks                                                               |
 | :bookmarks /&lt;folder&gt; (autocomplete)   | browse bookmarks by folder/open all bookmarks from folder                              |
-| :set (autocomplete)                         | temporarily change a cVim setting                                                      |
+| :set (autocomplete)                         | temporarily change a rVim setting                                                      |
 | :chrome:// (autocomplete)                   | open a chrome:// URL                                                                   |
 | :tabhistory (autocomplete)                  | browse the different history states of the current tab                                 |
 | :command `<NAME>` `<ACTION>`                | aliases :`<NAME>` to :`<ACTION>`                                                       |
@@ -484,7 +484,7 @@ let completionengines = ['google', 'google-image', 'youtube'] " Show only these 
 | :tabattach (autocomplete)                   | move the current tab to another open window                                            |
 | :tabdetach                                  | move the current tab to a new window                                                   |
 | :file (autocomplete)                        | open a local file                                                                      |
-| :source (autocomplete)                      | load a cVimrc file into memory (this will overwrite the settings in the options page if the `localconfig` setting had been set previously |
+| :source (autocomplete)                      | load a rVimrc file into memory (this will overwrite the settings in the options page if the `localconfig` setting had been set previously |
 | :duplicate                                  | duplicate the current tab                                                              |
 | :settings                                   | open the settings page                                                                 |
 | :nohlsearch                                 | clear the highlighted text from the last search                                        |
@@ -521,4 +521,4 @@ You'll get feedback whether it will likely be merged.
 1. Navigate to `chrome://extensions`
 1. Toggle into Developer Mode
 1. Click on "Load Unpacked Extension..."
-1. Select the cVim directory.
+1. Select the rVim directory.

@@ -17,10 +17,10 @@ var HUD = {
 
 // 性能监控函数
 HUD._recordPerformance = function(duration) {
-  this._performanceStats.displayCount++;
-  this._performanceStats.totalTime += duration;
-  this._performanceStats.maxTime = Math.max(this._performanceStats.maxTime, duration);
-  this._performanceStats.minTime = Math.min(this._performanceStats.minTime, duration);
+  HUD._performanceStats.displayCount++;
+  HUD._performanceStats.totalTime += duration;
+  HUD._performanceStats.maxTime = Math.max(HUD._performanceStats.maxTime, duration);
+  HUD._performanceStats.minTime = Math.min(HUD._performanceStats.minTime, duration);
   
   // 性能警告
   if (duration > 50) {
@@ -30,7 +30,7 @@ HUD._recordPerformance = function(duration) {
 
 // 获取性能统计
 HUD.getPerformanceStats = function() {
-  var stats = this._performanceStats;
+  var stats = HUD._performanceStats;
   return {
     displayCount: stats.displayCount,
     averageTime: stats.displayCount > 0 ? stats.totalTime / stats.displayCount : 0,
@@ -42,7 +42,7 @@ HUD.getPerformanceStats = function() {
 
 // 重置性能统计
 HUD.resetPerformanceStats = function() {
-  this._performanceStats = {
+  HUD._performanceStats = {
     displayCount: 0,
     totalTime: 0,
     maxTime: 0,
@@ -57,16 +57,16 @@ HUD.fastDisplay = function(text) {
   }
   
   // 直接更新文本，避免重新创建元素
-  var span = this.element.firstElementChild;
+  var span = HUD.element.firstElementChild;
   if (span && span.textContent !== text) {
     span.textContent = text;
-    this._lastMessage = text;
+    HUD._lastMessage = text;
   }
 };
 
 HUD.transitionEvent = function() {
   if (HUD.overflowValue) {
-    document.body.style.overflowX = HUD.overflowValue;
+    SafeStyleManager.setOverflow('x', HUD.overflowValue, true);
   }
   delete HUD.overflowValue;
   HUD.element.removeEventListener('transitionend', HUD.transitionEvent, true);
@@ -78,45 +78,45 @@ HUD.transitionEvent = function() {
 
 HUD.hide = function(ignoreSetting) {
   if (!ignoreSetting) {
-    if (!settings.hud || this.element === void 0) {
+    if (!settings.hud || HUD.element === void 0) {
       return false;
     }
     if (Find.matches.length) {
       return HUD.display(Find.index + 1 + ' / ' + Find.matches.length);
     }
   }
-  if (!this.element) {
+  if (!HUD.element) {
     return false;
   }
   HUD.transition = true;
-  this.element.addEventListener('transitionend', this.transitionEvent, true);
-  var width = this.element.offsetWidth;
-  this.element.style.right = -width + 'px';
+  HUD.element.addEventListener('transitionend', HUD.transitionEvent, true);
+  var width = HUD.element.offsetWidth;
+  HUD.element.style.right = -width + 'px';
 };
 
 HUD.setMessage = function(text, duration) {
   var startTime = performance.now();
   
   // 缓存检查：避免重复设置相同消息
-  if (this._lastMessage === text && this._lastDuration === duration) {
+  if (HUD._lastMessage === text && HUD._lastDuration === duration) {
     return true;
   }
   
-  window.clearTimeout(this.hideTimeout);
-  if (!settings.hud || this.element === void 0) {
+  window.clearTimeout(HUD.hideTimeout);
+  if (!settings.hud || HUD.element === void 0) {
     return false;
   }
   
   // 批量DOM更新
   requestAnimationFrame(() => {
-    this.element.firstElementChild.textContent = text;
+    HUD.element.firstElementChild.textContent = text;
   });
   
-  this._lastMessage = text;
-  this._lastDuration = duration;
+  HUD._lastMessage = text;
+  HUD._lastDuration = duration;
   
   if (duration) {
-    this.hideTimeout = window.setTimeout(function() {
+    HUD.hideTimeout = window.setTimeout(function() {
       HUD.hide();
     }, duration * 1000);
   }
@@ -128,42 +128,42 @@ HUD.display = function(text, duration, statusType) {
   var startTime = performance.now();
   
   // 快速缓存检查
-  if (this._lastMessage === text && this._statusType === statusType && this._lastDuration === duration && this.visible) {
-    this._pulseHUD();
+  if (HUD._lastMessage === text && HUD._statusType === statusType && HUD._lastDuration === duration && HUD.visible) {
+    HUD._pulseHUD();
     return true;
   }
   
   if (HUD.visible && HUD.transition) {
-    this.element.removeEventListener('transitionend', this.transitionEvent, true);
-    if (this.element.parentNode) {
-      this.element.parentNode.removeChild(this.element);
+    HUD.element.removeEventListener('transitionend', HUD.transitionEvent, true);
+    if (HUD.element.parentNode) {
+      HUD.element.parentNode.removeChild(HUD.element);
     }
-    delete this.element;
+    delete HUD.element;
   }
   
-  this._statusType = statusType || 'normal';
+  HUD._statusType = statusType || 'normal';
   HUD.visible = true;
   if (!settings.hud || HUD.element !== void 0) {
     return HUD.setMessage(text, duration);
   }
   
-  if (this.element) {
-    this.element.removeEventListener('transitionend', this.transitionEvent, true);
-    if (this.element.parentNode) {
-      this.element.parentNode.removeChild(this.element);
+  if (HUD.element) {
+    HUD.element.removeEventListener('transitionend', HUD.transitionEvent, true);
+    if (HUD.element.parentNode) {
+      HUD.element.parentNode.removeChild(HUD.element);
     }
-    delete this.element;
+    delete HUD.element;
   }
   
-  window.clearTimeout(this.hideTimeout);
+  window.clearTimeout(HUD.hideTimeout);
   
   // 元素缓存和重用
-  if (!this._elementCache) {
-    this._elementCache = document.createElement('div');
-    this._elementCache.id = 'rVim-hud';
+  if (!HUD._elementCache) {
+    HUD._elementCache = document.createElement('div');
+    HUD._elementCache.id = 'rVim-hud';
     
     // 预设样式以减少重排
-    this._elementCache.style.cssText = `
+    HUD._elementCache.style.cssText = `
       position: fixed !important;
       right: 10px !important;
       bottom: 10px !important;
@@ -173,83 +173,83 @@ HUD.display = function(text, duration, statusType) {
     `;
   }
   
-  this.element = this._elementCache;
+  HUD.element = HUD._elementCache;
   
   if (Command.onBottom) {
-    this.element.style.bottom = 'initial';
-    this.element.style.top = '0';
+    HUD.element.style.bottom = 'initial';
+    HUD.element.style.top = '0';
   } else {
-    this.element.style.bottom = '10px';
-    this.element.style.top = 'initial';
+    HUD.element.style.bottom = '10px';
+    HUD.element.style.top = 'initial';
   }
   
   // 批量DOM操作
-  if (this._animationFrame) {
-    window.cancelAnimationFrame(this._animationFrame);
+  if (HUD._animationFrame) {
+    window.cancelAnimationFrame(HUD._animationFrame);
   }
   
-  this._animationFrame = requestAnimationFrame(() => {
+  HUD._animationFrame = requestAnimationFrame(() => {
     if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeClearContent) {
-      SecurityUtils.safeClearContent(this.element);
+      SecurityUtils.safeClearContent(HUD.element);
     } else {
       // Fallback to safe clearing
-      this.element.textContent = '';
+      HUD.element.textContent = '';
     }
     
     // 添加状态指示器
     var statusIndicator = document.createElement('span');
     statusIndicator.className = 'rVim-status-indicator';
-    if (this._statusType === 'warning') {
+    if (HUD._statusType === 'warning') {
       statusIndicator.classList.add('warning');
-      this.element.style.borderLeftColor = '#FFC107';
-    } else if (this._statusType === 'error') {
+      HUD.element.style.borderLeftColor = '#FFC107';
+    } else if (HUD._statusType === 'error') {
       statusIndicator.classList.add('error');
-      this.element.style.borderLeftColor = '#FF5252';
+      HUD.element.style.borderLeftColor = '#FF5252';
     } else {
-      this.element.style.borderLeftColor = '#4CAF50';
+      HUD.element.style.borderLeftColor = '#4CAF50';
     }
-    this.element.appendChild(statusIndicator);
+    HUD.element.appendChild(statusIndicator);
     
     var span = document.createElement('span');
     span.textContent = text;
-    this.element.appendChild(span);
+    HUD.element.appendChild(span);
     
     // 应用入场动画
-    this.element.style.opacity = '0';
-    this.element.style.transform = 'translateY(5px)';
+    HUD.element.style.opacity = '0';
+    HUD.element.style.transform = 'translateY(5px)';
     
     // 优化的DOM插入
     try {
-      if (!this.element.parentNode) {
-        (document.lastElementChild || document.body).appendChild(this.element);
+      if (!HUD.element.parentNode) {
+        (document.lastElementChild || document.body).appendChild(HUD.element);
       }
     } catch (e) {
       if (document.body) {
-        document.body.appendChild(this.element);
+        document.body.appendChild(HUD.element);
       }
     }
     
     // 强制重绘并应用动画
-    this.element.offsetHeight;
-    this.element.style.opacity = '1';
-    this.element.style.transform = 'translateY(0)';
+    HUD.element.offsetHeight;
+    HUD.element.style.opacity = '1';
+    HUD.element.style.transform = 'translateY(0)';
     
-    // 优化的溢出处理
+    // 优化的溢出处理 - 使用安全样式管理器
     var screenWidth = document.documentElement.clientWidth;
     var pageWidth = document.body.scrollWidth;
     if (screenWidth === pageWidth) {
-      this.overflowValue = getComputedStyle(document.body).overflowX;
-      document.body.style.overflowX = 'hidden';
+      HUD.overflowValue = SafeStyleManager.getOverflow('x');
+      SafeStyleManager.setOverflow('x', 'hidden', true);
     }
     
-    this._animationFrame = null;
+    HUD._animationFrame = null;
   });
   
-  this._lastMessage = text;
-  this._lastDuration = duration;
+  HUD._lastMessage = text;
+  HUD._lastDuration = duration;
   
   if (duration) {
-    this.hideTimeout = window.setTimeout(function() {
+    HUD.hideTimeout = window.setTimeout(function() {
       HUD.hide();
     }, duration * 1000);
   }
@@ -258,22 +258,22 @@ HUD.display = function(text, duration, statusType) {
 };
 
 HUD._pulseHUD = function() {
-  if (!this.element) return;
+  if (!HUD.element) return;
   
   // 添加脉冲动画
-  this.element.classList.add('pulse');
+  HUD.element.classList.add('pulse');
   
   // 移除脉冲动画类
   setTimeout(() => {
-    this.element.classList.remove('pulse');
+    HUD.element.classList.remove('pulse');
   }, 500);
 };
 
 // 显示进度指示器
 HUD.showProgress = function(progress, operation, estimatedTime) {
-  this._progressValue = Math.max(0, Math.min(100, progress));
+  HUD._progressValue = Math.max(0, Math.min(100, progress));
   
-  var progressText = (operation || '处理中') + ': ' + this._progressValue + '%';
+  var progressText = (operation || '处理中') + ': ' + HUD._progressValue + '%';
   if (estimatedTime && estimatedTime > 0) {
     var timeText = estimatedTime < 60 ? 
       Math.ceil(estimatedTime) + '秒' : 
@@ -281,15 +281,15 @@ HUD.showProgress = function(progress, operation, estimatedTime) {
     progressText += ' (预计剩余: ' + timeText + ')';
   }
   
-  this.display(progressText, 0, 'normal');
-  this._updateProgressBar();
+  HUD.display(progressText, 0, 'normal');
+  HUD._updateProgressBar();
 };
 
 // 更新进度条显示
 HUD._updateProgressBar = function() {
-  if (!this.element) return;
+  if (!HUD.element) return;
   
-  var progressBar = this.element.querySelector('.rVim-progress-bar');
+  var progressBar = HUD.element.querySelector('.rVim-progress-bar');
   if (!progressBar) {
     var progressContainer = document.createElement('div');
     progressContainer.className = 'rVim-progress';
@@ -298,27 +298,26 @@ HUD._updateProgressBar = function() {
     progressBar.className = 'rVim-progress-bar';
     
     progressContainer.appendChild(progressBar);
-    this.element.appendChild(progressContainer);
+    HUD.element.appendChild(progressContainer);
   }
   
-  progressBar.style.width = this._progressValue + '%';
+  progressBar.style.width = HUD._progressValue + '%';
   
   // 进度完成时自动隐藏
-  if (this._progressValue >= 100) {
-    var self = this;
+  if (HUD._progressValue >= 100) {
     setTimeout(function() {
-      self.hideProgress();
+      HUD.hideProgress();
     }, 1000);
   }
 };
 
 // 隐藏进度指示器
 HUD.hideProgress = function() {
-  if (this.element) {
-    var progressContainer = this.element.querySelector('.rVim-progress');
+  if (HUD.element) {
+    var progressContainer = HUD.element.querySelector('.rVim-progress');
     if (progressContainer) {
       progressContainer.parentNode.removeChild(progressContainer);
     }
   }
-  this._progressValue = 0;
+  HUD._progressValue = 0;
 };

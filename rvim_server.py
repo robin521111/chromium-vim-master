@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 '''
-USAGE: ./cvim_server.py
+USAGE: ./rvim_server.py
 If you want to use native Vim to edit text boxes
 you must be running this script. To begin editing,
 first map the editWithVim (e.g. "imap <C-o> editWithVim") mapping.
@@ -21,7 +21,7 @@ PORT = 8001
 VIM_COMMAND = 'gvim -f'
 
 def edit_file(content):
-    fd, fn = mkstemp(suffix='.txt', prefix='cvim-', text=True)
+    fd, fn = mkstemp(suffix='.txt', prefix='rvim-', text=True)
     os.write(fd, content.encode('utf8'))
     os.close(fd)
     subprocess.Popen(shlex.split(VIM_COMMAND) + [fn]).wait()
@@ -32,7 +32,7 @@ def edit_file(content):
     return text
 
 
-class CvimServer(BaseHTTPRequestHandler):
+class RvimServer(BaseHTTPRequestHandler):
     def do_POST(self):
         length = int(self.headers['Content-Length'])
         content_str = self.rfile.read(length).decode('utf8')
@@ -52,7 +52,7 @@ class CvimServer(BaseHTTPRequestHandler):
 
 def init_server(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler):
     server_address = ('127.0.0.1', PORT)
-    httpd = server_class(server_address, CvimServer)
+    httpd = server_class(server_address, RvimServer)
     httpd.serve_forever()
 
 try:

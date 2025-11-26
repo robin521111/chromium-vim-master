@@ -41,7 +41,7 @@
   <rect x="200" y="68" width="600" height="24" rx="12" fill="#f8f9fa" stroke="#dee2e6"/>
   <text x="220" y="83" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">chrome://history/</text>
   
-  <!-- cVim icon in toolbar -->
+  <!-- rVim icon in toolbar -->
   <rect x="1140" y="68" width="24" height="24" rx="4" fill="#2c3e50"/>
   <text x="1152" y="78" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
   <rect x="1146" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>
@@ -88,7 +88,7 @@
       
       <g transform="translate(0, 195)">
         <rect x="0" y="0" width="1000" height="40" fill="#f8f9fa" stroke="#e9ecef" rx="4"/>
-        <text x="15" y="18" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#007bff">Chrome Web Store - cVim Extension</text>
+        <text x="15" y="18" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#007bff">Chrome Web Store - rVim Extension</text>
         <text x="15" y="32" font-family="Arial, sans-serif" font-size="10" fill="#6c757d">chrome.google.com/webstore/... - Yesterday 4:15 PM</text>
         <circle cx="-10" cy="20" r="8" fill="#ff6d01"/>
         <text x="-10" y="24" font-family="monospace" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">f</text>

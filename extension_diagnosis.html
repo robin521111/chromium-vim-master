@@ -256,7 +256,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `cvim-diagnosis-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.log`;
+            a.download = `rvim-diagnosis-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.log`;
             a.click();
             URL.revokeObjectURL(url);
         }
@@ -337,37 +337,37 @@
             
             // 检查content scripts
             const scripts = document.querySelectorAll('script');
-            let cvimScripts = 0;
+            let rvimScripts = 0;
             scripts.forEach(script => {
-                if (script.src && (script.src.includes('content_scripts') || script.src.includes('cvim'))) {
-                    cvimScripts++;
+                if (script.src && (script.src.includes('content_scripts') || script.src.includes('rvim'))) {
+                    rvimScripts++;
                 }
             });
             
             checks.push({
                 label: 'Content Scripts数量',
-                status: cvimScripts > 0 ? 'success' : 'warning',
-                value: cvimScripts.toString()
+                status: rvimScripts > 0 ? 'success' : 'warning',
+                    value: rvimScripts.toString()
             });
             
             // 检查CSS注入
             const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
-            let cvimStyles = 0;
+            let rvimStyles = 0;
             styles.forEach(style => {
                 const content = style.textContent || style.href || '';
-                if (content.includes('rVim') || content.includes('cvim')) {
-                    cvimStyles++;
+                if (content.includes('rVim')) {
+                    rvimStyles++;
                 }
             });
             
             checks.push({
                 label: 'CSS样式注入',
-                status: cvimStyles > 0 ? 'success' : 'warning',
-                value: cvimStyles > 0 ? '已注入' : '未检测到'
+                status: rvimStyles > 0 ? 'success' : 'warning',
+                    value: rvimStyles > 0 ? '已注入' : '未检测到'
             });
             
             // 检查DOM元素
-            const rVimElements = document.querySelectorAll('[class*="rVim"], [id*="rVim"], [class*="cvim"], [id*="cvim"]');
+            const rVimElements = document.querySelectorAll('[class*="rVim"], [id*="rVim"]');
             checks.push({
                 label: 'rVim DOM元素',
                 status: rVimElements.length > 0 ? 'success' : 'info',
@@ -377,7 +377,7 @@
             updateStatus('script-injection', checks);
             diagnosticResults.scriptInjection = checks;
             
-            log(`检测到 ${cvimScripts} 个相关脚本, ${cvimStyles} 个样式, ${rVimElements.length} 个DOM元素`);
+            log(`检测到 ${rvimScripts} 个相关脚本, ${rvimStyles} 个样式, ${rVimElements.length} 个DOM元素`);
         }
         
         function checkEventListeners() {

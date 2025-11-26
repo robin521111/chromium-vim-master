@@ -34,7 +34,7 @@ all: legacy-build
 legacy-build:
 	@echo "🔨 使用原有构建流程..."
 	node scripts/create_pages.js
-	cd ./cvimrc_parser && make
+	cd ./rvimrc_parser && make
 
 # 初始化开发环境
 setup:

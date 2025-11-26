@@ -30,7 +30,7 @@
   <rect x="80" y="100" width="1120" height="640" fill="#ffffff"/>
   
   <!-- Website content mockup -->
-  <text x="640" y="180" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#212529" text-anchor="middle">Welcome to cVim</text>
+  <text x="640" y="180" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#212529" text-anchor="middle">Welcome to rVim</text>
   <text x="640" y="220" font-family="Arial, sans-serif" font-size="18" fill="#6c757d" text-anchor="middle">Vim keybindings for Google Chrome</text>
   
   <!-- Link hints demonstration -->

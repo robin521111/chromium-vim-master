@@ -13,7 +13,8 @@
     "test:all": "mocha tests/**/*.test.js",
     "test:watch": "mocha tests/**/*.test.js --watch",
     "test:html": "echo 'Open http://localhost:8080/tests/html/test_pages_index.html in browser'",
-    "test:scripts": "node tests/scripts/run_comprehensive_tests.js"
+    "test:scripts": "node tests/scripts/run_comprehensive_tests.js",
+    "icons:generate": "node scripts/generate_icons.js"
   },
   "devDependencies": {
     "chai": "^5.2.1",
@@ -22,6 +23,7 @@
     "markdown-it": "latest",
     "mocha": "^11.7.1",
     "pegjs": "latest",
-    "sinon": "^21.0.0"
+    "sinon": "^21.0.0",
+    "sharp": "^0.33.4"
   }
 }

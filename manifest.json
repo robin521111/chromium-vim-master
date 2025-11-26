@@ -3,7 +3,6 @@
   "name": "rVim",
   "version": "1.2.99",
   "description": "An extension adding Vim-like bindings to Google Chrome",
-  "update_url": "https://clients2.google.com/service/update2/crx",
   "icons": {
     "128": "icons/128.png",
     "48":  "icons/48.png",
@@ -63,32 +62,30 @@
     "downloads",
     "topSites",
     "downloads.shelf",
-    "clipboardRead",
-    "clipboardWrite",
-    "webNavigation",
-    "scripting"
+    "scripting",
+    "activeTab"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
   "background": {
-    "service_worker": "service_worker.js"
+    "service_worker": "background_scripts/service_worker.js"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": [
-        "content_scripts/security_utils.js",
-        "content_scripts/cvimrc_parser.js",
+        "content_scripts/rvimrc_parser.js",
+        "content_scripts/safe_style_manager.js",
         "content_scripts/session.js",
         "content_scripts/utils.js",
         "content_scripts/dom.js",
-        "content_scripts/complete.js",
         "content_scripts/hints.js",
         "content_scripts/bookmarks.js",
         "content_scripts/command.js",
         "content_scripts/keys.js",
         "content_scripts/clipboard.js",
+        "content_scripts/complete.js",
         "content_scripts/mappings.js",
         "content_scripts/find.js",
         "content_scripts/cursor.js",
@@ -96,10 +93,7 @@
         "content_scripts/hud.js",
         "content_scripts/visual.js",
         "content_scripts/scroll.js",
-        "content_scripts/error_handler.js",
-        "content_scripts/help_system.js",
         "content_scripts/search.js",
-        "content_scripts/style_optimizer.js",
         "content_scripts/frames.js",
         "content_scripts/messenger.js"
       ],
@@ -115,8 +109,7 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "cmdline_frame.html",
-        "content_scripts/main_optimized.css"
+        "cmdline_frame.html"
       ],
       "matches": ["<all_urls>"]
     }

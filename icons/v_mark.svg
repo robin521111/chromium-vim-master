@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .v { fill: none; stroke: #222; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="64" height="64" rx="12" ry="12" />
+  <path class="v" d="M14 20 L32 48 L50 20" />
+</svg>

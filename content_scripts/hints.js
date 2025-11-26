@@ -176,14 +176,7 @@ Hints.dispatchAction = function(link, shift) {
     });
     break;
   case 'script':
-    if (typeof SecurityUtils !== 'undefined' && SecurityUtils.safeExecuteFunction) {
-      SecurityUtils.safeExecuteFunction(
-        settings.FUNCTIONS[this.scriptFunction],
-        link
-      );
-    } else {
-      console.warn('SecurityUtils not available, skipping script function execution');
-    }
+    eval(settings.FUNCTIONS[this.scriptFunction])(link);
     break;
   default:
     if (node === 'textarea' || (node === 'input' &&
@@ -326,14 +319,14 @@ Hints.handleHintFeedback = function() {
           if (settings.dimhintcharacters) {
             span = document.createElement('span');
             span.setAttribute('rVim', true);
-      span.className = 'rVim-link-hint_match';
+    span.className = 'rVim-link-hint_match';
             link.firstChild.splitText(stringNum.length);
             span.appendChild(link.firstChild.cloneNode(true));
             link.replaceChild(span, link.firstChild);
           } else if (link.textContent.length !== 1) {
             span = document.createElement('span');
             span.setAttribute('rVim', true);
-        span.className = 'rVim-link-hint_match_hidden';
+    span.className = 'rVim-link-hint_match_hidden';
             link.firstChild.splitText(stringNum.length);
             span.appendChild(link.firstChild.cloneNode(true));
             link.replaceChild(span, link.firstChild);
@@ -699,7 +692,7 @@ Hints.create = function(type, multi) {
     self.type = type;
     self.hideHints(true, multi);
     if (document.body && document.body.style) {
-      Hints.documentZoom = +document.body.style.zoom || 1;
+  Hints.documentZoom = SafeStyleManager.getZoom();
     } else {
       Hints.documentZoom = 1;
     }
@@ -722,6 +715,9 @@ Hints.create = function(type, multi) {
     }
 
     main = document.createElement('div');
+    if (settings && settings.linkanimations) {
+      main.style.opacity = '0';
+    }
     main.rVim = true;
     frag = document.createDocumentFragment();
 
@@ -736,8 +732,7 @@ Hints.create = function(type, multi) {
       document.body.appendChild(main);
     }
 
-    // 只在多链接且非特定操作类型时显示HUD
-    if (!multi && settings && settings.hud && self.linkArr.length > 1 && (!type || type === 'tabbed' || type === 'window')) {
+    if (!multi && settings && settings.hud) {
       HUD.display('Follow link ' + (function() {
         return ({
           yank:          '(yank)',
@@ -796,33 +791,3 @@ Hints.create = function(type, multi) {
 
   }, 0);
 };
-
-// Listen for style updates from features page
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if (request.action === 'updateStyles') {
-    // Update hint styles dynamically
-    var existingStyle = document.getElementById('rvim-dynamic-styles');
-    if (existingStyle) {
-      existingStyle.remove();
-    }
-    
-    var style = document.createElement('style');
-    style.id = 'rvim-dynamic-styles';
-    style.textContent = request.css;
-    document.head.appendChild(style);
-    
-    // Also update shadow DOM styles if hints are currently visible
-    if (Hints.shadowDOM) {
-      var shadowStyle = Hints.shadowDOM.getElementById('rvim-dynamic-styles');
-      if (shadowStyle) {
-        shadowStyle.remove();
-      }
-      var newShadowStyle = document.createElement('style');
-      newShadowStyle.id = 'rvim-dynamic-styles';
-      newShadowStyle.textContent = request.css;
-      Hints.shadowDOM.appendChild(newShadowStyle);
-    }
-    
-    sendResponse({success: true});
-  }
-});

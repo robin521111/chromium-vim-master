@@ -245,7 +245,7 @@
                 let rvimStyles = 0;
                 styles.forEach(style => {
                     const content = style.textContent || style.href || '';
-                    if (content.includes('rVim') || content.includes('cvim')) {
+                    if (content.includes('rVim')) {
                         rvimStyles++;
                     }
                 });

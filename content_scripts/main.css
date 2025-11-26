@@ -1,8 +1,20 @@
 /* 插件样式隔离和重置 */
 [id^="rVim-"], [class^="rVim-"], [class*=" rVim-"] {
-  all: unset;
-  box-sizing: border-box;
-  font-family: monospace;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  font-family: monospace !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  text-align: left !important;
+  color: inherit !important;
+  outline: none !important;
+  z-index: 999999 !important;
 }
 
 /* 确保插件元素不影响页面布局 */
@@ -28,16 +40,19 @@
 
 #rVim-command-frame {
   display: none;
-  border: 0;
-  position: fixed;
-  margin: 0;
-  padding: 0;
-  left: 0;
-  width: 100%;
-  top: 0;
-  height: 100%;
+  border: 0 !important;
+  position: fixed !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  top: 0 !important;
+  height: 0 !important;
   z-index: 999999 !important;
-  pointer-events: none;
+  pointer-events: none !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 #rVim-link-container {
@@ -149,24 +164,36 @@
 }
 
 #rVim-hud {
-  min-height: 0 !important;background-repeat: none !important;background-position: none !important;border-radius: 6px !important;box-sizing: border-box !important;vertical-align: none !important;margin: 0 !important;-webkit-appearance: none !important;letter-spacing: normal !important;word-spacing: normal !important;text-transform: none !important;text-indent: 0px !important;text-shadow: none !important;text-align: center !important;outline: 0 !important;border: 2px solid #757575 !important;outline-style: none !important;line-height: 1.3 !important; font-style: normal !important;
-  background-color: rgba(18, 18, 18, 0.95) !important; /* 更深的背景提高对比度 */
-  color: #FFFFFF !important; /* 纯白文字 */
-  font-family: monospace !important;
-  font-size: 13px !important; /* 稍大字体 */
-  font-weight: 600 !important; /* 增加字重 */
+  min-height: 0 !important;
+  background-repeat: none !important;
+  background-position: none !important;
+  border-radius: 4px !important;
+  box-sizing: border-box !important;
+  vertical-align: none !important;
+  margin: 0 !important;
+  -webkit-appearance: none !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  background: rgba(255, 255, 255, 0.95) !important; /* 白色半透明背景 */
+  color: #333 !important; /* 深色文字 */
+  font-family: 'SF Mono', Monaco, Inconsolata, monospace !important;
+  font-size: 14px !important; /* 稍大字体 */
+  font-weight: normal !important; /* 正常字重 */
   padding: 8px 12px !important; /* 增加内边距 */
-  display: inline-block !important;
-  vertical-align: middle !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
   position: fixed !important;
+  bottom: 10px !important;
+  right: 10px !important;
   z-index: 999997 !important;
   pointer-events: auto;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important; /* 增强阴影 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important; /* 柔和阴影 */
   border-left: 3px solid #4CAF50 !important; /* 绿色边框指示状态 */
   transform: translateY(0) !important;
   opacity: 1 !important;
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out, border-color 0.3s ease !important;
-  will-change: transform, opacity, border-color !important;
+  transition: opacity 0.15s ease-out, transform 0.2s ease-out !important;
+  will-change: transform, opacity !important;
 }
 
 #rVim-hud.pulse {
@@ -183,6 +210,10 @@
   display: inline-block !important;
   box-sizing: border-box !important;
   vertical-align: middle !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  font-size: 14px !important;
+  color: #333 !important;
+  flex: 1 !important;
 }
 
 #rVim-status-bar {
@@ -254,9 +285,10 @@
   width: 8px !important;
   height: 8px !important;
   border-radius: 50% !important;
-  margin-right: 6px !important;
+  margin-right: 0 !important;
   vertical-align: middle !important;
   background-color: #4CAF50 !important; /* 默认绿色 */
+  flex-shrink: 0 !important;
 }
 
 .rVim-status-indicator.warning {
@@ -283,14 +315,22 @@
 }
 
 .rVim-find-mark {
-  all: unset;
+  position: relative !important;
+  display: inline !important;
   background-color: rgba(255, 255, 0, 0.5) !important; /* 半透明黄色背景 */
   color: #000000 !important; /* 深色文字 */
   border: 1px solid #FFA500 !important; /* 橙色边框 */
   border-radius: 2px !important;
   padding: 0 1px !important;
+  margin: 0 !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  text-decoration: none !important;
   transition: background-color 0.2s ease, transform 0.2s ease !important;
   animation: highlight-pulse 0.5s ease-out !important;
+  z-index: 999999 !important;
 }
 
 @keyframes highlight-pulse {

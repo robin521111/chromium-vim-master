@@ -1,10 +1,10 @@
-# cVim Changelog
-# [Like cVim? Consider donating! https://www.paypal.me/1995eaton](https://www.paypal.me/1995eaton)
+# rVim Changelog
+# [Like rVim? Consider donating! https://www.paypal.me/1995eaton](https://www.paypal.me/1995eaton)
 
 ## 1.2.99 (2017-12-17)
  * Updated list of `chrome://` completion URLs when `:chrome` is used
  * Fixed issue with `openPasteTab` [#573](https://github.com/1995eaton/chromium-vim/issues/573)
- * Allow global site matches in cVimrc. For example, the following will unmap `j` on all sites:
+ * Allow global site matches in rVimrc. For example, the following will unmap `j` on all sites:
 ```
 site '*://*' {
   unmap j
@@ -20,7 +20,7 @@ site '*://*' {
  * Make `^` go to beginning of line when in insert mode
 
 ## 1.2.96 (2017-08-31)
- * Fix vulnerability where sites are able to trigger keyboard events that would be interpreted by cVim ([#572](https://github.com/1995eaton/chromium-vim/issues/572))
+ * Fix vulnerability where sites are able to trigger keyboard events that would be interpreted by rVim ([#572](https://github.com/1995eaton/chromium-vim/issues/572))
 
 ## 1.2.95 (2017-08-16)
  * Redesign options page and fixed CSS issues for smaller screens
@@ -41,7 +41,7 @@ site '*://*' {
  * Re-implement editWithVim
 
 ## 1.2.89 (2017-06-20)
- * If you are currently running an old version of the [cvim_server.py](https://github.com/1995eaton/chromium-vim/blob/master/cvim_server.py) script (keeping it up to date locally), please update to the latest version (in the link above)! For the time being, the `editWithVim` feature has been disabled due to a security concern.
+ * If you are currently running an old version of the [rvim_server.py](https://github.com/1995eaton/chromium-vim/blob/master/rvim_server.py) script (keeping it up to date locally), please update to the latest version (in the link above)! For the time being, the `editWithVim` feature has been disabled due to a security concern.
  * Bug fixes
 
 ## 1.2.88
@@ -89,13 +89,13 @@ site '*://*' {
 
 ## 1.2.77 (2015-06-09)
  * Bug fixes
- * Add support for local ".cvimrc" files
+ * Add support for local ".rvimrc" files
 
 ## 1.2.76 (2015-05-01)
  * Fixed issue with buffer switching. Partially breaks fix from last version
 
 ## 1.2.75 (2015-04-29)
- * Fixed issue where cVim sometimes stops responding after opening the command bar
+ * Fixed issue where rVim sometimes stops responding after opening the command bar
 
 ## 1.2.74 (2015-04-07)
  * Bug fixes
@@ -131,7 +131,7 @@ site '*://*' {
 
 ## 1.2.66
  * Added `nativelinkeorder`, `vimcommand`, and `vimport` options
- * `cvim_socket.py` is now `cvim_server.py`
+ * `rvim_socket.py` is now `rvim_server.py`
  * Bug fixes
 
 ## 1.2.65
@@ -139,7 +139,7 @@ site '*://*' {
  * Fix a URI encoding bug with search engines
 
 ## 1.2.64
- * Improved cVimrc parsing (with [PEG.js](http://pegjs.majda.cz/))
+ * Improved rVimrc parsing (with [PEG.js](http://pegjs.majda.cz/))
   * The options page will now report errors on which line has improper syntax.
 You can check Chrome's JavaScript console for more info on what the error was
 and why it occurred.
@@ -178,8 +178,8 @@ and why it occurred.
 
 ## 1.2.56
  * **Important!** The behavior of commands that open links (`:open`, `:tabnew`, `:history`, etc) has changed. See [the mappings page](./mappings.html#tabs) for more information.
- * Awesome new feature! It's now possible to use Vim to edit text boxes. All that is needed is a python script that can be found [here](https://github.com/1995eaton/chromium-vim/blob/master/cvim_server.py)
-  * To get things running, just run the script: `python cvim_socket.py` and press `<C-i>` inside a text box.
+ * Awesome new feature! It's now possible to use Vim to edit text boxes. All that is needed is a python script that can be found [here](https://github.com/1995eaton/chromium-vim/blob/master/rvim_server.py)
+  * To get things running, just run the script: `python rvim_socket.py` and press `<C-i>` inside a text box.
  * As a result of the above, the insert mapping `<C-i>` (beginningOfLine) is now `<C-a>`.
  * Smoother scrolling
  * Added `:tabattach` command
@@ -188,8 +188,8 @@ and why it occurred.
  * Performance enhancements
 
 ## 1.2.55
- * In order to make cVim as "vim-like" as possible, some commands have been added, and others have changed (the old ones will continue to work). `:tabopen` is now `:tabnew` and `:closetab` is now `:quit`
- * The `C-z` toggleCvim mapping is now `A-z` due to conflicts with the default undo-text Chrome shortcut.
+ * In order to make rVim as "vim-like" as possible, some commands have been added, and others have changed (the old ones will continue to work). `:tabopen` is now `:tabnew` and `:closetab` is now `:quit`
+ * The `C-z` togglerVim mapping is now `A-z` due to conflicts with the default undo-text Chrome shortcut.
  * Added `goToLastInput` command (`gI`)
  * The yank-link hint mode binding has changed from `Y` to `gy`
  * Yank link hint mode will now copy text box values/placeholders in addition to link URLs.
@@ -203,14 +203,14 @@ and why it occurred.
  * Added experimental GitHub autocomplete search engine (e.g. ```:tabopen github @1995eaton/```)
 
 ## 1.2.53
- * **Important!** cVimrc blacklists are now a part of the cVimrc. Previous blacklists should carry over to the cVimrc text area. New blacklists can be declared like this:
+ * **Important!** rVimrc blacklists are now a part of the rVimrc. Previous blacklists should carry over to the rVimrc text area. New blacklists can be declared like this:
 ```vim
 let blacklists = ["https://www.google.com"]
 ```
  * When defining custom search engines, you can now add the string ```%s``` somewhere inside the URL to indicate that the query should be inserted in this place. This is useful for search engines with URLs that have non-standard structures. For instance:
 
 ```vim
-" If you search for 'test' using this engine, cVim
+" If you search for 'test' using this engine, rVim
 " will open this link -> http://www.example.com/test?type=search
 let searchengine example = "http://www.example.com/%s?type=search"
 
@@ -229,16 +229,16 @@ let searchengine example = "http://www.example.com/search?query=%s" "This is no 
  * Improved link hint performance
  * The reverseImageSearch mapping can now parse base64 images (thanks to Google's "Search by Image" extension)
  * Added the closeTab command to the chrome://extensions -&gt; Keyboard Shortcuts page
- * Improved cVim response time on initial page load
+ * Improved rVim response time on initial page load
  * Minor bugfixes
 
 ## 1.2.51
- * **Important!** cVimrc setting are now stricter. You must use 'let' instead of set when using options requiring an equal symbol. For example:
+ * **Important!** rVimrc setting are now stricter. You must use 'let' instead of set when using options requiring an equal symbol. For example:
 ```vim
 set hintcharacters = abc123 "Incorrect!
 let hintcharacters = "abc123" "Correct
 ```
- * Added completionengines option to cVimrc (choose which completion engines to display). For example:
+ * Added completionengines option to rVimrc (choose which completion engines to display). For example:
 ```vim
 let completionengines = ["google", "imdb"] "Only these engines will appear in the search autocomplete menu
 ```
@@ -265,13 +265,13 @@ let completionengines = ["google", "imdb"] "Only these engines will appear in th
 
 ## 1.2.47
  * Several bugfixes
- * Added reloadAllTabs (cr), toggleImages (ci), zoomPageIn (zi), zoomPageOut (zo), zoomOrig (z0), zoomImage (z&lt;Enter&gt;), and toggleCvim (&lt;C-z&gt;) mappings
+ * Added reloadAllTabs (cr), toggleImages (ci), zoomPageIn (zi), zoomPageOut (zo), zoomOrig (z0), zoomImage (z<Enter>), and toggleRvim (<C-z>) mappings
 
 ## 1.2.46
  * Fixed a bug where bookmarks would be displayed multiple times on some sites
 
 ## 1.2.45
- * Fixed a CSS issue with the default font (if your font looks ugly, reset cVim to see changes).
+ * Fixed a CSS issue with the default font (if your font looks ugly, reset rVim to see changes).
 
 ## 1.2.44
  * Tiny bugfix

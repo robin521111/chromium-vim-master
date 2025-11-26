@@ -32,22 +32,29 @@
 
 /* 创建独立的样式上下文，防止继承网页样式 */
 [id^="rVim-"], [class^="rVim-"], [class*=" rVim-"] {
-  /* 重置所有样式，避免继承 */
-  all: unset;
-  
   /* 创建新的层叠上下文 */
   isolation: isolate;
   
-  /* 基础样式 */
+  /* 基础样式重置 - 避免使用all: unset */
   box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  
+  /* 字体样式 */
   font-family: var(--rvim-font-family) !important;
   font-size: var(--rvim-font-size) !important;
   font-weight: var(--rvim-font-weight) !important;
   line-height: 1.4 !important;
   
-  /* 防止被网页样式影响 */
+  /* 文本样式 */
   text-transform: none !important;
   text-decoration: none !important;
+  color: inherit !important;
+  
+  /* 布局样式 */
+  outline: none !important;
   text-shadow: none !important;
   letter-spacing: normal !important;
   word-spacing: normal !important;
@@ -232,36 +239,38 @@
 
 /* ===== HUD 显示系统 ===== */
 #rVim-hud {
-  /* 定位 */
+  /* 定位 - 修改为右下角 */
   position: fixed !important;
-  top: 20px !important;
-  right: 20px !important;
+  bottom: 10px !important;
+  right: 10px !important;
   z-index: var(--rvim-z-hud) !important;
   
-  /* 视觉样式 */
-  background-color: rgba(18, 18, 18, 0.95) !important;
-  color: var(--rvim-text-primary) !important;
-  border: 1px solid #333 !important;
+  /* 视觉样式 - 优化为白色半透明背景 */
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #333 !important;
+  border: none !important;
   border-left: 3px solid var(--rvim-accent) !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   
   /* 字体 */
   font-family: var(--rvim-font-family) !important;
-  font-size: var(--rvim-font-size) !important;
-  font-weight: 600 !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
   
-  /* 布局 */
+  /* 布局 - 使用flex布局 */
   padding: 8px 12px !important;
-  display: inline-block !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
   
   /* 视觉效果 */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
   backdrop-filter: blur(8px);
   
   /* 动画 */
   opacity: 1 !important;
   transform: translateY(0) !important;
-  transition: all 0.2s ease-out !important;
+  transition: opacity 0.15s ease-out, transform 0.2s ease-out !important;
   will-change: transform, opacity !important;
 }
 
@@ -278,6 +287,30 @@
 #rVim-hud span {
   display: inline-block !important;
   vertical-align: middle !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  font-size: 14px !important;
+  color: #333 !important;
+  flex: 1 !important;
+}
+
+/* 状态指示器样式 */
+.rVim-status-indicator {
+  display: inline-block !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  margin-right: 0 !important;
+  vertical-align: middle !important;
+  background-color: #4CAF50 !important;
+  flex-shrink: 0 !important;
+}
+
+.rVim-status-indicator.warning {
+  background-color: #FFC107 !important;
+}
+
+.rVim-status-indicator.error {
+  background-color: #FF5252 !important;
 }
 
 /* ===== 状态栏系统 ===== */
@@ -520,9 +553,6 @@
 
 /* 防止网页样式影响插件元素 */
 [id^="rVim-"], [class^="rVim-"], [class*=" rVim-"] {
-  /* 防止被全局样式重置 */
-  all: revert-layer !important;
-  
   /* 确保不被 CSS Grid 或 Flexbox 影响 */
   grid-area: unset !important;
   flex: none !important;
@@ -532,7 +562,6 @@
   
   /* 防止被主题样式影响 */
   filter: none !important;
-  backdrop-filter: none !important;
 }
 
 /* 确保插件元素在所有情况下都可见 */

@@ -9,7 +9,7 @@ try {
   importScripts(
     'background_scripts/security_utils.js',
     'background_scripts/utils_sw.js',
-    'background_scripts/cvimrc_parser_sw.js'
+    'background_scripts/rvimrc_parser_sw.js'
   );
   
   // Then import background scripts

@@ -11,6 +11,14 @@ class StyleOptimizer {
     this.optimizedStyleSheet = null;
     this.mutationObserver = null;
     
+    // 缓存相关属性
+    this.cachedMaxZIndex = null;
+    this.lastZIndexCheck = 0;
+    
+    // 监控相关属性
+    this.realTimeObserver = null;
+    this.styleObserver = null;
+    
     // 配置选项
     this.config = {
       enableAutoDetection: true,
@@ -90,6 +98,9 @@ class StyleOptimizer {
         
         // 禁用原始样式表
         this.disableOriginalStyles();
+        
+        // 应用网站特定的样式修复
+        this.applySiteSpecificFixes();
       })
       .catch(error => {
         this.log('加载优化样式失败:', error);
@@ -102,14 +113,360 @@ class StyleOptimizer {
    * 禁用原始样式表
    */
   disableOriginalStyles() {
-    const originalStyleSheets = document.querySelectorAll('link[href*="main.css"], style[data-rvim="true"]');
-    originalStyleSheets.forEach(sheet => {
+    // 只禁用rVim相关的原始样式表，不影响网页本身的样式
+    const rVimStyleSheets = document.querySelectorAll('style[data-rvim="true"], link[href*="content_scripts/main.css"]');
+    rVimStyleSheets.forEach(sheet => {
       if (sheet.sheet && !sheet.hasAttribute('data-rvim-optimizer')) {
         this.originalStyles.set(sheet, sheet.disabled);
         sheet.disabled = true;
-        this.log('禁用原始样式表:', sheet.href || 'inline');
+        this.log('禁用rVim原始样式表:', sheet.href || 'inline');
       }
     });
+  }
+  
+  /**
+   * 应用智能样式修复
+   */
+  applySiteSpecificFixes() {
+    // 启动智能样式冲突检测和修复
+    this.startIntelligentStyleFix();
+  }
+  
+  /**
+   * 启动智能样式修复系统
+   */
+  startIntelligentStyleFix() {
+    this.log('启动智能样式修复系统');
+    
+    // 检测页面环境
+    const pageContext = this.analyzePageContext();
+    
+    // 应用自适应z-index管理
+    this.applyAdaptiveZIndex(pageContext);
+    
+    // 应用智能样式隔离
+    this.applyIntelligentIsolation(pageContext);
+    
+    // 启动实时监控
+    this.startRealTimeMonitoring();
+  }
+  
+  /**
+   * 分析页面环境
+   */
+  analyzePageContext() {
+    const hostname = window.location.hostname;
+    const context = {
+      hostname: hostname,
+      isVideoSite: this.isVideoSite(hostname),
+      isSocialMedia: this.isSocialMedia(hostname),
+      isSearchEngine: this.isSearchEngine(hostname),
+      maxZIndex: this.detectMaxZIndex(),
+      hasFixedElements: this.hasFixedPositionElements(),
+      hasOverlays: this.hasOverlayElements(),
+      theme: this.detectTheme()
+    };
+    
+    this.log('页面环境分析:', context);
+    return context;
+  }
+  
+  /**
+   * 检测是否为视频网站
+   */
+  isVideoSite(hostname) {
+    const videoSites = ['youtube.com', 'vimeo.com', 'dailymotion.com', 'twitch.tv', 'bilibili.com'];
+    return videoSites.some(site => hostname.includes(site));
+  }
+  
+  /**
+   * 检测是否为社交媒体
+   */
+  isSocialMedia(hostname) {
+    const socialSites = ['facebook.com', 'twitter.com', 'instagram.com', 'linkedin.com', 'github.com'];
+    return socialSites.some(site => hostname.includes(site));
+  }
+  
+  /**
+   * 检测是否为搜索引擎
+   */
+  isSearchEngine(hostname) {
+    const searchSites = ['google.com', 'bing.com', 'duckduckgo.com', 'baidu.com'];
+    return searchSites.some(site => hostname.includes(site));
+  }
+  
+  /**
+   * 检测页面最大z-index（优化版本）
+   */
+  detectMaxZIndex() {
+    // 使用缓存避免重复计算
+    if (this.cachedMaxZIndex && Date.now() - this.lastZIndexCheck < 5000) {
+      return this.cachedMaxZIndex;
+    }
+    
+    let maxZ = 0;
+    // 只检查可能有高z-index的元素类型
+    const selectors = [
+      '[style*="z-index"]',
+      '.modal', '.popup', '.overlay', '.dropdown', '.tooltip',
+      '[class*="modal"]', '[class*="popup"]', '[class*="overlay"]',
+      '[id*="modal"]', '[id*="popup"]', '[id*="overlay"]'
+    ];
+    
+    try {
+      for (const selector of selectors) {
+        const elements = document.querySelectorAll(selector);
+        for (let element of elements) {
+          try {
+            const zIndex = parseInt(window.getComputedStyle(element).zIndex);
+            if (!isNaN(zIndex) && zIndex > maxZ) {
+              maxZ = zIndex;
+            }
+          } catch (e) {
+            // 忽略单个元素的错误
+          }
+        }
+      }
+    } catch (e) {
+      this.log('检测z-index时出错:', e);
+    }
+    
+    this.cachedMaxZIndex = Math.max(maxZ, 1000);
+    this.lastZIndexCheck = Date.now();
+    return this.cachedMaxZIndex;
+  }
+  
+  /**
+   * 检测是否有固定定位元素
+   */
+  hasFixedPositionElements() {
+    const fixedElements = document.querySelectorAll('*');
+    for (let element of fixedElements) {
+      if (window.getComputedStyle(element).position === 'fixed') {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * 检测是否有覆盖层元素
+   */
+  hasOverlayElements() {
+    const overlaySelectors = ['.overlay', '.modal', '.popup', '.dropdown', '.tooltip'];
+    return overlaySelectors.some(selector => document.querySelector(selector));
+  }
+  
+  /**
+   * 检测页面主题
+   */
+  detectTheme() {
+    const html = document.documentElement;
+    const body = document.body;
+    
+    // 检查常见的主题属性
+    if (html.hasAttribute('data-theme')) {
+      return html.getAttribute('data-theme');
+    }
+    
+    if (html.classList.contains('dark') || body.classList.contains('dark')) {
+      return 'dark';
+    }
+    
+    if (html.classList.contains('light') || body.classList.contains('light')) {
+      return 'light';
+    }
+    
+    // 通过背景色判断
+    const bgColor = window.getComputedStyle(body).backgroundColor;
+    const rgb = bgColor.match(/\d+/g);
+    if (rgb) {
+      const brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+      return brightness < 128 ? 'dark' : 'light';
+    }
+    
+    return 'auto';
+  }
+  
+  /**
+   * 应用自适应z-index管理
+   */
+  applyAdaptiveZIndex(context) {
+    const adaptiveZIndex = Math.max(context.maxZIndex + 1000, 2147483647);
+    
+    const adaptiveStyles = `
+      /* 自适应z-index管理 */
+      [id^="rVim-"], [class^="rVim-"], [class*=" rVim-"] {
+        z-index: ${adaptiveZIndex} !important;
+      }
+      
+      /* 确保命令栏始终在最顶层 */
+      #rVim-command-bar, #rVim-command-frame {
+        z-index: ${adaptiveZIndex + 100} !important;
+      }
+      
+      /* 确保链接提示在所有元素之上 */
+      .rVim-link-hint {
+        z-index: ${adaptiveZIndex + 200} !important;
+      }
+    `;
+    
+    this.injectAdaptiveStyles('rvim-adaptive-zindex', adaptiveStyles);
+    this.log('自适应z-index已应用，基础值:', adaptiveZIndex);
+  }
+  
+  /**
+   * 应用智能样式隔离
+   */
+  applyIntelligentIsolation(context) {
+    const isolationStyles = `
+      /* 精确的样式隔离 - 只针对真正的rVim元素 */
+      #rVim-hud, #rVim-command-line, #rVim-status, #rVim-hints,
+      .rVim-hint, .rVim-link-hint, .rVim-command-line, .rVim-hud,
+      [data-rvim="true"], [data-rvim-element="true"] {
+        /* 创建独立的层叠上下文 */
+        isolation: isolate !important;
+        contain: layout style paint !important;
+        
+        /* 基础字体和布局 */
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+        font-weight: normal !important;
+        font-style: normal !important;
+        
+        /* 重置可能冲突的属性 */
+        text-decoration: none !important;
+        text-transform: none !important;
+        letter-spacing: normal !important;
+        text-shadow: none !important;
+        
+        /* 确保正确的定位 */
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        outline: none !important;
+        
+        /* 防止动画干扰 */
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+        
+        /* 确保可见性 */
+        opacity: 1 !important;
+        visibility: visible !important;
+        
+        /* 防止滤镜影响 */
+        filter: none !important;
+        backdrop-filter: none !important;
+        
+        /* 盒模型 */
+        box-sizing: border-box !important;
+      }
+      
+      /* 确保SafeStyleManager的样式不被覆盖 */
+      #rVim-safe-style-overrides {
+        isolation: isolate !important;
+        contain: strict !important;
+      }
+    `;
+    
+    this.injectAdaptiveStyles('rvim-intelligent-isolation', isolationStyles);
+    this.log('精确样式隔离已应用，包含SafeStyleManager保护');
+  }
+  
+  /**
+   * 启动实时监控（优化版本）
+   */
+  startRealTimeMonitoring() {
+    // 防止重复启动
+    if (this.realTimeObserver) {
+      return;
+    }
+    
+    // 使用节流避免频繁更新
+    let updateTimeout = null;
+    
+    const observer = new MutationObserver((mutations) => {
+      // 清除之前的超时
+      if (updateTimeout) {
+        clearTimeout(updateTimeout);
+      }
+      
+      let needsUpdate = false;
+      
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // 只检查可能影响rVim的元素
+              if (this.isHighPriorityElement(node)) {
+                needsUpdate = true;
+              }
+            }
+          });
+        }
+      });
+      
+      if (needsUpdate) {
+        // 使用节流，避免频繁更新
+        updateTimeout = setTimeout(() => {
+          this.log('检测到重要页面变化，更新z-index缓存');
+          this.cachedMaxZIndex = null; // 清除缓存
+          this.lastZIndexCheck = 0;
+        }, 500);
+      }
+    });
+    
+    try {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: false // 只监控直接子元素，减少性能开销
+      });
+      
+      this.realTimeObserver = observer;
+      this.log('实时监控已启动');
+    } catch (e) {
+      this.log('启动实时监控失败:', e);
+    }
+  }
+  
+  /**
+   * 检查是否为高优先级元素
+   */
+  isHighPriorityElement(element) {
+    if (!element.className && !element.id) {
+      return false;
+    }
+    
+    const className = element.className.toString().toLowerCase();
+    const id = element.id.toLowerCase();
+    
+    const highPriorityKeywords = ['modal', 'popup', 'overlay', 'dropdown', 'tooltip', 'menu'];
+    
+    return highPriorityKeywords.some(keyword => 
+      className.includes(keyword) || id.includes(keyword)
+    );
+  }
+  
+  /**
+   * 注入自适应样式
+   */
+  injectAdaptiveStyles(id, styles) {
+    // 移除旧的样式
+    const existingStyle = document.getElementById(id);
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+    
+    // 注入新样式
+    const styleElement = document.createElement('style');
+    styleElement.id = id;
+    styleElement.setAttribute('data-rvim-adaptive', 'true');
+    styleElement.textContent = styles;
+    
+    // 插入到head的最后，确保最高优先级
+    document.head.appendChild(styleElement);
   }
   
   /**
@@ -117,14 +474,15 @@ class StyleOptimizer {
    */
   applyFallbackStyles(styleElement) {
     const fallbackCSS = `
-      /* rVim 备用样式 - 关键样式修复 */
-      [id^="rVim-"], [class^="rVim-"], [class*=" rVim-"] {
-        all: unset !important;
+      /* rVim 备用样式 - 安全的关键样式修复 */
+      #rVim-hud, #rVim-command-line, #rVim-status, #rVim-hints,
+      .rVim-hint, .rVim-link-hint, .rVim-command-line, .rVim-hud,
+      [data-rvim="true"], [data-rvim-element="true"] {
+        /* 移除危险的 all: unset，只设置必要属性 */
         isolation: isolate !important;
         box-sizing: border-box !important;
         font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace !important;
         font-size: 13px !important;
-        position: absolute !important;
       }
       
       #rVim-command-bar {
@@ -428,11 +786,27 @@ class StyleOptimizer {
    * 停止样式优化器
    */
   stop() {
+    // 停止所有监控
+    if (this.realTimeObserver) {
+      this.realTimeObserver.disconnect();
+      this.realTimeObserver = null;
+    }
+    
     if (this.mutationObserver) {
       this.mutationObserver.disconnect();
       this.mutationObserver = null;
     }
     
+    if (this.styleObserver) {
+      this.styleObserver.disconnect();
+      this.styleObserver = null;
+    }
+    
+    // 清除缓存
+    this.cachedMaxZIndex = null;
+    this.lastZIndexCheck = 0;
+    
+    // 恢复原始样式
     this.restoreOriginalStyles();
     this.log('样式优化器已停止');
   }
@@ -653,12 +1027,14 @@ if (typeof module !== 'undefined' && module.exports) {
   window.StyleConflictDetector = StyleConflictDetector;
 }
 
-// 自动启动样式优化器（如果在浏览器环境中）
+// 条件启动样式优化器（只在检测到rVim元素时启动）
 if (typeof window !== 'undefined' && window.document) {
-  // 等待其他脚本加载完成后启动
+  // 等待其他脚本加载完成后检查是否需要启动
   setTimeout(() => {
-    if (!window.rVimStyleOptimizer) {
+    // 只有在检测到rVim相关元素或者明确需要时才启动
+    const hasRVimElements = document.querySelector('[id*="rVim"], [class*="rVim"], [data-rvim]');
+    if (hasRVimElements && !window.rVimStyleOptimizer) {
       window.rVimStyleOptimizer = new StyleOptimizer();
     }
-  }, 1000);
+  }, 2000); // 延长等待时间，确保rVim元素已经创建
 }

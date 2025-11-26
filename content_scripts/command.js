@@ -65,7 +65,7 @@ Command.setupFrameElements = function() {
   if (!this.data) {
     this.data = document.createElement('div');
     this.data.id = 'rVim-command-bar-search-results';
-  this.data.rVim = true;
+    this.data.rVim = true;
     try {
       document.lastChild.appendChild(this.data);
     } catch (e) {
@@ -498,35 +498,6 @@ Command.complete = function(value) {
 };
 
 Command.execute = function(value, repeats) {
-  // 边界条件检查
-  if (!value || typeof value !== 'string' || value.trim() === '') {
-    if (typeof ErrorHandler !== 'undefined') {
-      ErrorHandler.showError('invalid_command', '命令不能为空', 3);
-    } else {
-      HUD.display('Command cannot be empty', 3000, 'error');
-    }
-    return;
-  }
-  
-  // 使用安全执行包装命令处理
-  if (typeof ErrorHandler !== 'undefined' && ErrorHandler.safeExecute) {
-    return ErrorHandler.safeExecute(function() {
-      return Command._performExecute(value, repeats);
-    }, '命令执行', function() {
-      // 降级：基础命令处理
-      HUD.display('命令功能降级运行', 2);
-      return Command._basicExecute(value, repeats);
-    });
-  } else {
-    return Command._performExecute(value, repeats);
-  }
-};
-
-Command._performExecute = function(value, repeats) {
-  // 显示命令执行进度
-  if (typeof HUD !== 'undefined' && HUD.showProgress) {
-    HUD.showProgress(25, '执行命令', 1);
-  }
 
   if (value.indexOf('@%') !== -1) {
     RUNTIME('getRootUrl', function(url) {
@@ -534,9 +505,6 @@ Command._performExecute = function(value, repeats) {
     });
     return;
   }
-  
-  // 记录最后执行的命令
-  this.lastCommand = value;
   if (value.indexOf('@"') !== -1) {
     RUNTIME('getPaste', function(paste) {
       Command.execute(value.split('@"').join(paste), repeats);

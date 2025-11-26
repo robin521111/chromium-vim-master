@@ -27,7 +27,7 @@ var md = require('markdown-it')('default', {
 });
 
 var scripts = [
-  '../content_scripts/cvimrc_parser.js',
+  '../content_scripts/rvimrc_parser.js',
   '../content_scripts/session.js',
   '../content_scripts/utils.js',
   '../content_scripts/dom.js',

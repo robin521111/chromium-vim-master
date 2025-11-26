@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试F键端口断开修复</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .link {
+            display: block;
+            margin: 10px 0;
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        .instructions {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .console-output {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>测试F键端口断开修复</h1>
+    
+    <div class="instructions">
+        <h3>测试说明：</h3>
+        <ol>
+            <li>打开浏览器开发者工具的控制台</li>
+            <li>按下 <strong>F</strong> 键激活链接提示</li>
+            <li>再次按下 <strong>F</strong> 键</li>
+            <li>检查控制台是否还出现 "rVim: 端口已断开，无法发送消息" 错误</li>
+            <li>如果修复成功，应该不会看到端口断开的错误信息</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h3>测试链接区域</h3>
+        <a href="https://www.google.com" class="link">Google 搜索</a>
+        <a href="https://www.github.com" class="link">GitHub</a>
+        <a href="https://www.stackoverflow.com" class="link">Stack Overflow</a>
+        <a href="https://www.mozilla.org" class="link">Mozilla</a>
+        <a href="https://www.w3.org" class="link">W3C</a>
+        <a href="https://developer.mozilla.org" class="link">MDN Web Docs</a>
+        <a href="https://www.npmjs.com" class="link">NPM</a>
+        <a href="https://www.reddit.com" class="link">Reddit</a>
+    </div>
+    
+    <div class="test-section">
+        <h3>更多测试链接</h3>
+        <a href="#section1" class="link">内部链接 1</a>
+        <a href="#section2" class="link">内部链接 2</a>
+        <a href="#section3" class="link">内部链接 3</a>
+        <a href="mailto:test@example.com" class="link">邮件链接</a>
+        <a href="tel:+1234567890" class="link">电话链接</a>
+    </div>
+    
+    <div class="console-output">
+        <strong>预期结果：</strong><br>
+        修复前：连续按F键会看到 "rVim: 端口已断开，无法发送消息: openLinkTab" 错误<br>
+        修复后：不应该再出现端口断开的错误信息
+    </div>
+    
+    <script>
+        // 监听控制台错误
+        window.addEventListener('error', function(e) {
+            console.log('页面错误:', e.message);
+        });
+        
+        // 添加一些调试信息
+        console.log('F键测试页面已加载');
+        console.log('请按F键测试链接提示功能');
+        
+        // 检查rVim是否已加载
+        setTimeout(function() {
+            if (typeof Hints !== 'undefined') {
+                console.log('✅ rVim Hints 功能已加载');
+            } else {
+                console.log('❌ rVim Hints 功能未加载');
+            }
+            
+            if (typeof PORT !== 'undefined') {
+                console.log('✅ rVim PORT 功能已加载');
+            } else {
+                console.log('❌ rVim PORT 功能未加载');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

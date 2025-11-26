@@ -123,7 +123,7 @@ var Listeners = {
         return Actions(request, port.sender, port.postMessage.bind(port), port);
       });
       port.onDisconnect.addListener(function() {
-        Frames.removeFrame(frameId);
+        Frames.removeFrame(port.sender.tab.id, frameId);
 
         for (var i = 0; i < activePorts.length; i++) {
           if (activePorts[i] === port) {

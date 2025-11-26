@@ -305,32 +305,32 @@ Mappings.actions = {
   },
   zoomPageIn: function(repeats) {
     RUNTIME('zoomIn', {repeats: repeats}, function() {
-      document.body.style.zoom =
-        (+document.body.style.zoom ? parseFloat(document.body.style.zoom) : 1)
-        + settings.zoomfactor * repeats;
+      var currentZoom = SafeStyleManager.getZoom();
+      var newZoom = currentZoom + settings.zoomfactor * repeats;
+      SafeStyleManager.setZoom(newZoom);
     });
   },
   zoomPageOut: function(repeats) {
     RUNTIME('zoomOut', {repeats: repeats}, function() {
-      document.body.style.zoom =
-        (+document.body.style.zoom ? parseFloat(document.body.style.zoom) : 1)
-        - settings.zoomfactor * repeats;
+      var currentZoom = SafeStyleManager.getZoom();
+      var newZoom = currentZoom - settings.zoomfactor * repeats;
+      SafeStyleManager.setZoom(newZoom);
     });
   },
   zoomOrig: function() {
     RUNTIME('zoomOrig', null, function() {
-      document.body.style.zoom = '1';
+      SafeStyleManager.setZoom(1);
     });
   },
   centerMatchT: function() {
-    var documentZoom = parseFloat(document.body.style.zoom) || 1;
+    var documentZoom = SafeStyleManager.getZoom();
     if (Find.matches.length && Find.matches[Find.index]) {
       window.scrollBy(0, Find.matches[Find.index].getBoundingClientRect().top *
                          documentZoom);
     }
   },
   centerMatchH: function() {
-    var documentZoom = parseFloat(document.body.style.zoom) || 1;
+    var documentZoom = SafeStyleManager.getZoom();
     if (Find.matches.length && Find.matches[Find.index]) {
       var scrollOffset = (function() {
         return this.matches[this.index].getBoundingClientRect().top *
@@ -341,7 +341,7 @@ Mappings.actions = {
     }
   },
   centerMatchB: function() {
-    var documentZoom = parseFloat(document.body.style.zoom) || 1;
+    var documentZoom = SafeStyleManager.getZoom();
     if (Find.matches.length && Find.matches[Find.index]) {
       var scrollOffset = (function() {
         return this.matches[this.index].getBoundingClientRect().top *

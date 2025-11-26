@@ -18,7 +18,7 @@
   <rect x="200" y="68" width="600" height="24" rx="12" fill="#f8f9fa" stroke="#dee2e6"/>
   <text x="220" y="83" font-family="Arial, sans-serif" font-size="12" fill="#6c757d">https://github.com/1995eaton/chromium-vim</text>
   
-  <!-- cVim icon in toolbar -->
+  <!-- rVim icon in toolbar -->
   <rect x="1140" y="68" width="24" height="24" rx="4" fill="#2c3e50"/>
   <text x="1152" y="78" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#2ecc71" text-anchor="middle">vim</text>
   <rect x="1146" y="84" width="4" height="4" rx="1" fill="#95a5a6" opacity="0.8"/>

@@ -381,7 +381,7 @@ Actions = (function() {
   })();
 
   _.openPasteTab = function(o) {
-    var paste = Clipboard.paste();
+    var paste = o.request.pastedText || Clipboard.paste();
     if (!paste) {
       return;
     }
@@ -397,7 +397,7 @@ Actions = (function() {
   };
 
   _.openPaste = function(o) {
-    var paste = Clipboard.paste();
+    var paste = o.request.pastedText || Clipboard.paste();
     if (!paste) {
       return;
     }

@@ -3,7 +3,7 @@ const path = require('path');
 const { expect } = require('chai');
 
 // 加载解析器
-const RCParser = require('../../cvimrc_parser/parser.js').RCParser;
+const RCParser = require('../../rvimrc_parser/rvimrc_parser.js').RCParser;
 
 describe('rVimrc Parser', () => {
   describe('基本解析功能', () => {
@@ -149,7 +149,7 @@ describe('rVimrc Parser', () => {
   describe('实际配置文件测试', () => {
     it('应该能解析测试配置文件', () => {
       const testConfig = fs.readFileSync(
-        path.join(__dirname, './cvimrc-parser.test.vim'),
+        path.join(__dirname, './rvimrc-parser.test.vim'),
         'utf8'
       );
       const result = RCParser.parse(testConfig);
