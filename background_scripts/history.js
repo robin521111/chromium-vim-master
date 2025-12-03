@@ -8,6 +8,9 @@ var History = {
 
   saveCommandHistory: function() {
     if (typeof chrome !== 'undefined' && chrome.storage) {
+      if (!settings || !settings.consentData || !settings.collectHistory) {
+        return;
+      }
       Object.keys(this.commandHistory).forEach(function(e) {
         var data = {};
         data[e] = JSON.stringify(this.commandHistory[e]);
@@ -36,10 +39,11 @@ var History = {
 
   append: function(value, type) {
     if (~this.historyTypes.indexOf(type)) {
-      this.commandHistory[type].push('' + value);
-      this.commandHistory[type] =
-        this.commandHistory[type].splice(-500);
-      this.saveCommandHistory();
+      if (settings && settings.consentData && settings.collectHistory) {
+        this.commandHistory[type].push('' + value);
+        this.commandHistory[type] = this.commandHistory[type].splice(-500);
+        this.saveCommandHistory();
+      }
     }
   },
 

@@ -39,8 +39,12 @@
                     <a href="mappings.html" target="_blank" rel="noopener">Help</a> &ndash;
                     <a href="features.html" target="_blank" rel="noopener">Features & Config</a> &ndash;
                     <a href="./changelog.html" target="_blank" rel="noopener">Changelog</a> &ndash;
-                    <a href="https://www.paypal.me/1995eaton" target="_blank" rel="noopener">Donate</a>
+                    <a href="https://www.paypal.me/1995eaton" target="_blank" rel="noopener">Donate</a> &ndash;
+                    <a href="https://raw.githubusercontent.com/robin521111/chromium-vim-master/main/privacy_policy.html" target="_blank" rel="noopener">Privacy Policy</a>
                 </span>
+            </div>
+            <div style="background:#fff3cd;border:1px solid #ffeeba;border-radius:8px;padding:12px;margin:10px 0;color:#856404;">
+              <strong>Prominent Disclosure:</strong> rVim stores only local data necessary for functionality. Command & completion history may be stored locally only with your consent. Manage data collection preferences below.
             </div>
             <div id="settings">
                 <table>
@@ -70,6 +74,25 @@
                         </td>
                         <td class="options-right">
                             <textarea id="commandBarCSS" name="css" placeholder="Enter custom CSS here" title="Custom CSS for command bar"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="options-left">Consent to store command & completion history (local)</td>
+                        <td class="options-right">
+                            <label><input id="consentData" type="checkbox"> I consent</label>
+                            <label style="margin-left:16px;"><input id="collectHistory" type="checkbox"> Enable history storage</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="options-left">Use Chrome sync storage for settings</td>
+                        <td class="options-right">
+                            <label><input id="useSyncStorage" type="checkbox"> Enable sync</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="options-left">Offline mode (disable remote config via Gist)</td>
+                        <td class="options-right">
+                            <label><input id="offlineMode" type="checkbox"> Enable offline mode</label>
                         </td>
                     </tr>
                     <tr>

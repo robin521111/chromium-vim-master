@@ -256,6 +256,15 @@
                     仅在用户触发相关功能时对目标网站发起必要的网络请求（例如打开页面、下载、获取用户配置），不进行背景遥测或数据上报。
                 </div>
             </div>
+            <div class="warning-box">
+                <h4>📣 醒目披露声明</h4>
+                <ul>
+                    <li>命令与补全历史仅在用户明确同意并开启选项后，才会在本地保存</li>
+                    <li>用户可在“选项”页面随时关闭并清除本地历史数据</li>
+                    <li>设置可选择采用 Chrome 同步或仅本地保存，并可启用“离线模式”禁用远程配置</li>
+                    <li>隐私政策直链：<a href="https://raw.githubusercontent.com/robin521111/chromium-vim-master/main/privacy_policy.html" target="_blank" rel="noopener">Privacy Policy</a></li>
+                </ul>
+            </div>
 
             <!-- 目录 -->
             <div class="toc">
@@ -691,25 +700,35 @@
         
         <div class="content">
             <div class="last-updated">
-                <strong>Last Updated:</strong> January 15, 2024 | <strong>Effective Date:</strong> January 22, 2024
+                <strong>Last Updated:</strong> November 26, 2025 | <strong>Effective Date:</strong> November 26, 2025
             </div>
 
             <div class="privacy-summary">
                 <h3>🛡️ Privacy Protection Commitment</h3>
                 <div class="summary-text">
-                    The rVim extension is committed to protecting user privacy. We only collect necessary functional data, 
-                    do not collect personal identification information, and all data is processed locally without transmission to external servers.
+                    rVim does not collect personal identification information and does not integrate analytics or ads. Data is primarily processed locally; 
+                    only user-triggered requests (open pages, downloads, loading user configuration) are performed, with no background telemetry or reporting.
                 </div>
+            </div>
+            <div class="warning-box">
+                <h4>📣 Prominent Disclosure</h4>
+                <ul>
+                    <li>Command & completion history is stored locally only with explicit user consent and opt-in</li>
+                    <li>Users can disable and clear local history anytime in the Options page</li>
+                    <li>Settings may use Chrome sync or local-only; an Offline Mode disables remote config loading</li>
+                    <li>Direct privacy policy URL for store listing: <a href="https://raw.githubusercontent.com/robin521111/chromium-vim-master/main/privacy_policy.html" target="_blank" rel="noopener">Privacy Policy</a></li>
+                </ul>
             </div>
             
             <div class="section">
                  <h2>1. 📊 Information Collection Scope</h2>
                  <div class="subsection">
-                     <h3>1.1 Data We Collect</h3>
+                     <h3>1.1 Data We Collect/Access</h3>
                      <ul>
-                         <li><strong>Extension Settings:</strong> User preferences and configuration data</li>
+                         <li><strong>Extension Settings:</strong> User preferences and configuration data (chrome.storage.local/sync)</li>
                          <li><strong>Keyboard Shortcuts:</strong> Custom key mappings and commands</li>
-                         <li><strong>Usage Statistics:</strong> Anonymous feature usage data for improvement</li>
+                         <li><strong>Bookmarks/History:</strong> Accessed via browser APIs only; not persisted in the extension</li>
+                         <li><strong>Command & Completion History:</strong> Stored in chrome.storage.local to improve efficiency</li>
                      </ul>
                  </div>
                  <div class="subsection">
@@ -743,17 +762,44 @@
                  <div class="subsection">
                      <h3>3.2 Security Measures</h3>
                      <ul>
-                         <li>Data encryption using browser-native security protocols</li>
+                         <li>Minimal permissions to implement declared functionality</li>
+                         <li>Local processing whenever possible</li>
                          <li>Secure API usage following Chrome extension best practices</li>
-                         <li>Regular security audits and updates</li>
+                         <li>Access control scoped to necessary contexts</li>
+                         <li>User controls to reset/clear stored data</li>
                      </ul>
                  </div>
              </div>
              
-             <div class="section">
-                 <h2>4. 🤝 Data Sharing Policy</h2>
-                 <p><strong>We do not share, sell, or transfer your data to third parties.</strong> Your data remains on your device and under your control.</p>
-             </div>
+            <div class="section">
+                <h2>4. 🤝 Data Sharing Policy</h2>
+                <p><strong>We do not share, sell, or transfer your data to third parties.</strong> Your data remains on your device and under your control.</p>
+            </div>
+
+            <div class="section">
+                <h2>6. 🌐 Third-Party Services & Network Requests</h2>
+                <ul>
+                    <li><strong>No analytics/ads integrations.</strong></li>
+                    <li><strong>User-triggered requests only:</strong> opening pages, downloads management, loading configuration from GitHub Gist, local editor integration via 127.0.0.1.</li>
+                    <li><strong>No background telemetry or reporting.</strong></li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>7. 🧩 APIs & Permissions Used</h2>
+                <ul>
+                    <li><strong>host_permissions &lt;all_urls&gt;:</strong> Provide Vim operations across sites</li>
+                    <li><strong>bookmarks:</strong> Access and manage bookmarks</li>
+                    <li><strong>history:</strong> Retrieve browsing history (no persistent copy)</li>
+                    <li><strong>storage:</strong> Persist settings and histories</li>
+                    <li><strong>tabs / activeTab:</strong> Tab management and interaction</li>
+                    <li><strong>downloads / downloads.shelf:</strong> Downloads management and shelf control</li>
+                    <li><strong>sessions:</strong> Session and tab state management</li>
+                    <li><strong>topSites:</strong> Quick access to most visited sites</li>
+                    <li><strong>scripting:</strong> Inject scripts into pages</li>
+                    <li><strong>webNavigation:</strong> Observe navigation events for SPA compatibility</li>
+                </ul>
+            </div>
              
              <div class="section">
                  <h2>5. 👤 Your Rights</h2>
@@ -784,7 +830,7 @@
         
         <div class="content">
             <div class="last-updated">
-                <strong>最終更新日：</strong> 2024年1月15日 | <strong>発効日：</strong> 2024年1月22日
+                <strong>最終更新日：</strong> 2025年11月26日 | <strong>発効日：</strong> 2025年11月26日
             </div>
 
             <div class="privacy-summary">
@@ -798,11 +844,12 @@
              <div class="section">
                  <h2>1. 📊 情報収集範囲</h2>
                  <div class="subsection">
-                     <h3>1.1 収集するデータ</h3>
+                     <h3>1.1 収集/アクセスするデータ</h3>
                      <ul>
                          <li><strong>拡張機能設定:</strong> ユーザー設定と構成データ</li>
                          <li><strong>キーボードショートカット:</strong> カスタムキーマッピングとコマンド</li>
-                         <li><strong>使用統計:</strong> 改善のための匿名機能使用データ</li>
+                         <li><strong>ブックマーク/履歴:</strong> ブラウザAPI経由で参照のみ（拡張に保存しない）</li>
+                         <li><strong>コマンド/補完履歴:</strong> 効率向上のため chrome.storage.local に保存</li>
                      </ul>
                  </div>
                  <div class="subsection">
@@ -846,7 +893,7 @@
         
         <div class="content">
             <div class="last-updated">
-                <strong>최종 업데이트:</strong> 2024년 1월 15일 | <strong>시행일:</strong> 2024년 1월 22일
+                <strong>최종 업데이트:</strong> 2025년 11월 26일 | <strong>시행일:</strong> 2025년 11월 26일
             </div>
 
             <div class="privacy-summary">
@@ -860,11 +907,12 @@
              <div class="section">
                  <h2>1. 📊 정보 수집 범위</h2>
                  <div class="subsection">
-                     <h3>1.1 수집하는 데이터</h3>
+                     <h3>1.1 수집/접근하는 데이터</h3>
                      <ul>
                          <li><strong>확장 프로그램 설정:</strong> 사용자 기본 설정 및 구성 데이터</li>
                          <li><strong>키보드 단축키:</strong> 사용자 정의 키 매핑 및 명령</li>
-                         <li><strong>사용 통계:</strong> 개선을 위한 익명 기능 사용 데이터</li>
+                         <li><strong>북마크/기록:</strong> 브라우저 API로 접근만, 확장에 영구 저장하지 않음</li>
+                         <li><strong>명령/완성 기록:</strong> 효율 향상을 위해 chrome.storage.local 에 저장</li>
                      </ul>
                  </div>
                  <div class="subsection">
@@ -908,7 +956,7 @@
         
         <div class="content">
             <div class="last-updated">
-                <strong>Dernière mise à jour :</strong> 15 janvier 2024 | <strong>Date d'entrée en vigueur :</strong> 22 janvier 2024
+                <strong>Dernière mise à jour :</strong> 26 novembre 2025 | <strong>Date d'entrée en vigueur :</strong> 26 novembre 2025
             </div>
 
             <div class="privacy-summary">
@@ -922,11 +970,12 @@
              <div class="section">
                  <h2>1. 📊 Portée de la collecte d'informations</h2>
                  <div class="subsection">
-                     <h3>1.1 Données que nous collectons</h3>
+                     <h3>1.1 Données que nous collectons / auxquelles nous accédons</h3>
                      <ul>
                          <li><strong>Paramètres d'extension :</strong> Préférences utilisateur et données de configuration</li>
                          <li><strong>Raccourcis clavier :</strong> Mappages de touches et commandes personnalisés</li>
-                         <li><strong>Statistiques d'utilisation :</strong> Données anonymes d'utilisation des fonctionnalités pour amélioration</li>
+                         <li><strong>Signets / Historique :</strong> Accès via les API du navigateur, non conservé dans l’extension</li>
+                         <li><strong>Historique de commandes et de complétion :</strong> Stocké dans chrome.storage.local pour améliorer l’efficacité</li>
                      </ul>
                  </div>
                  <div class="subsection">
@@ -970,7 +1019,7 @@
         
         <div class="content">
             <div class="last-updated">
-                <strong>Letzte Aktualisierung:</strong> 15. Januar 2024 | <strong>Inkrafttreten:</strong> 22. Januar 2024
+                <strong>Letzte Aktualisierung:</strong> 26. November 2025 | <strong>Inkrafttreten:</strong> 26. November 2025
             </div>
 
             <div class="privacy-summary">
@@ -984,11 +1033,12 @@
              <div class="section">
                  <h2>1. 📊 Umfang der Datensammlung</h2>
                  <div class="subsection">
-                     <h3>1.1 Daten, die wir sammeln</h3>
+                     <h3>1.1 Daten, die wir sammeln / auf die wir zugreifen</h3>
                      <ul>
                          <li><strong>Erweiterungseinstellungen:</strong> Benutzereinstellungen und Konfigurationsdaten</li>
                          <li><strong>Tastaturkürzel:</strong> Benutzerdefinierte Tastenzuordnungen und Befehle</li>
-                         <li><strong>Nutzungsstatistiken:</strong> Anonyme Funktionsnutzungsdaten zur Verbesserung</li>
+                         <li><strong>Lesezeichen/Verlauf:</strong> Zugriff über Browser-APIs; keine dauerhafte Speicherung in der Erweiterung</li>
+                         <li><strong>Befehls- und Vervollständigungs-Historie:</strong> Speicherung in chrome.storage.local zur Effizienzsteigerung</li>
                      </ul>
                  </div>
                  <div class="subsection">
@@ -1032,7 +1082,7 @@
         
         <div class="content">
             <div class="last-updated">
-                <strong>Última actualización:</strong> 15 de enero de 2024 | <strong>Fecha de vigencia:</strong> 22 de enero de 2024
+                <strong>Última actualización:</strong> 26 de noviembre de 2025 | <strong>Fecha de vigencia:</strong> 26 de noviembre de 2025
             </div>
 
             <div class="privacy-summary">
@@ -1046,11 +1096,12 @@
              <div class="section">
                  <h2>1. 📊 Alcance de la recopilación de información</h2>
                  <div class="subsection">
-                     <h3>1.1 Datos que recopilamos</h3>
+                     <h3>1.1 Datos que recopilamos / a los que accedemos</h3>
                      <ul>
                          <li><strong>Configuración de extensión:</strong> Preferencias del usuario y datos de configuración</li>
                          <li><strong>Atajos de teclado:</strong> Mapeos de teclas y comandos personalizados</li>
-                         <li><strong>Estadísticas de uso:</strong> Datos anónimos de uso de funciones para mejora</li>
+                         <li><strong>Marcadores/Historial:</strong> Acceso mediante las APIs del navegador; no se persiste en la extensión</li>
+                         <li><strong>Historial de comandos y autocompletado:</strong> Almacenado en chrome.storage.local para mejorar la eficiencia</li>
                      </ul>
                  </div>
                  <div class="subsection">
@@ -1229,3 +1280,123 @@
     </script>
 </body>
 </html>
+            <div class="section">
+                <h2>6. 🌐 サードパーティサービスとネットワークリクエスト</h2>
+                <ul>
+                    <li><strong>分析/広告の統合はありません。</strong></li>
+                    <li><strong>ユーザー操作が引き金となるリクエストのみ:</strong> ページを開く、ダウンロード管理、GitHub Gistから設定を読み込み、127.0.0.1 のローカルエディタ連携。</li>
+                    <li><strong>バックグラウンドのテレメトリやレポートはありません。</strong></li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>7. 🧩 使用するAPIと権限</h2>
+                <ul>
+                    <li><strong>host_permissions &lt;all_urls&gt;：</strong> すべてのサイトでVim操作を提供</li>
+                    <li><strong>bookmarks：</strong> ブックマークの参照/管理</li>
+                    <li><strong>history：</strong> 履歴の取得（永続的コピーなし）</li>
+                    <li><strong>storage：</strong> 設定と履歴の保存</li>
+                    <li><strong>tabs / activeTab：</strong> タブ管理と相互作用</li>
+                    <li><strong>downloads / downloads.shelf：</strong> ダウンロード管理とシェルフ制御</li>
+                    <li><strong>sessions：</strong> セッションとタブ状態の管理</li>
+                    <li><strong>topSites：</strong> よく使うサイトへのクイックアクセス</li>
+                    <li><strong>scripting：</strong> ページへのスクリプト注入</li>
+                    <li><strong>webNavigation：</strong> SPA互換のためのナビゲーション監視</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h2>6. 🌐 서드파티 서비스 및 네트워크 요청</h2>
+                <ul>
+                    <li><strong>분석/광고 통합 없음.</strong></li>
+                    <li><strong>사용자 트리거 요청만:</strong> 페이지 열기, 다운로드 관리, GitHub Gist에서 설정 로드, 127.0.0.1 로컬 에디터 연동.</li>
+                    <li><strong>백그라운드 텔레메트리/보고 없음.</strong></li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>7. 🧩 사용 API 및 권한</h2>
+                <ul>
+                    <li><strong>host_permissions &lt;all_urls&gt;:</strong> 모든 사이트에서 Vim 동작 제공</li>
+                    <li><strong>bookmarks:</strong> 북마크 접근/관리</li>
+                    <li><strong>history:</strong> 브라우징 기록 조회 (영구 복사 없음)</li>
+                    <li><strong>storage:</strong> 설정/기록 저장</li>
+                    <li><strong>tabs / activeTab:</strong> 탭 관리 및 상호작용</li>
+                    <li><strong>downloads / downloads.shelf:</strong> 다운로드 관리 및 선반 제어</li>
+                    <li><strong>sessions:</strong> 세션/탭 상태 관리</li>
+                    <li><strong>topSites:</strong> 자주 방문한 사이트 빠른 접근</li>
+                    <li><strong>scripting:</strong> 페이지에 스크립트 주입</li>
+                    <li><strong>webNavigation:</strong> SPA 호환을 위한 네비게이션 관찰</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h2>6. 🌐 Services tiers et requêtes réseau</h2>
+                <ul>
+                    <li><strong>Aucune intégration d’analytique ou de publicité.</strong></li>
+                    <li><strong>Requêtes déclenchées par l’utilisateur uniquement :</strong> ouverture de pages, gestion des téléchargements, chargement de configuration depuis GitHub Gist, intégration éditeur local via 127.0.0.1.</li>
+                    <li><strong>Aucune télémétrie en arrière-plan ni remontée de données.</strong></li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>7. 🧩 API et permissions utilisées</h2>
+                <ul>
+                    <li><strong>host_permissions &lt;all_urls&gt; :</strong> Fournir des opérations Vim sur les sites</li>
+                    <li><strong>bookmarks :</strong> Accéder et gérer les signets</li>
+                    <li><strong>history :</strong> Consulter l’historique (sans copie persistante)</li>
+                    <li><strong>storage :</strong> Sauvegarder les réglages et historiques</li>
+                    <li><strong>tabs / activeTab :</strong> Gestion et interaction avec les onglets</li>
+                    <li><strong>downloads / downloads.shelf :</strong> Gestion des téléchargements et de la barre</li>
+                    <li><strong>sessions :</strong> Gestion des sessions et de l’état des onglets</li>
+                    <li><strong>topSites :</strong> Accès rapide aux sites les plus visités</li>
+                    <li><strong>scripting :</strong> Injection de scripts dans les pages</li>
+                    <li><strong>webNavigation :</strong> Observation des navigations pour compatibilité SPA</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h2>6. 🌐 Drittanbieter & Netzwerkanfragen</h2>
+                <ul>
+                    <li><strong>Keine Analyse-/Werbe-Integrationen.</strong></li>
+                    <li><strong>Nur vom Nutzer ausgelöste Anfragen:</strong> Seiten öffnen, Downloads verwalten, Konfiguration von GitHub Gist laden, lokale Editor-Integration über 127.0.0.1.</li>
+                    <li><strong>Keine Hintergrund-Telemetrie oder Berichterstattung.</strong></li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>7. 🧩 Verwendete APIs & Berechtigungen</h2>
+                <ul>
+                    <li><strong>host_permissions &lt;all_urls&gt;:</strong> Vim-Operationen auf Websites bereitstellen</li>
+                    <li><strong>bookmarks:</strong> Lesezeichenzugriff/-verwaltung</li>
+                    <li><strong>history:</strong> Verlauf abrufen (ohne persistente Kopie)</li>
+                    <li><strong>storage:</strong> Einstellungen und Historien speichern</li>
+                    <li><strong>tabs / activeTab:</strong> Tabverwaltung und Interaktion</li>
+                    <li><strong>downloads / downloads.shelf:</strong> Downloadverwaltung und Shelf-Steuerung</li>
+                    <li><strong>sessions:</strong> Sitzungs- und Tabstatusverwaltung</li>
+                    <li><strong>topSites:</strong> Schneller Zugriff auf meistbesuchte Seiten</li>
+                    <li><strong>scripting:</strong> Skriptinjektion in Seiten</li>
+                    <li><strong>webNavigation:</strong> Navigation beobachten für SPA-Kompatibilität</li>
+                </ul>
+            </div>
+            <div class="section">
+                <h2>6. 🌐 Servicios de terceros y solicitudes de red</h2>
+                <ul>
+                    <li><strong>Sin integraciones de analítica o publicidad.</strong></li>
+                    <li><strong>Solo solicitudes disparadas por el usuario:</strong> abrir páginas, gestionar descargas, cargar configuración desde GitHub Gist, integración con editor local vía 127.0.0.1.</li>
+                    <li><strong>Sin telemetría en segundo plano ni reportes.</strong></li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>7. 🧩 APIs y permisos utilizados</h2>
+                <ul>
+                    <li><strong>host_permissions &lt;all_urls&gt;:</strong> Proporcionar operaciones Vim en los sitios</li>
+                    <li><strong>bookmarks:</strong> Acceso y gestión de marcadores</li>
+                    <li><strong>history:</strong> Consulta del historial (sin copia persistente)</li>
+                    <li><strong>storage:</strong> Guardar ajustes e historiales</li>
+                    <li><strong>tabs / activeTab:</strong> Gestión de pestañas e interacción</li>
+                    <li><strong>downloads / downloads.shelf:</strong> Gestión de descargas y estantería</li>
+                    <li><strong>sessions:</strong> Gestión de sesiones y estado de pestañas</li>
+                    <li><strong>topSites:</strong> Acceso rápido a los sitios más visitados</li>
+                    <li><strong>scripting:</strong> Inyección de scripts en páginas</li>
+                    <li><strong>webNavigation:</strong> Observación de navegación para compatibilidad con SPA</li>
+                </ul>
+            </div>

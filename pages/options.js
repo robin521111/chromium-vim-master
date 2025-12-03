@@ -41,6 +41,15 @@ Settings.saveSettings = function() {
     this.settings.COMMANDBARCSS = this.cssEl.getValue();
     this.settings.GISTURL = this.gistUrl.value;
     this.settings.mapleader = this.settings.mapleader.replace(/ /g, '<Space>');
+    // Privacy/consent toggles
+    var consentEl = document.getElementById('consentData');
+    var collectEl = document.getElementById('collectHistory');
+    var syncEl = document.getElementById('useSyncStorage');
+    var offlineEl = document.getElementById('offlineMode');
+    if (consentEl) this.settings.consentData = !!consentEl.checked;
+    if (collectEl) this.settings.collectHistory = !!collectEl.checked;
+    if (syncEl) this.settings.useSyncStorage = !!syncEl.checked;
+    if (offlineEl) this.settings.offlineMode = !!offlineEl.checked;
     if (hadLocalConfigSet && this.settings.localconfig && this.settings.configpath &&
         lastConfigPath === this.settings.configpath) {
       alert('rVim Error: unset the localconfig before saving from here');
@@ -65,6 +74,10 @@ Settings.editMode = function(e) {
 };
 
 Settings.syncGist = function() {
+  if (Settings.settings && Settings.settings.offlineMode) {
+    alert('Offline mode is enabled. Remote config sync is disabled.');
+    return;
+  }
   var url = new URL(Utils.trim(this.gistUrl.value));
   if (url.hostname === 'gist.github.com') {
     url.hostname = 'gist.githubusercontent.com';
@@ -157,3 +170,12 @@ port.onMessage.addListener(function(response) {
 });
 
 PORT('getSettings');
+  // Initialize privacy/consent toggles
+  var consentEl = document.getElementById('consentData');
+  var collectEl = document.getElementById('collectHistory');
+  var syncEl = document.getElementById('useSyncStorage');
+  var offlineEl = document.getElementById('offlineMode');
+  if (consentEl) consentEl.checked = !!Settings.settings.consentData;
+  if (collectEl) collectEl.checked = !!Settings.settings.collectHistory;
+  if (syncEl) syncEl.checked = !!Settings.settings.useSyncStorage;
+  if (offlineEl) offlineEl.checked = !!Settings.settings.offlineMode;
