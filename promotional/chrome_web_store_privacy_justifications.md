@@ -95,4 +95,4 @@ rVim 承诺：
   - 命令与补全历史仅在用户选择同意并开启“本地存储历史”后，才会在本地保存；可在扩展选项页随时关闭并清除。
   - 设置可选择使用 Chrome 同步或仅在本地保存；支持关闭远程配置（离线模式）。
 - 隐私政策的直接链接（用于商店隐私字段）：
-  - https://raw.githubusercontent.com/robin521111/chromium-vim-master/main/privacy_policy.html
+  - https://cdn.statically.io/gh/robin521111/chromium-vim-master/main/privacy_policy.html

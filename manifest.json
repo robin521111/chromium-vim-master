@@ -53,7 +53,7 @@
     "default_popup": "pages/popup.html"
   },
   "author": "Jake Eaton",
-  "homepage_url": "https://raw.githubusercontent.com/robin521111/chromium-vim-master/main/privacy_policy.html",
+  "homepage_url": "https://cdn.statically.io/gh/robin521111/chromium-vim-master/main/privacy_policy.html",
   "permissions": [
     "tabs",
     "history",
