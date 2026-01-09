@@ -57,20 +57,13 @@ Command.setupFrameElements = function() {
   this.bar.appendChild(this.modeIdentifier);
   this.bar.appendChild(this.input);
   this.bar.spellcheck = false;
-  try {
-    document.lastChild.appendChild(this.bar);
-  } catch (e) {
-    document.body.appendChild(this.bar);
-  }
+  var root = Command.ensureShadowRoot();
+  root.appendChild(this.bar);
   if (!this.data) {
     this.data = document.createElement('div');
     this.data.id = 'rVim-command-bar-search-results';
     this.data.rVim = true;
-    try {
-      document.lastChild.appendChild(this.data);
-    } catch (e) {
-      document.body.appendChild(this.data);
-    }
+    root.appendChild(this.data);
     this.barHeight = parseInt(getComputedStyle(this.bar).height, 10);
     if (this.onBottom) {
       this.barPaddingTop = 0;
@@ -92,11 +85,8 @@ Command.setup = function() {
   this.statusBar = document.createElement('div');
   this.statusBar.id = 'rVim-status-bar';
   this.statusBar.style[(this.onBottom) ? 'bottom' : 'top'] = '0';
-  try {
-    document.lastChild.appendChild(this.statusBar);
-  } catch (e) {
-    document.body.appendChild(this.statusBar);
-  }
+  var root2 = Command.ensureShadowRoot();
+  root2.appendChild(this.statusBar);
   if (window.isCommandFrame)
     Command.setupFrameElements();
 };
@@ -1425,4 +1415,35 @@ Command.configureSettings = function(_settings) {
   } else {
     this.init(false);
   }
+};
+Command.shadowHost = null;
+Command.shadowDOM = null;
+Command.mainCSS = Command.mainCSS || null;
+
+Command.ensureShadowRoot = function() {
+  if (Command.shadowDOM) return Command.shadowDOM;
+  var host = document.createElement('div');
+  host.id = 'rVim-ui-host';
+  try {
+    document.lastChild.appendChild(host);
+  } catch (e) {
+    document.body.appendChild(host);
+  }
+  Command.shadowHost = host;
+  Command.shadowDOM = host.attachShadow({mode: 'open'});
+
+  var style = document.createElement('style');
+  var apply = function(cssText) {
+    style.textContent = cssText || '';
+    Command.shadowDOM.appendChild(style);
+  };
+  if (Command.mainCSS) {
+    apply(Command.mainCSS);
+  } else {
+    httpRequest({ url: chrome.runtime.getURL('content_scripts/main.css') }, function(data) {
+      Command.mainCSS = data;
+      apply(data);
+    });
+  }
+  return Command.shadowDOM;
 };
